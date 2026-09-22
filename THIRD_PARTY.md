@@ -1,8 +1,9 @@
-# Componentes de terceiros
+# Bibliotecas externas
 
-A aplicação referencia, via CDN, os seguintes projetos:
+A aplicação carrega, via jsDelivr, versões fixadas de:
 
-- TensorFlow.js `4.22.0` — Apache License 2.0.
-- TensorFlow.js COCO-SSD `2.2.3` — Apache License 2.0.
+- TensorFlow.js `4.22.0`
+- COCO-SSD `2.2.3`
+- MobileNet `2.1.1`
 
-O modelo COCO-SSD é usado para detecção local no navegador. Consulte os repositórios oficiais do TensorFlow para os termos completos e avisos de licença.
+Os pesos dos modelos usados pelas bibliotecas podem ser obtidos da infraestrutura pública configurada pelos respectivos pacotes. A inferência de câmera é executada no navegador; o código do Mira Nihongo não contém upload de quadros da câmera para um backend próprio.

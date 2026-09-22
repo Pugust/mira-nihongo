@@ -215,6 +215,66 @@ const JAPANESE_DB = {
   ]}
 };
 
+
+// Vocabulário manual adicional da V0.1. Estes itens enriquecem o estudo mesmo
+// quando o detector COCO-SSD não possui uma classe visual correspondente.
+Object.assign(JAPANESE_DB, {
+  utility_knife: { jp: 'カッターナイフ', kana: 'かったーないふ', romaji: 'kattā naifu', pt: 'estilete / cortador', manualOnly: true, actions: [
+    { jp: 'カッターナイフを使います。', romaji: 'Kattā naifu o tsukaimasu.', pt: 'Uso o estilete.' },
+    { jp: 'カッターナイフを置きます。', romaji: 'Kattā naifu o okimasu.', pt: 'Coloco o estilete.' }
+  ]},
+  box: { jp: '箱', kana: 'はこ', romaji: 'hako', pt: 'caixa', manualOnly: true, actions: [
+    { jp: '箱を開けます。', romaji: 'Hako o akemasu.', pt: 'Abro a caixa.' },
+    { jp: '箱を持ちます。', romaji: 'Hako o mochimasu.', pt: 'Seguro/carrego a caixa.' }
+  ]},
+  cardboard_box: { jp: '段ボール箱', kana: 'だんぼーるばこ', romaji: 'danbōru bako', pt: 'caixa de papelão', manualOnly: true, actions: [
+    { jp: '段ボール箱を開けます。', romaji: 'Danbōru bako o akemasu.', pt: 'Abro a caixa de papelão.' }
+  ]},
+  shelf: { jp: '棚', kana: 'たな', romaji: 'tana', pt: 'prateleira / estante', manualOnly: true },
+  drawer: { jp: '引き出し', kana: 'ひきだし', romaji: 'hikidashi', pt: 'gaveta', manualOnly: true, actions: [
+    { jp: '引き出しを開けます。', romaji: 'Hikidashi o akemasu.', pt: 'Abro a gaveta.' }
+  ]},
+  pen: { jp: 'ペン', kana: 'ぺん', romaji: 'pen', pt: 'caneta', manualOnly: true, actions: [
+    { jp: 'ペンで書きます。', romaji: 'Pen de kakimasu.', pt: 'Escrevo com a caneta.' }
+  ]},
+  pencil: { jp: '鉛筆', kana: 'えんぴつ', romaji: 'enpitsu', pt: 'lápis', manualOnly: true, actions: [
+    { jp: '鉛筆で書きます。', romaji: 'Enpitsu de kakimasu.', pt: 'Escrevo com o lápis.' }
+  ]},
+  paper: { jp: '紙', kana: 'かみ', romaji: 'kami', pt: 'papel', manualOnly: true },
+  notebook_paper: { jp: 'ノート', kana: 'のーと', romaji: 'nōto', pt: 'caderno', manualOnly: true, actions: [
+    { jp: 'ノートに書きます。', romaji: 'Nōto ni kakimasu.', pt: 'Escrevo no caderno.' }
+  ]},
+  key: { jp: '鍵', kana: 'かぎ', romaji: 'kagi', pt: 'chave', manualOnly: true, actions: [
+    { jp: '鍵を取ります。', romaji: 'Kagi o torimasu.', pt: 'Pego a chave.' }
+  ]},
+  door: { jp: 'ドア', kana: 'どあ', romaji: 'doa', pt: 'porta', manualOnly: true, actions: [
+    { jp: 'ドアを開けます。', romaji: 'Doa o akemasu.', pt: 'Abro a porta.' },
+    { jp: 'ドアを閉めます。', romaji: 'Doa o shimemasu.', pt: 'Fecho a porta.' }
+  ]},
+  window: { jp: '窓', kana: 'まど', romaji: 'mado', pt: 'janela', manualOnly: true, actions: [
+    { jp: '窓を開けます。', romaji: 'Mado o akemasu.', pt: 'Abro a janela.' }
+  ]},
+  wall: { jp: '壁', kana: 'かべ', romaji: 'kabe', pt: 'parede', manualOnly: true },
+  floor: { jp: '床', kana: 'ゆか', romaji: 'yuka', pt: 'chão / piso', manualOnly: true },
+  ceiling: { jp: '天井', kana: 'てんじょう', romaji: 'tenjō', pt: 'teto', manualOnly: true },
+  bag: { jp: '袋', kana: 'ふくろ', romaji: 'fukuro', pt: 'sacola / saco', manualOnly: true },
+  screwdriver: { jp: 'ドライバー', kana: 'どらいばー', romaji: 'doraibā', pt: 'chave de fenda', manualOnly: true, actions: [
+    { jp: 'ドライバーを使います。', romaji: 'Doraibā o tsukaimasu.', pt: 'Uso a chave de fenda.' }
+  ]},
+  hammer: { jp: 'ハンマー', kana: 'はんまー', romaji: 'hanmā', pt: 'martelo', manualOnly: true },
+  pliers: { jp: 'ペンチ', kana: 'ぺんち', romaji: 'penchi', pt: 'alicate', manualOnly: true },
+  tape: { jp: 'テープ', kana: 'てーぷ', romaji: 'tēpu', pt: 'fita adesiva', manualOnly: true },
+  ruler: { jp: '定規', kana: 'じょうぎ', romaji: 'jōgi', pt: 'régua', manualOnly: true },
+  cable: { jp: 'ケーブル', kana: 'けーぶる', romaji: 'kēburu', pt: 'cabo', manualOnly: true },
+  charger: { jp: '充電器', kana: 'じゅうでんき', romaji: 'jūdenki', pt: 'carregador', manualOnly: true, actions: [
+    { jp: '充電器を使います。', romaji: 'Jūdenki o tsukaimasu.', pt: 'Uso o carregador.' }
+  ]},
+  lamp: { jp: '照明', kana: 'しょうめい', romaji: 'shōmei', pt: 'luminária / iluminação', manualOnly: true },
+  glasses: { jp: '眼鏡', kana: 'めがね', romaji: 'megane', pt: 'óculos', manualOnly: true, actions: [
+    { jp: '眼鏡をかけます。', romaji: 'Megane o kakemasu.', pt: 'Coloco/uso os óculos.' }
+  ]}
+});
+
 const DEMONSTRATIVES = {
   kore: { thing: 'これ', romaji: 'kore', pt: 'isto', place: 'ここ', placeRomaji: 'koko', placePt: 'aqui' },
   sore: { thing: 'それ', romaji: 'sore', pt: 'isso', place: 'そこ', placeRomaji: 'soko', placePt: 'aí' },
