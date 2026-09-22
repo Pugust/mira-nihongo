@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0d10" />
+  <meta name="description" content="Aprenda japonês apontando a câmera para objetos do mundo real." />
+  <title>Mira Nihongo</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
+</head>
+<body>
+  <main id="app" class="app" aria-live="polite">
+    <section class="camera-stage" id="cameraStage">
+      <video id="camera" playsinline muted></video>
+      <div id="boxesLayer" class="boxes-layer" aria-hidden="true"></div>
+
+      <div class="topbar glass">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">◎</span>
+          <div>
+            <strong>Mira Nihongo</strong>
+            <small id="statusText">Pronto para iniciar</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="flipCameraBtn" class="icon-btn" type="button" title="Trocar câmera" aria-label="Trocar câmera">↻</button>
+          <button id="settingsBtn" class="icon-btn" type="button" title="Configurações" aria-label="Configurações">⚙</button>
+        </div>
+      </div>
+
+      <div class="crosshair-wrap" aria-hidden="true">
+        <div id="crosshair" class="crosshair"><span></span></div>
+        <div id="holdRing" class="hold-ring"></div>
+      </div>
+
+      <div id="emptyHint" class="empty-hint glass">
+        <strong>Aponte a mira para um objeto</strong>
+        <span>Segure por um instante ou toque em uma caixa detectada.</span>
+      </div>
+
+      <section id="lessonCard" class="lesson-card glass hidden" aria-label="Lição atual">
+        <div class="object-row">
+          <div>
+            <div class="jp-word" id="jpWord">—</div>
+            <div class="kana" id="kanaText">—</div>
+            <div class="romaji" id="romajiText">—</div>
+          </div>
+          <button id="speakWordBtn" class="speak-btn" type="button" aria-label="Ouvir palavra">🔊</button>
+        </div>
+
+        <div id="translationText" class="translation">—</div>
+
+        <div class="sentence-box">
+          <div id="sentenceJp" class="sentence-jp">—</div>
+          <div id="sentenceRomaji" class="sentence-romaji">—</div>
+          <div id="sentencePt" class="sentence-pt">—</div>
+        </div>
+
+        <div id="quizPanel" class="quiz-panel hidden">
+          <div class="quiz-question" id="quizQuestion">これは何ですか？</div>
+          <div class="quiz-hint">Responda em voz alta antes de revelar.</div>
+          <button id="revealBtn" class="primary compact" type="button">Revelar resposta</button>
+        </div>
+
+        <div class="card-actions">
+          <button id="speakSentenceBtn" type="button" class="soft-btn">🔊 Frase</button>
+          <button id="nextActionBtn" type="button" class="soft-btn">↪ Outra ação</button>
+          <button id="freezeBtn" type="button" class="soft-btn">⌾ Travar</button>
+        </div>
+      </section>
+
+      <div class="mode-dock glass" role="tablist" aria-label="Modos de estudo">
+        <button class="mode-btn active" data-mode="explore" type="button"><span>👁</span><small>Explorar</small></button>
+        <button class="mode-btn" data-mode="actions" type="button"><span>⚡</span><small>Ações</small></button>
+        <button class="mode-btn" data-mode="location" type="button"><span>📍</span><small>Local</small></button>
+        <button class="mode-btn" data-mode="quiz" type="button"><span>🎯</span><small>Quiz</small></button>
+        <button id="vocabBtn" class="mode-btn" type="button"><span>⌕</span><small>Vocabulário</small></button>
+      </div>
+
+      <button id="startBtn" class="start-btn primary" type="button">Abrir câmera</button>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog" class="sheet">
+    <form method="dialog" class="sheet-card">
+      <header>
+        <div>
+          <h2>Configurações</h2>
+          <p>Controle a quantidade de ajuda que aparece na tela.</p>
+        </div>
+        <button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
+      </header>
+
+      <label class="field">
+        <span>Nível de imersão</span>
+        <select id="immersionLevel">
+          <option value="1">1 — Japonês + kana + rōmaji + português</option>
+          <option value="2">2 — Japonês + kana + rōmaji</option>
+          <option value="3">3 — Japonês + kana</option>
+        </select>
+      </label>
+
+      <fieldset>
+        <legend>Distância / demonstrativo</legend>
+        <div class="segmented" id="demonstrativeControl">
+          <button type="button" data-demo="kore" class="active">これ · perto de mim</button>
+          <button type="button" data-demo="sore">それ · perto de você</button>
+          <button type="button" data-demo="are">あれ · longe</button>
+        </div>
+      </fieldset>
+
+      <label class="field">
+        <span>Confiança mínima da IA</span>
+        <div class="range-row">
+          <input id="confidenceRange" type="range" min="0.35" max="0.80" value="0.50" step="0.05" />
+          <output id="confidenceValue">50%</output>
+        </div>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <strong>Mostrar caixas detectadas</strong>
+          <small>Útil para entender o que a IA está enxergando.</small>
+        </span>
+        <input id="showBoxesToggle" type="checkbox" checked />
+      </label>
+
+      <section class="privacy-note">
+        <strong>Privacidade</strong>
+        <p>Este app não envia os quadros da câmera por código. A detecção é executada no navegador; arquivos do modelo são carregados da infraestrutura do TensorFlow.</p>
+      </section>
+    </form>
+  </dialog>
+
+  <dialog id="vocabDialog" class="sheet">
+    <form method="dialog" class="sheet-card tall">
+      <header>
+        <div>
+          <h2>Vocabulário detectável</h2>
+          <p>Toque em um item para estudar manualmente quando a câmera não reconhecer bem.</p>
+        </div>
+        <button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
+      </header>
+      <input id="vocabSearch" class="search" type="search" placeholder="Buscar: cadeira, celular, neko..." autocomplete="off" />
+      <div id="vocabList" class="vocab-list"></div>
+    </form>
+  </dialog>
+
+  <dialog id="onboardingDialog" class="onboarding">
+    <form method="dialog" class="onboarding-card">
+      <div class="onboarding-mark">◎</div>
+      <h1>Transforme o mundo em japonês</h1>
+      <p>Aponte a mira para objetos. O app reconhece itens comuns e transforma cada um em vocabulário, frase, ação e treino.</p>
+      <ol>
+        <li><strong>Mire</strong> no objeto.</li>
+        <li><strong>Espere</strong> a detecção estabilizar.</li>
+        <li><strong>Fale</strong> a palavra e a frase antes de ouvir o áudio.</li>
+      </ol>
+      <p class="small-note">A IA inicial reconhece categorias comuns; objetos muito específicos podem exigir seleção manual.</p>
+      <button id="onboardingContinue" class="primary" value="default">Entendi</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script src="js/japanese-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
