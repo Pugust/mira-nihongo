@@ -1,10 +1,12 @@
 'use strict';
 
-const CACHE = 'mira-nihongo-v0-1-r2';
+const CACHE = 'mira-nihongo-v0-2-r2';
 const LOCAL_ASSETS = [
   './',
   './index.html',
   './css/app.css',
+  './js/recognition-policy.js',
+  './js/open-vocab-loader.js',
   './js/japanese-data.js',
   './js/app.js',
   './manifest.webmanifest',

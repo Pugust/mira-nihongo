@@ -296,3 +296,19 @@ function capitalize(text) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { JAPANESE_DB, DEMONSTRATIVES, fallbackAction, capitalize };
 }
+
+// V0.2 — objetos adicionados a partir dos testes físicos e da visão de vocabulário aberto.
+Object.assign(JAPANESE_DB, {
+  fan: { jp: '扇風機', kana: 'せんぷうき', romaji: 'senpūki', pt: 'ventilador', manualOnly: true, actions: [
+    { jp: '扇風機をつけます。', romaji: 'Senpūki o tsukemasu.', pt: 'Ligo o ventilador.' },
+    { jp: '扇風機を消します。', romaji: 'Senpūki o keshimasu.', pt: 'Desligo o ventilador.' }
+  ]},
+  hand: { jp: '手', kana: 'て', romaji: 'te', pt: 'mão', manualOnly: true, actions: [
+    { jp: '手を上げます。', romaji: 'Te o agemasu.', pt: 'Levanto a mão.' },
+    { jp: '手を洗います。', romaji: 'Te o araimasu.', pt: 'Lavo as mãos.' }
+  ]},
+  shoe: { jp: '靴', kana: 'くつ', romaji: 'kutsu', pt: 'sapato / calçado', manualOnly: true, actions: [
+    { jp: '靴を履きます。', romaji: 'Kutsu o hakimasu.', pt: 'Calço o sapato.' },
+    { jp: '靴を脱ぎます。', romaji: 'Kutsu o nugimasu.', pt: 'Tiro o sapato.' }
+  ]}
+});

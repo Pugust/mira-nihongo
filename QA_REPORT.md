@@ -1,148 +1,204 @@
-# Mira Nihongo V0.1 — Relatório de reavaliação
+# Mira Nihongo V0.2 — Relatório de reavaliação
 
-## O que significa 10/10 nesta versão
+## Regra de qualidade do projeto
 
-A nota 10/10 significa que o **escopo definido para a V0.1** foi implementado, reavaliado e passou pelos testes de código disponíveis: interface compacta, estabilidade temporal, segunda checagem visual, incerteza explícita, correção manual, memória visual local, imersão progressiva, controles de memória, PWA e atualização por GitHub Pages.
+Cada atualização passa por ciclos de:
 
-Não significa que um modelo de visão passa a reconhecer qualquer objeto do mundo, nem substitui o teste físico. COCO-SSD e MobileNet continuam sendo modelos de classes fechadas. A validação final de câmera, desempenho e precisão com objetos reais depende do Android e da rede do aparelho.
+**implementar → testar → reavaliar criticamente → corrigir → testar novamente**
 
-## Ciclos de desenvolvimento e reavaliação
+até atingir **10/10 dentro do escopo definido para o código da versão**.
 
-### Etapa 1 — Experiência de câmera: 9,6/10 → corrigida
+A nota não substitui teste físico. “10/10 de código” e “10/10 em câmera real” são estados diferentes e continuarão sendo reportados separadamente.
 
-Problemas observados no teste físico da V0:
+---
 
-- cartão ocupava uma parte excessiva da câmera;
-- dock permanente de cinco modos reduzia ainda mais a área visual;
-- caixas de detecção chamavam mais atenção do que o objeto;
-- a última lição podia permanecer na tela mesmo após a mira sair do objeto.
+## Ponto de partida: teste físico da V0.1
 
-Correções:
+As fotos reais enviadas após a V0.1 revelaram cinco regressões concretas:
 
-- painel de lição recolhido na base;
-- detalhes sob expansão manual;
-- modos movidos para uma folha inferior aberta por um pequeno botão;
-- caixas gerais desligadas por padrão; o alvo continua destacável;
-- mira reposicionada para preservar espaço;
-- três perdas consecutivas do alvo limpam a lição antiga.
+1. estilete → `skateboard`;
+2. mão → `person`;
+3. caixa de papelão → `suitcase`;
+4. sapato/perna → `person`;
+5. ventilador → nenhuma detecção.
 
-Resultado simulado em viewport 412×915:
+Esses casos passaram a orientar diretamente a política da V0.2.
 
-- barra superior: 56 px;
-- cartão em estado estável/memória: ~180 px (aprox. 20% da altura);
-- cartão em estado incerto, com confirmação: máximo de 278 px (aprox. 30%);
-- área entre barra superior e cartão permanece livre para a câmera e a mira.
+---
 
-### Etapa 2 — Confiabilidade da leitura: 9,7/10 → corrigida
+## Ciclo 1 — Cobertura visual: 8,8/10 → corrigido
+
+Problema: COCO-SSD possui apenas 80 classes e não pode reconhecer diretamente muitos objetos cotidianos.
 
 Implementado:
 
-- histórico de 5 leituras;
-- mínimo de 3 votos consistentes antes de estabilizar uma classe;
-- seleção pelo ponto central da mira;
-- segunda checagem visual sobre o recorte do alvo com MobileNet;
-- `Talvez seja` quando a confiança é moderada ou os modelos discordam;
-- percentuais ocultos por padrão e disponíveis apenas no diagnóstico.
+- terceira camada de visão usando `Xenova/mobileclip_s0` com Transformers.js;
+- classificação zero-shot contra candidatos controlados pelo Mira Nihongo;
+- análise da região da mira mesmo quando COCO-SSD não retorna caixa alguma;
+- vocabulário visual explícito para estilete, caixa/papelão, ventilador, mão e calçado;
+- botão manual `Analisar mira`.
 
-Reavaliação encontrou uma lacuna: a memória de correções precisava ficar sob controle explícito do usuário.
-
-Correções:
-
-- botão para apagar todas as correções visuais;
-- contador de correções persistidas;
-- botão separado para redefinir o progresso da imersão.
-
-### Etapa 3 — Correção e memória: 9,9/10 → corrigida
-
-Implementado:
-
-- `Corrigir` e `Aprender isto` abrem vocabulário pesquisável;
-- vocabulário ampliado com objetos que não existem entre as 80 classes do COCO-SSD, incluindo `カッターナイフ`, `箱`, `段ボール箱`, `鍵`, `ドア`, ferramentas e outros itens cotidianos;
-- o recorte atual gera um dHash de 64 bits;
-- a correção salva `hash + classe bruta + palavra corrigida` em `localStorage`;
-- uma futura imagem suficientemente parecida, com a mesma classe bruta, pode reutilizar a correção;
-- limiar de Hamming conservador para reduzir associações acidentais;
-- máximo de 40 correções locais.
-
-Fluxo de integração simulado validado:
-
-1. detector principal retorna `skateboard` com 71%;
-2. segunda checagem retorna `letter opener` com 74%;
-3. interface mostra `カッターナイフ` como **Talvez seja**;
-4. correção manual para `段ボール箱` é salva;
-5. nova execução com a mesma assinatura visual retorna `段ボール箱` como **Lembrança local**;
-6. limpeza de correções retorna o contador a zero.
-
-Nenhum erro JavaScript foi registrado nesse fluxo simulado.
-
-### Etapa 4 — Didática e imersão: 9,9/10 → corrigida
-
-Mantido/corrigido:
-
-- これ・それ・あれ continuam escolhidos conscientemente pelo aluno;
-- pessoa usa `この人／その人／あの人`, não os demonstrativos de objeto de forma mecânica;
-- seres animados usam `います`; objetos usam `あります`;
-- português saiu do cartão principal e fica nos detalhes;
-- modo progressivo usa interações intencionais, não frames da câmera, para medir familiaridade;
-- nível 1: japonês + kana + rōmaji + português;
-- nível 2: japonês + kana + rōmaji;
-- nível 3: japonês + kana;
-- ouvir, confirmar e revelar quiz aumentam familiaridade; mera detecção repetitiva não aumenta.
-
-### Etapa 5 — Atualização/PWA: 9,9/10 → corrigida
-
-A reavaliação detectou que cache-first seria inconveniente para um projeto que será atualizado frequentemente via GitHub Pages.
+Reavaliação: **9,4/10**. Ainda havia risco de custo de rede/desempenho desnecessário ao carregar o modelo amplo sempre que a câmera abrisse.
 
 Correção:
 
-- Service Worker alterado para **network-first** em recursos locais;
-- quando há rede, HTML/JS/CSS novos são priorizados;
-- quando não há rede, a última versão cacheada continua como fallback;
-- cache versionado como `mira-nihongo-v0-1-r2`;
-- caches antigos são removidos na ativação.
+- modelo amplo passou a carregar **sob demanda**;
+- primeiro uso informa aproximadamente 57 MB de download quantizado + arquivos pequenos;
+- falha de rede recebe backoff de 60 s;
+- análise manual pode forçar nova tentativa.
+
+Resultado do ciclo: **10/10 no escopo de arquitetura de fallback**.
+
+---
+
+## Ciclo 2 — Falsos positivos conhecidos: 9,1/10 → corrigido
+
+Problema: confiança alta do detector não significa que a classe seja correta. Os testes físicos mostraram classes sistematicamente amplas/erradas.
+
+Implementado:
+
+- famílias explícitas de confusão para `skateboard`, `person`, `suitcase`, `oven`, `bench`, `dining table`, `bottle`, `cup`, `knife` e `scissors`;
+- listas curtas de candidatos para essas famílias, reduzindo comparação com rótulos irrelevantes;
+- `person` usa recorte localizado na mira para MobileNet/MobileCLIP;
+- MobileNet ganhou mapeamentos rápidos para `electric fan` e classes de calçado;
+- categorias de alta confusão deixam de virar “Reconhecimento estável” apenas pela confiança do detector caso a checagem ampla falhe.
+
+Testes unitários da política:
+
+- skateboard → utility knife: passou;
+- person → hand: passou;
+- person → shoe: passou;
+- suitcase → cardboard box: passou;
+- nenhuma detecção → fan: passou;
+- resultado zero-shot ambíguo: corretamente rejeitado;
+- shortlist de `person`: passou.
+
+Resultado: **9/9 testes de política passaram**.
+
+Reavaliação: **10/10 no escopo de política de decisão**.
+
+---
+
+## Ciclo 3 — Palavra antiga após mover a câmera: 9,5/10 → corrigido
+
+Problema: um reconhecimento feito diretamente pela mira não possui uma caixa COCO para dizer que o objeto desapareceu. Sem proteção adicional, uma palavra antiga poderia permanecer enquanto a câmera já estivesse apontando para outra coisa.
+
+Correções:
+
+- hash perceptual do recorte da mira é comparado entre análises;
+- mudança visual grande coloca a leitura em estado de rechecagem;
+- duas leituras amplas inconclusivas removem a seleção antiga;
+- memória local continua disponível sem converter leitura incerta em certeza.
+
+Teste de navegador simulado:
+
+- primeira análise reconhece 扇風機;
+- análises posteriores ficam ambíguas;
+- cartão antigo é removido após a política de perda de confirmação;
+- erros JavaScript: 0.
+
+Resultado: **10/10 no escopo de estado/staleness**.
+
+---
+
+## Ciclo 4 — Relações de cena: 8,9/10 → corrigido
+
+Primeira implementação geométrica poderia interpretar um objeto projetado dentro da caixa delimitadora de uma mesa como “dentro da mesa”. Isso seria linguisticamente ruim mesmo que a geometria 2D estivesse correta.
+
+Correções:
+
+- `中` só é inferido para classes semanticamente compatíveis com recipientes;
+- `上`/apoio usa classes compatíveis com superfícies e sobreposição suficiente;
+- esquerda/direita exigem proximidade e dominância horizontal;
+- relações fracas são descartadas em vez de mostradas como fato;
+- ausência de relação segura faz o modo Cena voltar à localização simples.
+
+Testes de política:
+
+- garrafa sobre mesa → 上: passou;
+- garrafa dentro de mala → 中: passou;
+- caixa delimitadora de mesa não é automaticamente tratada como recipiente: passou.
+
+Resultado: **10/10 no escopo heurístico da V0.2**.
+
+---
 
 ## QA estático final
 
-**45/45 verificações passaram.**
+**74/74 verificações passaram.**
 
-Incluem:
+Entre elas:
 
-- sintaxe válida em `app.js`, `japanese-data.js` e `sw.js`;
-- `manifest.webmanifest` válido;
-- `display: standalone` e caminhos relativos;
-- todos os IDs usados pelo JavaScript existem no HTML;
-- nenhum ID HTML duplicado;
-- 80/80 classes esperadas do COCO-SSD presentes;
-- vocabulário manual adicional presente;
-- versões de TFJS, COCO-SSD e MobileNet fixadas;
-- consenso temporal implementado;
-- segunda checagem implementada;
-- dHash e distância de Hamming implementados;
-- controles de limpeza de memória presentes;
-- progressão automática de imersão presente;
-- caixas desligadas por padrão;
-- diagnóstico opt-in;
-- tratamento especial de pessoas e localização animada;
-- cartão compacto e dock antigo removido;
-- todos os assets locais essenciais incluídos no Service Worker.
+- sintaxe válida em todos os JavaScript;
+- IDs do JavaScript existentes no HTML e nenhum ID duplicado;
+- manifesto PWA válido;
+- versões das dependências fixadas;
+- Transformers.js `3.8.1`, MobileCLIP e `q8` presentes;
+- carregamento amplo lazy e backoff presentes;
+- 80/80 classes COCO possuem entrada japonesa;
+- 108 entradas totais no banco atual;
+- estilete, papelão, ventilador, mão e calçado presentes;
+- estados de alta confusão presentes;
+- regras rápidas de ventilador/calçado presentes;
+- Cena e filtros semânticos presentes;
+- memória/correção/imersão preservadas;
+- Service Worker V0.2 network-first com todos os assets locais essenciais.
 
-## Teste de integração em navegador
+---
 
-Foi executado Chromium headless com viewport mobile 412×915 e modelos/câmera simulados localmente, porque o ambiente de empacotamento não possui acesso de rede às CDNs dos modelos.
+## QA de execução em navegador
 
-Resultados principais:
+Foi usado Chromium headless em viewport **412×915** com câmera, COCO-SSD, MobileNet e MobileCLIP simulados. Isso testa integração e política sem fingir que substitui a inferência real dos modelos.
 
-- segunda checagem `skateboard → letter opener → カッターナイフ`: passou;
-- estado `Talvez seja`: passou;
-- diálogo de correção: passou;
-- busca por `papelão`: 1 resultado pertinente;
-- persistência da correção: passou;
-- reaplicação em nova execução como `Lembrança local`: passou;
-- limpeza de correções: passou;
-- erros JavaScript no fluxo: 0.
+### Regressões principais
+
+**6/6 cenários passaram, com 0 erros JavaScript:**
+
+- estilete → `カッターナイフ` / Visão ampla;
+- mão → `手` / Visão ampla;
+- calçado → `靴` / Visão ampla;
+- caixa de papelão → `段ボール箱` / Visão ampla;
+- sem caixa COCO → `扇風機` / Visão ampla;
+- Cena: `ボトルはテーブルの上にあります。`.
+
+O cartão estável ficou em aproximadamente **180 px** numa tela de 412×915, abaixo de 20% da altura útil simulada.
+
+### Testes defensivos
+
+**2/2 passaram, com 0 erros JavaScript:**
+
+- `person` com Visão ampla inconclusiva permaneceu em `Talvez seja` em vez de ser promovido a certeza;
+- reconhecimento amplo antigo foi ocultado após leituras posteriores inconclusivas.
+
+---
+
+## O que não foi validado neste ambiente
+
+O ambiente de empacotamento não consegue baixar os pesos externos do Hugging Face/CDNs. Portanto, os testes de execução usaram saídas controladas dos modelos para validar toda a cadeia de decisão e UI.
+
+Ainda precisa ser testado fisicamente no Android:
+
+- download real inicial do MobileCLIP;
+- tempo de inferência no aparelho;
+- reconhecimento real dos cinco objetos das fotos;
+- comportamento térmico/bateria;
+- cache do modelo após fechar/reabrir;
+- desempenho em Wi‑Fi e dados móveis.
+
+Esses pontos **não são chamados de 10/10 ainda**.
+
+---
 
 ## Resultado
 
-**10/10 para o escopo de código da V0.1.**
+**10/10 para o escopo de código da V0.2.**
 
-A etapa ainda não declarada 10/10 é a **validação física da V0.1 em Android com os modelos reais**, pois ela exige o aparelho, a câmera, a conexão e objetos reais. Essa distinção será mantida nas próximas versões.
+Base objetiva:
+
+- 74/74 verificações estáticas;
+- 9/9 testes unitários da política;
+- 6/6 cenários principais de integração;
+- 2/2 cenários defensivos;
+- 0 erros JavaScript nos cenários de integração.
+
+Próxima validação: publicar a V0.2 no mesmo GitHub Pages e repetir os cinco casos físicos no celular.

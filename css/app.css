@@ -250,3 +250,29 @@ fieldset { margin:18px 0; padding:0; border:0; }
 .settings-actions { display:grid; gap:8px; margin-top:14px; }
 .settings-btn { width:100%; min-height:44px; border:1px solid #d8dce2; border-radius:13px; background:#fff; color:#232831; font-weight:700; }
 .settings-btn span { display:inline-grid; place-items:center; min-width:23px; min-height:23px; margin-left:6px; border-radius:999px; background:#e8ebef; font-size:11px; }
+
+/* V0.2 — visão ampla e cena */
+.scan-btn {
+  margin-top:10px;
+  min-height:36px;
+  padding:0 13px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-weight:700;
+}
+.scan-btn:disabled { opacity:.55; }
+.model-status {
+  margin:-6px 0 14px;
+  padding:9px 11px;
+  border-radius:12px;
+  background:#e8ebef;
+  color:#59616c;
+  font-size:12px;
+  line-height:1.4;
+}
+.recognition-state.deep { color:#9fd7ff; }
+.detection-box.deep-selected { border-style:dashed; border-color:#9fd7ff; }
+.detection-box.deep-selected > span { background:rgba(15,40,58,.92); }
+.mode-btn[data-mode="scene"] { grid-column:1 / -1; }

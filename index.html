@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/app.css" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://huggingface.co" crossorigin />
 </head>
 <body>
   <main id="app" class="app" aria-live="polite">
@@ -23,7 +24,7 @@
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">◎</span>
           <div class="brand-copy">
-            <strong>Mira Nihongo <em>0.1</em></strong>
+            <strong>Mira Nihongo <em>0.2</em></strong>
             <small id="statusText">Preparando reconhecimento…</small>
           </div>
         </div>
@@ -44,7 +45,8 @@
 
       <div id="emptyHint" class="empty-hint glass">
         <strong>Aponte para algo</strong>
-        <span>A mira escolhe o objeto. O app só confirma quando a leitura fica estável.</span>
+        <span>A mira escolhe o objeto. Se o detector comum não enxergar, a Visão ampla analisa a região central.</span>
+        <button id="scanBtn" class="scan-btn" type="button">◎ Analisar mira</button>
       </div>
 
       <section id="lessonCard" class="lesson-card glass hidden" aria-label="Lição atual">
@@ -113,6 +115,7 @@
         <button class="mode-btn" data-mode="actions" type="button"><span>⚡</span><strong>Ações</strong><small>Verbos úteis</small></button>
         <button class="mode-btn" data-mode="location" type="button"><span>📍</span><strong>Local</strong><small>ここ・そこ・あそこ</small></button>
         <button class="mode-btn" data-mode="quiz" type="button"><span>🎯</span><strong>Quiz</strong><small>Lembre antes de ver</small></button>
+        <button class="mode-btn" data-mode="scene" type="button"><span>🧭</span><strong>Cena</strong><small>Relações reais</small></button>
       </div>
       <button id="vocabBtn" class="wide-soft" type="button">⌕ Abrir vocabulário manual</button>
     </form>
@@ -152,6 +155,12 @@
           <output id="confidenceValue">50%</output>
         </div>
       </label>
+
+      <label class="switch-row">
+        <span><strong>Visão ampla</strong><small>Usa MobileCLIP no próprio navegador para reconhecer objetos fora das 80 classes do detector. No primeiro uso, baixa cerca de 57 MB de pesos quantizados + arquivos pequenos e depois usa o cache do navegador.</small></span>
+        <input id="deepVisionToggle" type="checkbox" checked />
+      </label>
+      <div id="deepVisionStatus" class="model-status">Visão ampla: aguardando câmera</div>
 
       <label class="switch-row">
         <span><strong>Mostrar todas as caixas</strong><small>Desligado deixa apenas o alvo da mira destacado.</small></span>
@@ -202,13 +211,13 @@
     <form method="dialog" class="onboarding-card">
       <div class="onboarding-mark">◎</div>
       <h1>Transforme o mundo em japonês</h1>
-      <p>Mire em objetos reais. A V0.1 combina estabilidade temporal com uma segunda checagem visual e mostra incerteza quando não tem evidência suficiente.</p>
+      <p>A V0.2 usa três níveis locais de visão: detector rápido, verificador e uma Visão ampla de vocabulário aberto para objetos específicos.</p>
       <ol>
-        <li><strong>Mire</strong> no objeto.</li>
-        <li><strong>Espere</strong> a leitura estabilizar.</li>
-        <li>Se aparecer <strong>“Talvez seja”</strong>, confirme ou corrija antes de memorizar.</li>
+        <li><strong>Mire</strong> no objeto e espere a leitura estabilizar.</li>
+        <li>Se o detector comum falhar, a <strong>Visão ampla</strong> analisa a região central.</li>
+        <li>Use <strong>Cena</strong> para praticar relações como 上・下・中・左・右 quando houver mais de um objeto.</li>
       </ol>
-      <p class="small-note">Objetos específicos podem não existir nos 80 rótulos do detector inicial. “Aprender isto” mantém o estudo útil mesmo nesses casos.</p>
+      <p class="small-note">No primeiro uso da Visão ampla, o navegador baixa aproximadamente 57 MB de pesos quantizados, além de arquivos pequenos de configuração/tokenização. A inferência continua no navegador e o cache evita repetir o download quando disponível.</p>
       <button id="onboardingContinue" class="primary" value="default">Entendi</button>
     </form>
   </dialog>
@@ -218,6 +227,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+  <script src="js/recognition-policy.js"></script>
+  <script src="js/open-vocab-loader.js"></script>
   <script src="js/japanese-data.js"></script>
   <script src="js/app.js"></script>
 </body>
