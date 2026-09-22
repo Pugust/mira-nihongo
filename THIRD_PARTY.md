@@ -1,9 +1,7 @@
-# Third-party components — Mira Nihongo V0.5
+# Third-party components — Mira Nihongo V0.6
 
-Carregados no navegador a partir de CDN:
+- TensorFlow.js 4.22.0 — execução dos modelos no navegador.
+- COCO-SSD 2.2.3 — detector visual rápido.
+- MobileNet 2.1.1 — verificador detalhado acionado sob demanda.
 
-- TensorFlow.js 4.22.0
-- TensorFlow.js COCO-SSD 2.2.3 — detector rápido
-- TensorFlow.js MobileNet 2.1.1 — verificador/classificador detalhado
-
-Os modelos executam no navegador. O código do Mira Nihongo não contém rotina de upload dos frames da câmera.
+As bibliotecas são carregadas das CDNs declaradas em `index.html`. O código de interação, pedagogia, memória, reconhecimento em camadas e interface do Mira Nihongo está nos arquivos locais do projeto.

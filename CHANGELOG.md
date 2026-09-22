@@ -1,29 +1,41 @@
-# Mira Nihongo V0.5 — Stable Focus + Broad Recognition
+# Mira Nihongo V0.6 — Interaction & Flow
 
-## Estabilidade
-- Auto Freeze após identificação.
-- Frame congelado preserva a cena durante estudo/correção.
-- Inferência e amostragem de foco pausadas enquanto congelado.
-- Botão global **Continuar** para retomar a câmera.
-- Sticky Lock com tolerância a pequenos movimentos quando Auto Freeze está desligado.
-- Correção não destrava mais a câmera automaticamente.
+## Interface
+- Cabeçalho compacto; número da versão movido para `Sobre`.
+- Seletor de modo visualmente reduzido.
+- Mira reduzida para liberar mais área do objeto.
+- Japonês e frase permanecem como elementos de maior peso visual.
+- Anotações da câmera somem gradualmente quando o frame é congelado e podem ser reveladas temporariamente com toque.
 
-## Reconhecimento
-- Novo `vision-engine.js` com votação de detector + MobileNet + geometria + escala + família + contexto.
-- Top candidatos em leituras incertas.
-- Famílias semânticas para evitar saltos absurdos entre categorias.
-- Saída `unknown` quando não há evidência suficiente.
-- Regressões dedicadas para estilete↔switch/celular, mão↔pessoa, sapato↔pessoa e tampinha↔frisbee.
-- Inferência parte–todo para tampinha de garrafa e infraestrutura para outras partes.
-- Classes de alto risco exigem margem maior antes de virarem resultado estável.
+## Bottom sheet
+- Três snaps: compacto, médio e completo.
+- Drag vertical com feedback contínuo e snap ao soltar.
+- Toque na alça continua funcionando como fallback.
+- Novo objeto sempre retorna ao cartão compacto.
+- Conteúdo completo passa a rolar verticalmente somente quando necessário.
+
+## Gestos e fluxo
+- Swipe horizontal na frase para avançar/voltar exemplos.
+- `Outra frase` permanece em `⋯ Mais` como fallback explícito.
+- Um único botão dinâmico `Congelar / Continuar`.
+- Removidos os controles duplicados `Continuar` e `Continuar câmera`.
+- Leituras tentativas priorizam `É isso / Corrigir` e escondem a ação principal até confirmação.
+- Histórico continua acessível por botão, sem conflito com o gesto de voltar do Android.
 
 ## Aprendizagem
-- Correção ocorre sobre imagem congelada.
-- Sugestões rápidas no diálogo de correção.
-- Histórico dos últimos 10 objetos.
-- Vocabulário expandido de 290 para 383 entradas.
-- Mantidos Cartão Vivo, breakdown, produção ativa, contexto de cena e progresso por palavra.
+- `Quero dizer algo` agora usa carrossel horizontal.
+- Ações secundárias agrupadas em `⋯ Mais`.
+- Dicas contextuais de primeira utilização para Breakdown e progressão por palavra.
+- Tutorial interativo em 4 etapas: mirar → puxar cartão → deslizar frase → corrigir.
+- Tutorial pode ser refeito em Configurações.
+
+## Acessibilidade e sensação
+- Feedback háptico opcional para reconhecimento/congelamento/navegação.
+- Tamanho de texto configurável.
+- Áreas de toque principais mantidas amplas.
+- `:focus-visible` para navegação por teclado/dispositivos assistivos.
+- `prefers-reduced-motion` respeitado.
 
 ## PWA
-- Cache atualizado para `mira-nihongo-v0-5-r1`.
-- `vision-engine.js` incluído no precache local.
+- Cache atualizado para `mira-nihongo-v0-6-r1`.
+- Novo `interaction-engine.js` incluído no precache.

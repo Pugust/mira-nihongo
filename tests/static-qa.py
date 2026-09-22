@@ -37,14 +37,23 @@ ok(manifest['start_url']=='./','manifest start url')
 
 # service worker cache includes core files
 sw=(root/'sw.js').read_text()
-for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/recognition-policy.js']:
+for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/recognition-policy.js','./js/interaction-engine.js']:
     ok(v in sw,f'sw missing {v}')
 
-# version markers and v0.5 feature hooks
-for needle in ['Mira Nihongo <em>0.5</em>','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog']:
+# version markers and v0.6 interaction/flow hooks
+for needle in ['Mira Nihongo V0.6','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle']:
     ok(needle in html,f'html missing {needle}')
-for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox']:
+for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations']:
     ok(needle in app,f'app missing {needle}')
+
+# V0.6 UX invariants
+css=(root/'css/app.css').read_text()
+ok('resumeBtn' not in html,'duplicate top Continue control must be removed')
+ok('freezeBtn' not in html,'duplicate freeze/continue control must be removed')
+for needle_css in ['.lesson-card.snap-compact','.lesson-card.snap-medium','.lesson-card.snap-full','.tutorial-coach','.intent-rail','prefers-reduced-motion','touch-action:none']:
+    ok(needle_css in css,f'css missing UX hook {needle_css}')
+ok('mn-v06-sheet' not in app,'sheet position must remain session-only')
+ok(html.index('js/interaction-engine.js') < html.index('js/app.js'),'interaction engine must load before app')
 
 # privacy: no upload/fetch of image blob/form data in app
 for bad in ['fetch(', 'XMLHttpRequest', 'FormData(', 'navigator.sendBeacon']:

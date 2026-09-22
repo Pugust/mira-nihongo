@@ -1,76 +1,98 @@
-# Mira Nihongo V0.5 — Relatório de reavaliação
+# Mira Nihongo V0.6 — Relatório de reavaliação
 
 ## Regra de validação
-A versão só recebe 10/10 **no escopo de código** depois de ciclos de implementação → crítica → correção → reteste. Validação física no Android permanece separada.
+A versão só recebe 10/10 **no escopo de código e UX simulável** após ciclos de implementação → crítica → correção → reteste. Câmera, ergonomia real, temperatura e sensação dos gestos no Android continuam exigindo validação física separada.
 
-## Ciclo 1 — estabilidade pós-reconhecimento
-**Nota inicial: 9,5/10.**
+## Ciclo 1 — hierarquia e bottom sheet
+**Nota inicial: 9,6/10.**
 
-Problema encontrado: o tracking da V0.4 ainda descartava a leitura com movimentos pequenos e a correção exigia segurar o celular imóvel.
+Problemas encontrados:
+- o cartão ainda se comportava como painel binário aberto/fechado;
+- havia dois controles de retomada da câmera;
+- a interface congelada mantinha marcações demais sobre o objeto.
 
 Correções:
-- Auto Freeze por padrão;
-- captura do frame visível;
-- pausa completa do loop de amostragem enquanto congelado;
-- correção mantém a imagem e a lição congeladas;
-- botão `Continuar` explícito;
-- Sticky Lock exige até 5 amostras de mudança no perfil forte antes de liberar um objeto quando Auto Freeze está desativado.
+- bottom sheet com snaps Compacto / Médio / Completo;
+- drag vertical com feedback contínuo e snap ao soltar;
+- toque na alça como fallback equivalente;
+- único botão dinâmico `Congelar / Continuar`;
+- mira e caixas desaparecem após 700 ms no frame congelado e reaparecem temporariamente ao tocar na imagem;
+- cabeçalho e seletor de modo reduzidos.
 
-## Ciclo 2 — reconhecimento amplo
+## Ciclo 2 — descobribilidade e uso com uma mão
 **Reavaliação: 9,8/10.**
 
-Problema encontrado: simplesmente congelar um resultado não evita uma identificação semanticamente absurda.
+Problema encontrado: gestos úteis poderiam virar funções escondidas.
 
 Correções:
-- motor separado `vision-engine.js`;
-- fusão de detector, MobileNet, geometria, escala, família semântica e contexto;
-- classes de alto risco têm limiar/margem mais severos;
-- top candidatos são preservados para decisão do usuário;
-- `unknown` é uma saída válida;
-- partes seguras podem superar a classe do objeto inteiro.
+- swipe de frase sempre possui fallback `⋯ Mais → Outra frase`;
+- histórico permanece em botão explícito, sem gesto de borda que conflita com Android;
+- drag do cartão continua possível por toque;
+- tutorial contextual de 4 etapas sobre a interface real;
+- tutorial pode avançar pela interação real ou pelo botão `Próxima`;
+- feedback háptico opcional;
+- tamanho de texto configurável;
+- suporte a `prefers-reduced-motion` e `:focus-visible`.
 
-## Ciclo 3 — regressões dos testes físicos
+## Ciclo 3 — hierarquia em leituras incertas
 **Reavaliação: 9,9/10.**
 
-Foram criados testes puros para os erros observados no aparelho:
-- objeto alongado detectado como `switch` → `utility_knife` passa a ser o candidato principal, ainda pedindo confirmação;
-- objeto alongado detectado como `cell phone` → `utility_knife` passa a ser o candidato principal;
-- `person` + forte evidência de pele → `hand` passa à frente e permanece tentativo;
-- `person` + candidato visual de calçado → `shoe` passa à frente;
-- `frisbee` muito pequeno → `bottle_cap` passa à frente e permanece tentativo;
-- foco no topo de `bottle` → `bottle_cap` pode ser aceito por relação parte–todo;
-- Sticky Lock forte só libera após mudança persistente.
+Problema encontrado: um cartão compacto podia ficar apertado quando candidatos e confirmação eram necessários, e `Continuar` podia competir com `É isso / Corrigir`.
 
-Resultado do teste puro: **9/9**.
+Correções:
+- cartão compacto ganha altura adaptativa em estado tentativo;
+- botão principal fica oculto enquanto a leitura exige confirmação;
+- candidatos aparecem somente em incerteza;
+- novo objeto sempre volta ao estado compacto;
+- ações secundárias ficam agrupadas em `⋯ Mais`;
+- `Quero dizer algo` passou para rail horizontal.
 
-## Validação estática
-- Sintaxe de todos os JS: OK.
-- IDs HTML referenciados pelo JS: OK.
-- Recursos locais: OK.
-- Manifesto: OK.
-- Cache PWA inclui `vision-engine.js`: OK.
-- Nenhuma API de upload (`fetch`, XHR, FormData ou sendBeacon) presente em `app.js`.
-- Vocabulário: **383 entradas**.
+## Ciclo 4 — regressão e limpeza
+**Resultado: 10/10 no escopo definido.**
 
-Resultado: **57/57** verificações estáticas.
+Validações:
+- nenhuma regressão nas regras de visão da V0.5;
+- nenhuma referência HTML quebrada;
+- controles duplicados antigos removidos;
+- posição do cartão é somente da sessão e não entra em `localStorage`;
+- novo `interaction-engine.js` carregado antes do app e incluído no Service Worker;
+- estilos antigos do onboarding removidos;
+- cache PWA atualizado para `mira-nihongo-v0-6-r1`.
 
-## Smoke runtime sem câmera
-Um harness DOM em Node inicializou o app, abriu uma leitura tentativa, renderizou candidatos, registrou histórico, congelou e retomou sem exceções.
+## Suíte automatizada
 
-Resultado: **8/8**.
+### Validação estática
+**81/81** verificações aprovadas.
 
-**Total automatizado da V0.5: 74/74 verificações aprovadas** (57 estáticas + 9 do motor de visão + 8 de runtime).
+Inclui sintaxe JS, IDs, recursos locais, manifesto, cache PWA, invariantes de UX, privacidade e banco de **383 entradas**.
 
-A automação com Chromium local foi bloqueada pela política de navegação do ambiente de execução, então ela não é contabilizada como aprovação. Isso não foi substituído por uma alegação fictícia de teste de navegador.
+### Motor de visão
+**9/9** cenários de regressão aprovados.
 
-## Nota final do escopo de código
-**10/10** após as correções acima.
+Preserva os testes físicos transformados em regras: estilete/switch/celular, mão/pessoa, sapato/pessoa, tampinha/frisbee, parte–todo e Sticky Lock.
 
-A nota não cobre ainda:
-- precisão real dos modelos no Xiaomi/Android;
-- temperatura após uso prolongado;
-- disponibilidade/qualidade do autofocus do navegador;
-- comportamento da câmera com diferentes iluminações;
-- comparação física dos mesmos objetos usados nos testes V0.1–V0.4.
+### Motor de interação
+**13/13** asserções aprovadas.
 
-Esses itens só podem ser validados no próximo teste físico.
+Cobre snaps, limites do bottom sheet, velocidade/direção de drag e reconhecimento de swipe horizontal sem confundir movimento vertical.
+
+### Runtime DOM sem câmera
+**24/24** asserções aprovadas.
+
+Cobre inicialização, reconhecimento tentativo/estável, candidatos, congelamento, botão principal, estados do bottom sheet, troca de frase, retomada, tutorial e integração do gesto de arrastar.
+
+**Total automatizado contabilizado: 127/127 verificações/asserções/cenários aprovados.**
+
+Uma tentativa adicional de screenshot via Chromium headless no ambiente de execução não concluiu dentro do limite do processo. Ela **não é contabilizada como aprovação** e não foi substituída por uma alegação de teste visual inexistente.
+
+## Nota final
+**10/10 — código + UX simulável dentro do escopo da V0.6.**
+
+Ainda requer teste físico no celular para validar:
+- conforto real do drag com polegar;
+- altura percebida dos três snaps em diferentes telas;
+- ausência de conflitos com gestos do navegador/Android;
+- haptics no hardware real;
+- legibilidade dos três tamanhos de texto;
+- velocidade/temperatura da câmera e IA;
+- precisão visual dos objetos reais.

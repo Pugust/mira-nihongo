@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090b0f" />
-  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com Stable Focus, congelamento inteligente e reconhecimento em camadas." />
+  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com fluxo por gestos e aprendizado contextual." />
   <title>Mira Nihongo</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
@@ -25,7 +25,7 @@
       <header class="topbar glass">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">◎</span>
-          <div class="brand-copy"><strong>Mira Nihongo <em>0.5</em></strong><small id="statusText">Preparando visão…</small></div>
+          <div class="brand-copy"><strong>Mira Nihongo</strong><small id="statusText">Preparando visão…</small></div>
         </div>
         <div class="top-actions">
           <button id="flipCameraBtn" class="icon-btn" type="button" aria-label="Trocar câmera">↻</button>
@@ -35,7 +35,7 @@
 
       <button id="studyBtn" class="study-pill glass" type="button"><span id="studyModeIcon">👁</span><span id="studyModeLabel">Cotidiano</span><span>⌄</span></button>
       <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
-      <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Imagem congelada · IA pausada</span><button id="resumeBtn" type="button">▶ Continuar</button></div>
+      <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span></div>
 
       <div id="crosshairWrap" class="crosshair-wrap" aria-hidden="true">
         <div class="crosshair"><span></span></div><div id="holdRing" class="hold-ring"></div>
@@ -47,7 +47,7 @@
         <div class="empty-actions"><button id="scanBtn" class="scan-btn" type="button">◎ Analisar agora</button><button id="unknownCorrectBtn" class="scan-btn secondary" type="button">✎ Escolher palavra</button></div>
       </div>
 
-      <section id="lessonCard" class="lesson-card glass hidden" aria-label="Lição atual">
+      <section id="lessonCard" class="lesson-card glass hidden snap-compact" aria-label="Lição atual">
         <button id="expandLessonBtn" class="drawer-handle" type="button" aria-expanded="false"><span></span><span class="drawer-chevron">⌃</span></button>
         <div class="compact-lesson">
           <div class="object-row">
@@ -62,6 +62,7 @@
             <div id="sentenceJp" class="sentence-jp">—</div>
             <div id="sentenceRomaji" class="sentence-romaji">—</div>
           </div>
+          <button id="primaryFlowAction" class="primary-flow-action hidden" type="button">▶ Continuar</button>
           <div id="tentativePanel" class="tentative-panel hidden"><p id="tentativeReason">Ainda não tenho certeza.</p><div id="candidateStrip" class="candidate-strip hidden"></div><div class="tentative-actions"><button id="confirmBtn" class="primary compact" type="button">✓ É isso</button><button id="correctBtn" class="soft-btn compact" type="button">✎ Corrigir</button></div></div>
         </div>
 
@@ -83,7 +84,7 @@
           <section class="learning-section">
             <button id="saySomethingToggle" class="section-toggle" type="button"><span>💭 Quero dizer algo</span><small>Produzir japonês com este objeto</small><b>⌄</b></button>
             <div id="saySomethingPanel" class="say-panel hidden">
-              <div class="intent-grid" id="intentGrid">
+              <div class="intent-rail" id="intentGrid" aria-label="Intenções de fala">
                 <button data-intent="identify" type="button">O que é isto?</button><button data-intent="use" type="button">Estou usando</button>
                 <button data-intent="take" type="button">Vou pegar</button><button data-intent="place" type="button">Vou colocar</button>
                 <button data-intent="where" type="button">Onde está?</button><button data-intent="describe" type="button">Descrever</button>
@@ -93,11 +94,13 @@
           </section>
 
           <div id="sceneLine" class="scene-line hidden"></div>
-          <div class="card-actions">
+          <div class="learning-toolbar">
             <button id="knowBtn" type="button" class="soft-btn">✓ Já sei</button>
+            <button id="moreActionsBtn" type="button" class="soft-btn" aria-expanded="false">⋯ Mais</button>
+          </div>
+          <div id="secondaryActions" class="secondary-actions hidden">
             <button id="reviewBtn" type="button" class="soft-btn">↺ Quero revisar</button>
             <button id="nextActionBtn" type="button" class="soft-btn">↪ Outra frase</button>
-            <button id="freezeBtn" type="button" class="soft-btn">❄ Congelar</button>
             <button id="learnThisBtn" type="button" class="soft-btn">✎ Corrigir objeto</button>
           </div>
           <small id="progressHint" class="progress-hint"></small>
@@ -133,8 +136,10 @@
     <label class="field"><span>Persistência da leitura</span><select id="stickyStrength"><option value="strong">Forte — recomendado</option><option value="normal">Normal</option></select><small>Quando o congelamento automático estiver desligado, tolera pequenos movimentos antes de abandonar o objeto.</small></label>
     <label class="switch-row"><span><strong>Mostrar caixas</strong><small>Útil para diagnóstico; desligado é mais limpo.</small></span><input id="showBoxesToggle" type="checkbox" /></label>
     <label class="switch-row"><span><strong>Diagnóstico</strong><small>Mostra confiança e carga estimada.</small></span><input id="diagnosticsToggle" type="checkbox" /></label>
+    <label class="field"><span>Tamanho do texto</span><select id="fontSize"><option value="small">Compacto</option><option value="medium">Médio — recomendado</option><option value="large">Grande</option></select><small>Ajusta o conteúdo pedagógico sem mudar o tamanho dos alvos de toque.</small></label>
+    <label class="switch-row"><span><strong>Feedback háptico</strong><small>Pulsos curtos ao reconhecer, congelar e confirmar.</small></span><input id="hapticsToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir progresso por palavra</button></div>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir progresso por palavra</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.6 · Interaction &amp; Flow</strong><p>Interface focada em uso com uma mão, gestos descobríveis e câmera dominante.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -143,8 +148,10 @@
   <dialog id="correctionDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>O que é isto?</h2><p>A imagem permanece congelada. Escolha um candidato ou pesquise a palavra certa.</p></div><button id="cancelCorrectionBtn" class="icon-btn dark" value="cancel">×</button></header><div id="correctionCandidates" class="correction-candidates hidden"><strong>Sugestões da visão</strong><div id="correctionCandidateList" class="candidate-strip light"></div></div><input id="correctionSearch" class="search" type="search" placeholder="Ex.: tampinha, estilete, caixa..." autocomplete="off" /><div id="correctionList" class="vocab-list"></div></form></dialog>
 
   <dialog id="historyDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>Últimos objetos</h2><p>Volte rapidamente ao que encontrou sem precisar mirar outra vez.</p></div><button class="icon-btn dark" value="cancel">×</button></header><div id="historyList" class="vocab-list"></div></form></dialog>
-
-  <dialog id="onboardingDialog" class="onboarding"><form method="dialog" class="onboarding-card"><div class="onboarding-mark">◎</div><h1>Mire. Aprenda. Continue o seu dia.</h1><p>A V0.5 usa Stable Focus: reconhece o objeto em camadas, congela o quadro e pausa a IA para você estudar ou corrigir sem precisar manter o celular imóvel.</p><ol><li><strong>Mire</strong> no objeto; a visão combina detector, verificador, forma e contexto.</li><li>Quando houver uma leitura, a imagem congela e o processamento pesado para.</li><li>Confirme, corrija, abra o breakdown ou toque em Continuar para procurar outro objeto.</li></ol><p class="small-note">A meta é ensinar o máximo exigindo o mínimo possível da sua atenção.</p><button id="onboardingContinue" class="primary" value="default">Entendi</button></form></dialog>
+  <aside id="tutorialCoach" class="tutorial-coach hidden" role="status" aria-live="polite">
+    <div class="coach-copy"><strong id="tutorialTitle">Tutorial rápido</strong><span id="tutorialText">Mire em um objeto.</span></div>
+    <div class="coach-actions"><button id="tutorialSkipBtn" type="button">Pular</button><button id="tutorialNextBtn" type="button">Próxima</button></div>
+  </aside>
 
   <div id="toast" class="toast" role="status"></div>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
@@ -154,6 +161,7 @@
   <script src="js/vision-engine.js"></script>
   <script src="js/japanese-data.js"></script>
   <script src="js/learning-engine.js"></script>
+  <script src="js/interaction-engine.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

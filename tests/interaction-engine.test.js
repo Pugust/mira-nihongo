@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('assert');
+const I=require('../js/interaction-engine.js');
+assert.deepEqual(I.ORDER,['compact','medium','full']);
+assert.equal(I.nextSnap('compact',1),'medium');
+assert.equal(I.nextSnap('medium',1),'full');
+assert.equal(I.nextSnap('full',1),'full');
+assert.equal(I.nextSnap('full',-1),'medium');
+assert.equal(I.resolveSnap({current:'compact',deltaY:-120,velocityY:-.7,viewport:900}),'medium');
+assert.equal(I.resolveSnap({current:'medium',deltaY:-120,velocityY:-.7,viewport:900}),'full');
+assert.equal(I.resolveSnap({current:'full',deltaY:140,velocityY:.8,viewport:900}),'medium');
+assert.equal(I.resolveSnap({current:'medium',deltaY:8,velocityY:.05,viewport:900}),'medium');
+assert.equal(I.classifySwipe({dx:-90,dy:12,dt:240}),'next');
+assert.equal(I.classifySwipe({dx:90,dy:12,dt:240}),'previous');
+assert.equal(I.classifySwipe({dx:30,dy:4,dt:240}),null);
+assert.equal(I.classifySwipe({dx:90,dy:100,dt:240}),null);
+console.log('interaction-engine: 13/13 passed');

@@ -5,17 +5,17 @@
     stage: document.getElementById('cameraStage'), video: document.getElementById('camera'), freezeCanvas: document.getElementById('freezeCanvas'), focus: document.getElementById('focusCanvas'), detect: document.getElementById('detectCanvas'), crop: document.getElementById('cropCanvas'), boxes: document.getElementById('boxesLayer'),
     status: document.getElementById('statusText'), start: document.getElementById('startBtn'), flip: document.getElementById('flipCameraBtn'), settings: document.getElementById('settingsBtn'), settingsDialog: document.getElementById('settingsDialog'),
     study: document.getElementById('studyBtn'), studyDialog: document.getElementById('studyDialog'), studyModeIcon: document.getElementById('studyModeIcon'), studyModeLabel: document.getElementById('studyModeLabel'),
-    crosshairWrap: document.getElementById('crosshairWrap'), holdRing: document.getElementById('holdRing'), emptyHint: document.getElementById('emptyHint'), scan: document.getElementById('scanBtn'), unknownCorrect: document.getElementById('unknownCorrectBtn'), loadChip: document.getElementById('loadChip'), loadText: document.getElementById('loadText'), freezeBanner: document.getElementById('freezeBanner'), resume: document.getElementById('resumeBtn'),
+    crosshairWrap: document.getElementById('crosshairWrap'), holdRing: document.getElementById('holdRing'), emptyHint: document.getElementById('emptyHint'), scan: document.getElementById('scanBtn'), unknownCorrect: document.getElementById('unknownCorrectBtn'), loadChip: document.getElementById('loadChip'), loadText: document.getElementById('loadText'), freezeBanner: document.getElementById('freezeBanner'),
     lessonCard: document.getElementById('lessonCard'), expandLesson: document.getElementById('expandLessonBtn'), lessonDetails: document.getElementById('lessonDetails'), recognitionState: document.getElementById('recognitionState'),
-    jpWord: document.getElementById('jpWord'), kana: document.getElementById('kanaText'), romaji: document.getElementById('romajiText'), translationInline: document.getElementById('translationInline'), readingRow: document.getElementById('readingRow'), sentenceCompact: document.getElementById('sentenceCompact'), sentenceJp: document.getElementById('sentenceJp'), sentenceRomaji: document.getElementById('sentenceRomaji'), sentencePt: document.getElementById('sentencePt'),
+    jpWord: document.getElementById('jpWord'), kana: document.getElementById('kanaText'), romaji: document.getElementById('romajiText'), translationInline: document.getElementById('translationInline'), readingRow: document.getElementById('readingRow'), sentenceCompact: document.getElementById('sentenceCompact'), sentenceJp: document.getElementById('sentenceJp'), sentenceRomaji: document.getElementById('sentenceRomaji'), sentencePt: document.getElementById('sentencePt'), primaryFlowAction: document.getElementById('primaryFlowAction'),
     tentativePanel: document.getElementById('tentativePanel'), tentativeReason: document.getElementById('tentativeReason'), candidateStrip: document.getElementById('candidateStrip'), confirm: document.getElementById('confirmBtn'), correct: document.getElementById('correctBtn'),
     breakdownToggle: document.getElementById('breakdownToggle'), breakdownPanel: document.getElementById('breakdownPanel'), breakdownTokens: document.getElementById('breakdownTokens'), tokenExplain: document.getElementById('tokenExplain'), patternBox: document.getElementById('patternBox'),
     sayToggle: document.getElementById('saySomethingToggle'), sayPanel: document.getElementById('saySomethingPanel'), intentGrid: document.getElementById('intentGrid'), intentAnswer: document.getElementById('intentAnswer'), sceneLine: document.getElementById('sceneLine'),
-    speakWord: document.getElementById('speakWordBtn'), speakSentence: document.getElementById('speakSentenceBtn'), know: document.getElementById('knowBtn'), review: document.getElementById('reviewBtn'), nextAction: document.getElementById('nextActionBtn'), freeze: document.getElementById('freezeBtn'), learnThis: document.getElementById('learnThisBtn'), progressHint: document.getElementById('progressHint'),
-    immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'),
-    clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'),
+    speakWord: document.getElementById('speakWordBtn'), speakSentence: document.getElementById('speakSentenceBtn'), know: document.getElementById('knowBtn'), review: document.getElementById('reviewBtn'), nextAction: document.getElementById('nextActionBtn'), learnThis: document.getElementById('learnThisBtn'), progressHint: document.getElementById('progressHint'), moreActions: document.getElementById('moreActionsBtn'), secondaryActions: document.getElementById('secondaryActions'),
+    immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'), fontSize: document.getElementById('fontSize'), haptics: document.getElementById('hapticsToggle'),
+    clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'), replayTutorial: document.getElementById('replayTutorialBtn'),
     vocabBtn: document.getElementById('vocabBtn'), vocabDialog: document.getElementById('vocabDialog'), vocabSearch: document.getElementById('vocabSearch'), vocabList: document.getElementById('vocabList'), correctionDialog: document.getElementById('correctionDialog'), correctionSearch: document.getElementById('correctionSearch'), correctionList: document.getElementById('correctionList'), correctionCandidates: document.getElementById('correctionCandidates'), correctionCandidateList: document.getElementById('correctionCandidateList'), cancelCorrection: document.getElementById('cancelCorrectionBtn'), historyBtn: document.getElementById('historyBtn'), historyDialog: document.getElementById('historyDialog'), historyList: document.getElementById('historyList'),
-    onboarding: document.getElementById('onboardingDialog'), onboardingContinue: document.getElementById('onboardingContinue'), toast: document.getElementById('toast')
+    tutorialCoach: document.getElementById('tutorialCoach'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialText: document.getElementById('tutorialText'), tutorialNext: document.getElementById('tutorialNextBtn'), tutorialSkip: document.getElementById('tutorialSkipBtn'), toast: document.getElementById('toast')
   };
 
   const MODE_META = { daily:{icon:'👁',label:'Cotidiano'}, actions:{icon:'⚡',label:'Ações'}, location:{icon:'📍',label:'Local'}, scene:{icon:'🧭',label:'Cena'}, quiz:{icon:'🎯',label:'Quiz'}, immersion:{icon:'◉',label:'Imersão'} };
@@ -156,20 +156,20 @@
   const state = {
     detector:null, detectorError:null, verifier:null, verifierLoading:false, verifierError:null,
     stream:null, cameraStarted:false, facingMode:'environment', analyzing:false, verifying:false,
-    mode:localStorage.getItem('mn-v05-mode')||localStorage.getItem('mn-v04-mode')||'daily', demonstrative:localStorage.getItem('mn-demo')||'kore', immersionSetting:localStorage.getItem('mn-immersion')||'auto',
-    performanceMode:localStorage.getItem('mn-performance')||'balanced', minScore:finiteOr(localStorage.getItem('mn-score'),.50), deepVisionEnabled:localStorage.getItem('mn-deep-vision')!=='0', autoFreezeEnabled:localStorage.getItem('mn-v05-autofreeze')!=='0', stickyStrength:localStorage.getItem('mn-v05-sticky')||'strong', showBoxes:localStorage.getItem('mn-boxes')==='1', diagnostics:localStorage.getItem('mn-diagnostics')==='1',
+    mode:localStorage.getItem('mn-v06-mode')||localStorage.getItem('mn-v05-mode')||localStorage.getItem('mn-v04-mode')||'daily', demonstrative:localStorage.getItem('mn-demo')||'kore', immersionSetting:localStorage.getItem('mn-immersion')||'auto',
+    performanceMode:localStorage.getItem('mn-performance')||'balanced', minScore:finiteOr(localStorage.getItem('mn-score'),.50), deepVisionEnabled:localStorage.getItem('mn-deep-vision')!=='0', autoFreezeEnabled:localStorage.getItem('mn-v05-autofreeze')!=='0', stickyStrength:localStorage.getItem('mn-v05-sticky')||'strong', showBoxes:localStorage.getItem('mn-boxes')==='1', diagnostics:localStorage.getItem('mn-diagnostics')==='1', fontSize:localStorage.getItem('mn-v06-font')||'medium', hapticsEnabled:localStorage.getItem('mn-v06-haptics')!=='0',
     selectedKey:null, selectedPrediction:null, rawDetectorKey:null, lastPredictions:[], candidates:[], recognition:{kind:'idle',reason:'',detectorScore:null,verifierScore:null,verifierLabel:'',family:null},
-    frozen:false, freezeReason:'', detailsOpen:false, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), progress:readJson('mn-v05-progress',readJson('mn-v04-progress',{})), history:readJson('mn-v05-history',[]),
+    frozen:false, freezeReason:'', detailsOpen:false, sheetSnap:'compact', sheetDrag:null, sentenceSwipe:null, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), progress:readJson('mn-v05-progress',readJson('mn-v04-progress',{})), history:readJson('mn-v05-history',[]),
     focus:{nx:.5,ny:.45,phase:'observing',stable:0,moving:0,prevPixels:null,lastHash:null,trackingHash:null,loopTimer:null,lastAnalysisAt:0,lastMotion:1,lastSharpness:0},
     revealPhase:0, revealTimer:null, analysisToken:0,
-    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0}, toastTimer:null
+    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null
   };
 
   init();
 
   function init(){
     restoreControls(); bindEvents(); renderVocabulary(els.vocabList,'',selectManual); renderVocabulary(els.correctionList,'',applyCorrection); updateDemoButtons(); updateStudyButton(); updateMemoryControls(); updateTelemetry();
-    if(!localStorage.getItem('mn-onboarded-v05')) requestAnimationFrame(()=>safeShowModal(els.onboarding));
+    applyUiPreferences();
     if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     loadDetector();
     setInterval(updateTelemetry,1200);
@@ -178,10 +178,11 @@
   function bindEvents(){
     els.start.addEventListener('click',startCamera); els.flip.addEventListener('click',flipCamera); els.settings.addEventListener('click',()=>safeShowModal(els.settingsDialog)); els.study.addEventListener('click',()=>safeShowModal(els.studyDialog)); els.scan.addEventListener('click',()=>requestAnalysis(true)); els.unknownCorrect.addEventListener('click',openCorrection);
     els.stage.addEventListener('pointerup',handleStageTap);
-    els.expandLesson.addEventListener('click',toggleDetails); els.breakdownToggle.addEventListener('click',()=>togglePanel(els.breakdownPanel)); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
+    bindSheetGestures(); bindSentenceSwipe();
+    els.expandLesson.addEventListener('click',()=>{if(state.sheetDrag?.moved)return;setSheetSnap(window.MiraInteraction.nextSnap(state.sheetSnap,state.sheetSnap==='full'?-1:1),true)}); els.breakdownToggle.addEventListener('click',()=>{togglePanel(els.breakdownPanel);firstTip('breakdown','Toque em um bloco da frase para entender sua função.')}); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
     els.intentGrid.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(b)showIntent(b.dataset.intent)});
     els.speakWord.addEventListener('click',()=>{const i=currentItem();if(i)speak(i.jp)}); els.speakSentence.addEventListener('click',()=>{const s=currentSentence();if(s)speak(s.jp)});
-    els.know.addEventListener('click',()=>adjustMastery(1)); els.review.addEventListener('click',()=>adjustMastery(-1)); els.nextAction.addEventListener('click',()=>{state.actionIndex++;state.quizRevealed=false;renderLesson()}); els.freeze.addEventListener('click',()=>state.frozen?resumeLive():setFrozen(true,'manual')); els.resume.addEventListener('click',resumeLive);
+    els.know.addEventListener('click',()=>{adjustMastery(1);firstTip('know','O Mira vai reduzir as ajudas desta palavra conforme ela ficar familiar.')}); els.review.addEventListener('click',()=>adjustMastery(-1)); els.nextAction.addEventListener('click',()=>changeSentence(1)); els.primaryFlowAction.addEventListener('click',()=>state.frozen?resumeLive():setFrozen(true,'manual')); els.moreActions.addEventListener('click',toggleSecondaryActions);
     els.confirm.addEventListener('click',confirmSelection); els.correct.addEventListener('click',openCorrection); els.learnThis.addEventListener('click',openCorrection); els.cancelCorrection.addEventListener('click',()=>{});
     els.vocabBtn.addEventListener('click',()=>{safeClose(els.studyDialog);setTimeout(()=>safeShowModal(els.vocabDialog),0)}); els.historyBtn.addEventListener('click',()=>{safeClose(els.studyDialog);renderHistory();setTimeout(()=>safeShowModal(els.historyDialog),0)}); els.vocabSearch.addEventListener('input',()=>renderVocabulary(els.vocabList,els.vocabSearch.value,selectManual)); els.correctionSearch.addEventListener('input',()=>renderVocabulary(els.correctionList,els.correctionSearch.value,applyCorrection));
     document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.mode);safeClose(els.studyDialog)}));
@@ -194,9 +195,12 @@
     els.stickyStrength.addEventListener('change',()=>{state.stickyStrength=els.stickyStrength.value;localStorage.setItem('mn-v05-sticky',state.stickyStrength)});
     els.showBoxes.addEventListener('change',()=>{state.showBoxes=els.showBoxes.checked;localStorage.setItem('mn-boxes',state.showBoxes?'1':'0');renderBoxes()});
     els.diagnostics.addEventListener('change',()=>{state.diagnostics=els.diagnostics.checked;localStorage.setItem('mn-diagnostics',state.diagnostics?'1':'0');updateTelemetry();renderRecognitionState()});
+    els.fontSize.addEventListener('change',()=>{state.fontSize=els.fontSize.value;localStorage.setItem('mn-v06-font',state.fontSize);applyUiPreferences()});
+    els.haptics.addEventListener('change',()=>{state.hapticsEnabled=els.haptics.checked;localStorage.setItem('mn-v06-haptics',state.hapticsEnabled?'1':'0')});
     els.clearCorrections.addEventListener('click',()=>{state.corrections=[];localStorage.removeItem('mn-corrections');updateMemoryControls();showToast('Correções visuais apagadas.')});
     els.resetProgress.addEventListener('click',()=>{state.progress={};localStorage.removeItem('mn-v05-progress');localStorage.removeItem('mn-v04-progress');renderLesson();showToast('Progresso por palavra redefinido.')});
-    els.onboardingContinue.addEventListener('click',()=>localStorage.setItem('mn-onboarded-v05','1'));
+    els.replayTutorial.addEventListener('click',()=>{safeClose(els.settingsDialog);startTutorial(true)});
+    els.tutorialNext.addEventListener('click',()=>advanceTutorial()); els.tutorialSkip.addEventListener('click',finishTutorial);
     window.addEventListener('resize',()=>{positionCrosshair();renderBoxes()}); window.addEventListener('pagehide',stopCamera); document.addEventListener('visibilitychange',()=>{if(document.hidden&&window.speechSynthesis)window.speechSynthesis.cancel()});
   }
 
@@ -216,7 +220,7 @@
   async function startCamera(){
     if(!navigator.mediaDevices?.getUserMedia){showToast('Câmera web não disponível. Use HTTPS.',4500);return}
     els.start.disabled=true;setStatus('Pedindo acesso à câmera…');
-    try{await openCamera(state.facingMode);state.cameraStarted=true;els.start.classList.add('hidden');resetObservation('Mire em algo');startFocusLoop()}catch(e){console.error(e);els.start.disabled=false;setStatus(e?.name==='NotAllowedError'?'Permissão da câmera negada':'Não foi possível abrir a câmera');showToast('Verifique a permissão da câmera.',4200)}
+    try{await openCamera(state.facingMode);state.cameraStarted=true;els.start.classList.add('hidden');resetObservation('Mire em algo');startFocusLoop();if(state.tutorial.pending)startTutorial(false)}catch(e){console.error(e);els.start.disabled=false;setStatus(e?.name==='NotAllowedError'?'Permissão da câmera negada':'Não foi possível abrir a câmera');showToast('Verifique a permissão da câmera.',4200)}
   }
 
   async function openCamera(mode){
@@ -350,7 +354,7 @@
   }
 
   function selectObject(key,prediction,recognition){
-    if(!JAPANESE_DB[key])return;const changed=state.selectedKey!==key;state.selectedKey=key;state.selectedPrediction=prediction||state.selectedPrediction;state.recognition={detectorScore:null,verifierScore:null,verifierLabel:'',family:null,...recognition};state.focus.trackingHash=(state.cameraStarted&&els.video.videoWidth)?computeCurrentFocusHash():null;state.focus.moving=0;setPhase('tracking');hideEmpty();els.lessonCard.classList.remove('hidden');if(changed){registerEncounter(key);registerHistory(key);state.actionIndex=0;state.revealPhase=0;clearTimeout(state.revealTimer);state.revealTimer=setTimeout(()=>{state.revealPhase=1;renderLesson()},850)}renderLesson();setStatus(state.recognition.kind==='tentative'?'Talvez seja · leitura protegida para confirmação':'Reconhecido · leitura estável');if(state.autoFreezeEnabled&&state.cameraStarted&&!state.frozen)setFrozen(true,'recognition');
+    if(!JAPANESE_DB[key])return;const changed=state.selectedKey!==key;state.selectedKey=key;state.selectedPrediction=prediction||state.selectedPrediction;state.recognition={detectorScore:null,verifierScore:null,verifierLabel:'',family:null,...recognition};state.focus.trackingHash=(state.cameraStarted&&els.video.videoWidth)?computeCurrentFocusHash():null;state.focus.moving=0;setPhase('tracking');hideEmpty();els.lessonCard.classList.remove('hidden');if(changed){registerEncounter(key);registerHistory(key);state.actionIndex=0;state.revealPhase=0;setSheetSnap('compact',false);clearTimeout(state.revealTimer);state.revealTimer=setTimeout(()=>{state.revealPhase=1;renderLesson()},650)}renderLesson();setStatus(state.recognition.kind==='tentative'?'Provavelmente · confirme':'Reconhecido');haptic(14);if(state.autoFreezeEnabled&&state.cameraStarted&&!state.frozen)setFrozen(true,'recognition');if(state.tutorial.active&&state.tutorial.step===0)showTutorialStep(1);
   }
 
   function clearSelection(clearCandidates=true){state.selectedKey=null;state.selectedPrediction=null;state.rawDetectorKey=null;state.recognition={kind:'idle',reason:'',detectorScore:null,verifierScore:null,verifierLabel:'',family:null};if(clearCandidates)state.candidates=[];state.focus.trackingHash=null;clearTimeout(state.revealTimer);els.lessonCard.classList.add('hidden');renderBoxes()}
@@ -363,16 +367,16 @@
     if(!state.selectedPrediction||!window.MiraRecognitionPolicy?.inferSceneRelation)return null;const rel=window.MiraRecognitionPolicy.inferSceneRelation(state.selectedPrediction,state.lastPredictions.filter(p=>p!==state.selectedPrediction));if(!rel)return null;const a=currentItem(),b=JAPANESE_DB[rel.other.class];if(!a||!b)return null;
     const forms={on:['上','ue','em cima de'],above:['上','ue','acima de'],below:['下','shita','embaixo de'],inside:['中','naka','dentro de'],left:['左','hidari','à esquerda de'],right:['右','migi','à direita de']};const f=forms[rel.relation];if(!f)return null;const exist=a.animate?{jp:'います',romaji:'imasu'}:{jp:'あります',romaji:'arimasu'};return{jp:`${a.jp}は${b.jp}の${f[0]}に${exist.jp}。`,romaji:`${cap(a.romaji)} wa ${b.romaji} no ${f[1]} ni ${exist.romaji}.`,pt:`${cap(a.pt)} está ${f[2]} ${b.pt}.`,kind:'scene'}
   }
-  function currentSentence(){const item=currentItem();if(!item)return null;const p=currentProgress();const scene=currentSceneSentence();return MiraLearning.chooseMoment({key:state.selectedKey,item,mode:state.mode==='immersion'?'daily':state.mode,level:p.mastery,actionIndex:state.actionIndex,demo:state.demonstrative,scene})}
+  function currentSentence(){const item=currentItem();if(!item)return null;const p=currentProgress();const scene=currentSceneSentence();const mode=state.mode==='immersion'?'daily':state.mode;if(state.actionIndex>0&&!['location','scene','quiz'].includes(mode)){const actions=MiraLearning.actionPool(state.selectedKey,item);return {...actions[(state.actionIndex-1)%actions.length],kind:'action'}}return MiraLearning.chooseMoment({key:state.selectedKey,item,mode,level:p.mastery,actionIndex:state.actionIndex,demo:state.demonstrative,scene})}
 
   function renderLesson(){
     const item=currentItem();if(!item)return;const p=currentProgress();const help=MiraLearning.helpLevel(p,state.immersionSetting);const sentence=currentSentence();const quiz=state.mode==='quiz'&&!state.quizRevealed;
     els.jpWord.textContent=quiz?'何？':item.jp;els.kana.textContent=quiz?'なに':item.kana;els.romaji.textContent=quiz?'nani':item.romaji;els.translationInline.textContent=help===1&&!quiz?item.pt:'';
     els.kana.classList.toggle('hidden',state.mode==='immersion'&&p.mastery>=3);els.romaji.classList.toggle('hidden',help>=3||state.mode==='immersion');els.translationInline.classList.toggle('hidden',help>=2||state.mode==='immersion'||quiz);
     const shownSentence=quiz?{jp:'これは何ですか？',romaji:'Kore wa nan desu ka?',pt:'O que é isto?'}:sentence;els.sentenceJp.textContent=shownSentence?.jp||'';els.sentenceRomaji.textContent=shownSentence?.romaji||'';els.sentencePt.textContent=quiz?`Resposta: ${item.jp} (${item.pt})`:shownSentence?.pt||'';els.sentenceRomaji.classList.toggle('hidden',help>=3||state.mode==='immersion');els.sentenceCompact.classList.toggle('concealed',state.revealPhase===0&&state.mode!=='quiz');
-    renderRecognitionState();renderBreakdown(shownSentence,item);renderProgress();renderScene();renderCandidateStrip();els.freeze.textContent=state.frozen?'▶ Continuar câmera':'❄ Congelar';els.tentativePanel.classList.toggle('hidden',state.recognition.kind!=='tentative');els.tentativeReason.textContent=state.recognition.reason||'Confirme ou corrija.'
+    renderRecognitionState();renderBreakdown(shownSentence,item);renderProgress();renderScene();renderCandidateStrip();renderPrimaryFlowAction();els.tentativePanel.classList.toggle('hidden',state.recognition.kind!=='tentative');els.tentativeReason.textContent=state.recognition.reason||'Confirme ou corrija.'
   }
-  function renderRecognitionState(){const r=state.recognition;const labels={stable:'Reconhecido',deep:'Visão detalhada',memory:'Lembrança local',tentative:'Talvez seja'};let t=labels[r.kind]||'Reconhecido';if(state.diagnostics){const bits=[];if(Number.isFinite(r.detectorScore))bits.push(`D ${Math.round(r.detectorScore*100)}%`);if(Number.isFinite(r.verifierScore))bits.push(`V ${Math.round(r.verifierScore*100)}%`);if(bits.length)t+=` · ${bits.join(' / ')}`}els.recognitionState.textContent=t;els.recognitionState.classList.toggle('tentative',r.kind==='tentative')}
+  function renderRecognitionState(){const r=state.recognition;const labels={stable:'Reconhecido',deep:'Visão detalhada',memory:'Lembrança local',tentative:'Talvez seja'};let t=labels[r.kind]||'Reconhecido';if(state.diagnostics){const bits=[];if(Number.isFinite(r.detectorScore))bits.push(`D ${Math.round(r.detectorScore*100)}%`);if(Number.isFinite(r.verifierScore))bits.push(`V ${Math.round(r.verifierScore*100)}%`);if(bits.length)t+=` · ${bits.join(' / ')}`}els.recognitionState.textContent=t;els.recognitionState.classList.toggle('tentative',r.kind==='tentative');els.lessonCard.classList.toggle('has-tentative',r.kind==='tentative')}
   function renderBreakdown(sentence,item){els.breakdownTokens.replaceChildren();if(!sentence)return;const tokens=MiraLearning.tokenize(sentence,item);tokens.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='token-chip';b.innerHTML='<strong></strong><small></small>';b.querySelector('strong').textContent=t.text;b.querySelector('small').textContent=t.reading||t.meaning;b.addEventListener('click',()=>{els.breakdownTokens.querySelectorAll('.token-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');els.tokenExplain.textContent=`${t.meaning}${t.role?` — ${t.role}`:''}`});els.breakdownTokens.appendChild(b)});els.patternBox.textContent=`Padrão: ${MiraLearning.patternFor(tokens)}`}
   function renderProgress(){const p=currentProgress();els.progressHint.textContent=`Esta palavra: ${p.seen} encontro(s) · domínio ${p.mastery}/5. ${p.mastery<2?'Ainda mantenho mais ajuda.':p.mastery<4?'Português começa a desaparecer.':'Japonês em primeiro plano.'}`}
   function renderScene(){const s=currentSceneSentence();els.sceneLine.classList.toggle('hidden',!s);if(s)els.sceneLine.textContent=`🧭 Contexto: ${s.jp} · ${s.pt}`}
@@ -383,7 +387,49 @@
 
   function showIntent(intent){const item=currentItem();if(!item)return;const s=MiraLearning.intentSentence(intent,item,state.demonstrative);els.intentAnswer.classList.remove('hidden');els.intentAnswer.innerHTML='<strong></strong><span class="r"></span><span class="p"></span>';els.intentAnswer.querySelector('strong').textContent=s.jp;els.intentAnswer.querySelector('.r').textContent=s.romaji;els.intentAnswer.querySelector('.p').textContent=s.pt;speak(s.jp)}
   function togglePanel(panel){panel.classList.toggle('hidden')}
-  function toggleDetails(){state.detailsOpen=!state.detailsOpen;state.quizRevealed=state.quizRevealed||state.mode==='quiz';els.lessonCard.classList.toggle('expanded',state.detailsOpen);els.expandLesson.setAttribute('aria-expanded',String(state.detailsOpen));els.lessonDetails.setAttribute('aria-hidden',String(!state.detailsOpen));if(state.detailsOpen){state.revealPhase=1;renderLesson()}}
+
+  function setSheetSnap(snap,user=false){
+    if(!window.MiraInteraction||!window.MiraInteraction.ORDER.includes(snap))snap='compact';
+    state.sheetSnap=snap;state.detailsOpen=snap!=='compact';state.telemetry.uiActions+=user?1:0;
+    els.lessonCard.classList.remove('snap-compact','snap-medium','snap-full','expanded','dragging');
+    els.lessonCard.classList.add(`snap-${snap}`);if(state.detailsOpen)els.lessonCard.classList.add('expanded');
+    els.lessonCard.style.maxHeight='';els.lessonDetails.setAttribute('aria-hidden',String(!state.detailsOpen));els.expandLesson.setAttribute('aria-expanded',String(state.detailsOpen));
+    if(snap==='compact'){els.lessonCard.scrollTop=0;els.secondaryActions.classList.add('hidden');els.moreActions.setAttribute('aria-expanded','false')}
+    if(user&&state.tutorial.active&&state.tutorial.step===1&&snap!=='compact')showTutorialStep(2);
+  }
+  function bindSheetGestures(){
+    const handle=els.expandLesson;
+    handle.addEventListener('pointerdown',e=>{if(els.lessonCard.classList.contains('hidden'))return;const now=performance.now?.()||Date.now();state.sheetDrag={startY:e.clientY,lastY:e.clientY,startAt:now,lastAt:now,startSnap:state.sheetSnap,moved:false};els.lessonCard.classList.add('dragging');try{handle.setPointerCapture?.(e.pointerId)}catch(_){}});
+    handle.addEventListener('pointermove',e=>{const d=state.sheetDrag;if(!d)return;const now=performance.now?.()||Date.now(),dy=e.clientY-d.startY;if(Math.abs(dy)>6)d.moved=true;d.lastY=e.clientY;d.lastAt=now;const vh=els.stage.clientHeight||window.innerHeight||800;const start=window.MiraInteraction.snapHeight(d.startSnap,vh),min=window.MiraInteraction.snapHeight('compact',vh),max=window.MiraInteraction.snapHeight('full',vh);els.lessonCard.style.maxHeight=`${clamp(start-dy,min,max)}px`;if(d.moved)e.preventDefault?.()});
+    const end=e=>{const d=state.sheetDrag;if(!d)return;const now=performance.now?.()||Date.now(),dy=(e.clientY??d.lastY)-d.startY,dt=Math.max(16,now-d.startAt),velocity=dy/dt,vh=els.stage.clientHeight||window.innerHeight||800;const target=d.moved?window.MiraInteraction.resolveSnap({current:d.startSnap,deltaY:dy,velocityY:velocity,viewport:vh}):d.startSnap;const moved=d.moved;setSheetSnap(target,moved);state.sheetDrag={moved};setTimeout(()=>{if(state.sheetDrag?.moved===moved)state.sheetDrag=null},0)};
+    handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
+  }
+  function bindSentenceSwipe(){
+    els.sentenceCompact.addEventListener('pointerdown',e=>{state.sentenceSwipe={x:e.clientX,y:e.clientY,t:performance.now?.()||Date.now()};try{els.sentenceCompact.setPointerCapture?.(e.pointerId)}catch(_){}});
+    els.sentenceCompact.addEventListener('pointerup',e=>{const a=state.sentenceSwipe;if(!a)return;const gesture=window.MiraInteraction.classifySwipe({dx:e.clientX-a.x,dy:e.clientY-a.y,dt:(performance.now?.()||Date.now())-a.t});state.sentenceSwipe=null;if(gesture){changeSentence(gesture==='next'?1:-1);haptic(8);if(state.tutorial.active&&state.tutorial.step===2)showTutorialStep(3)}});
+  }
+  function changeSentence(delta){state.actionIndex=Math.max(0,state.actionIndex+delta);state.quizRevealed=false;renderLesson();state.telemetry.uiActions++;}
+  function renderPrimaryFlowAction(){
+    const visible=!!state.selectedKey&&state.recognition.kind!=='tentative';els.primaryFlowAction.classList.toggle('hidden',!visible);if(!visible)return;
+    els.primaryFlowAction.textContent=state.frozen?'▶ Continuar':'❄ Congelar';els.primaryFlowAction.setAttribute('aria-label',state.frozen?'Continuar câmera':'Congelar imagem');
+  }
+  function toggleSecondaryActions(){const open=els.secondaryActions.classList.toggle('hidden')===false;els.moreActions.setAttribute('aria-expanded',String(open));if(open&&state.sheetSnap==='compact')setSheetSnap('medium',true)}
+  function toggleFrozenAnnotations(){if(!state.frozen)return;const hidden=els.stage.classList.toggle('annotations-hidden');clearTimeout(state.annotationTimer);if(!hidden)state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),1800)}
+  function haptic(pattern){if(!state.hapticsEnabled||typeof navigator.vibrate!=='function')return;try{navigator.vibrate(pattern)}catch(_){}}
+  function applyUiPreferences(){if(!['small','medium','large'].includes(state.fontSize))state.fontSize='medium';if(document.documentElement?.dataset)document.documentElement.dataset.fontSize=state.fontSize}
+  function firstTip(key,msg){const k=`mn-v06-tip-${key}`;if(localStorage.getItem(k))return;localStorage.setItem(k,'1');showToast(msg,3600)}
+  function startTutorial(force=false){state.tutorial.active=true;state.tutorial.pending=false;state.tutorial.step=0;if(force)localStorage.removeItem('mn-v06-tutorial');showTutorialStep(0)}
+  function showTutorialStep(step){
+    state.tutorial.active=true;state.tutorial.step=clamp(step,0,3);const steps=[
+      ['1/4 · Mire','Mire em um objeto. Quando houver uma leitura, o Mira congela a imagem para você estudar sem pressa.'],
+      ['2/4 · Puxe','↑ Arraste a barra do cartão para cima. Ela encaixa em três alturas; um toque também funciona.'],
+      ['3/4 · Deslize','← Deslize a frase para os lados para ver outra frase. O botão em ⋯ continua disponível.'],
+      ['4/4 · Corrija','Se o Mira errar, abra ⋯ Mais → Corrigir objeto. A imagem continua congelada enquanto você procura.']
+    ];const [title,text]=steps[state.tutorial.step];els.tutorialTitle.textContent=title;els.tutorialText.textContent=text;els.tutorialNext.textContent=state.tutorial.step===3?'Concluir':'Próxima';els.tutorialCoach.classList.remove('hidden')
+  }
+  function advanceTutorial(){if(!state.tutorial.active)return;if(state.tutorial.step>=3){finishTutorial();return}showTutorialStep(state.tutorial.step+1)}
+  function finishTutorial(){state.tutorial.active=false;state.tutorial.pending=false;els.tutorialCoach.classList.add('hidden');localStorage.setItem('mn-v06-tutorial','done')}
+  function toggleDetails(){setSheetSnap(state.sheetSnap==='compact'?'medium':'compact',true)}
   function captureFreezeFrame(){
     if(!state.cameraStarted||!els.video.videoWidth)return false;
     const cw=Math.max(1,Math.round(els.stage.clientWidth)),ch=Math.max(1,Math.round(els.stage.clientHeight));
@@ -395,17 +441,17 @@
     if(v===state.frozen){renderLesson();return}
     if(v){
       if(!captureFreezeFrame()&&state.cameraStarted)return;
-      state.frozen=true;state.freezeReason=reason;state.telemetry.frozenSince=Date.now();state.analysisToken++;clearTimeout(state.focus.loopTimer);state.focus.loopTimer=null;els.stage.classList.add('frozen');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus(reason==='recognition'?'Imagem congelada · IA pausada':'Quadro congelado · IA pausada');
+      state.frozen=true;state.freezeReason=reason;state.telemetry.frozenSince=Date.now();state.analysisToken++;clearTimeout(state.focus.loopTimer);state.focus.loopTimer=null;els.stage.classList.add('frozen');els.stage.classList.remove('annotations-hidden');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus('Congelado');haptic([10,35,10]);clearTimeout(state.annotationTimer);state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),700);
       try{els.video.pause()}catch(_){/* opcional */}
-      showToast('Imagem congelada. Você pode estudar ou corrigir sem manter o celular parado.');
+      if(reason==='manual')showToast('Imagem congelada.');
     }else{
-      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';els.stage.classList.remove('frozen');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
+      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';clearTimeout(state.annotationTimer);els.stage.classList.remove('frozen','annotations-hidden');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
       setPhase(state.selectedKey?'tracking':'observing');if(state.cameraStarted)startFocusLoop();
     }
     renderLesson();updateTelemetry();
   }
   function resumeLive(){
-    if(state.frozen)setFrozen(false,'resume');state.detailsOpen=false;els.lessonCard.classList.remove('expanded');els.lessonDetails.setAttribute('aria-hidden','true');resetObservation('Câmera retomada · mire no próximo objeto');showToast('Câmera retomada.');
+    if(state.frozen)setFrozen(false,'resume');setSheetSnap('compact',false);resetObservation('Mire no próximo objeto');
   }
 
   function confirmSelection(){if(!state.selectedKey)return;const saved=rememberCorrection(state.selectedKey);state.recognition.kind='stable';state.recognition.reason=saved?'Confirmado e lembrado localmente.':'Confirmado por você.';adjustMastery(1);renderLesson()}
@@ -441,7 +487,7 @@
   function selectManual(key){const item=JAPANESE_DB[key];if(!item)return;state.rawDetectorKey='__manual__';state.currentCropHash=null;state.candidates=[{key,score:1}];selectObject(key,{class:key,score:1,bbox:focusBox(.32),_manual:true},{kind:'stable',reason:'Escolhido no vocabulário.'});safeClose(els.vocabDialog);if(state.cameraStarted&&!state.frozen)setFrozen(true,'manual');showToast(`${item.jp} · imagem preservada`)}
   function renderVocabulary(container,query,onChoose){const q=normalize(query);const entries=Object.entries(JAPANESE_DB).filter(([k,i])=>!q||[k,i.jp,i.kana,i.romaji,i.pt,...(i.aliases||[])].some(v=>normalize(v).includes(q))).sort((a,b)=>a[1].pt.localeCompare(b[1].pt,'pt-BR'));container.replaceChildren();entries.forEach(([k,i])=>{const b=document.createElement('button');b.type='button';b.className='vocab-item';b.innerHTML='<span><span class="jp"></span><span class="sub"></span></span><span class="pt"></span>';b.querySelector('.jp').textContent=i.jp;b.querySelector('.sub').textContent=`${i.kana} · ${i.romaji}`;b.querySelector('.pt').textContent=i.pt;b.addEventListener('click',()=>onChoose(k));container.appendChild(b)})}
 
-  function handleStageTap(e){if(!state.cameraStarted)return;if(e.target.closest('button,section.lesson-card,header,.study-pill,.load-chip,.freeze-banner'))return;if(state.frozen){showToast('A imagem está congelada. Toque em Continuar para voltar à câmera.');return}const r=els.stage.getBoundingClientRect();state.focus.nx=clamp((e.clientX-r.left)/r.width,.08,.92);state.focus.ny=clamp((e.clientY-r.top)/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.')}
+  function handleStageTap(e){if(!state.cameraStarted)return;if(e.target.closest('button,section.lesson-card,header,.study-pill,.load-chip,.freeze-banner'))return;if(state.frozen){toggleFrozenAnnotations();return}const r=els.stage.getBoundingClientRect();state.focus.nx=clamp((e.clientX-r.left)/r.width,.08,.92);state.focus.ny=clamp((e.clientY-r.top)/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.')}
   function positionCrosshair(){els.crosshairWrap.style.left=`${state.focus.nx*100}%`;els.crosshairWrap.style.top=`${state.focus.ny*100}%`}
   function focusPointInVideo(){const m=videoCoverMetrics();let sx=state.focus.nx*m.cw,sy=state.focus.ny*m.ch;if(state.facingMode==='user')sx=m.cw-sx;return{x:(sx-m.ox)/m.scale,y:(sy-m.oy)/m.scale}}
   function focusBox(ratio){const p=focusPointInVideo(),vw=els.video.videoWidth||1,vh=els.video.videoHeight||1;return window.MiraRecognitionPolicy?.makeCrosshairBox?.(vw,vh,p,ratio)||[Math.max(0,p.x-100),Math.max(0,p.y-100),200,200]}
@@ -459,10 +505,10 @@
   function computeDHash(canvas){const tmp=document.createElement('canvas');tmp.width=9;tmp.height=8;const ctx=tmp.getContext('2d',{willReadFrequently:true});ctx.drawImage(canvas,0,0,9,8);const d=ctx.getImageData(0,0,9,8).data;let bits='',hex='';for(let y=0;y<8;y++)for(let x=0;x<8;x++){const i=(y*9+x)*4,j=(y*9+x+1)*4;const a=d[i]+d[i+1]+d[i+2],b=d[j]+d[j+1]+d[j+2];bits+=a>b?'1':'0'}for(let i=0;i<bits.length;i+=4)hex+=parseInt(bits.slice(i,i+4),2).toString(16);return hex}
   function hammingHex(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i++){let x=parseInt(a[i],16)^parseInt(b[i],16);while(x){n+=x&1;x>>=1}}return n}
 
-  function setMode(mode){state.mode=MODE_META[mode]?mode:'daily';localStorage.setItem('mn-v05-mode',state.mode);state.quizRevealed=false;updateStudyButton();renderLesson()}
+  function setMode(mode){state.mode=MODE_META[mode]?mode:'daily';localStorage.setItem('mn-v06-mode',state.mode);state.quizRevealed=false;updateStudyButton();renderLesson()}
   function updateStudyButton(){const m=MODE_META[state.mode]||MODE_META.daily;els.studyModeIcon.textContent=m.icon;els.studyModeLabel.textContent=m.label;document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode))}
   function updateDemoButtons(){els.demoControl.querySelectorAll('[data-demo]').forEach(b=>b.classList.toggle('active',b.dataset.demo===state.demonstrative))}
-  function restoreControls(){if(!['eco','balanced','accuracy'].includes(state.performanceMode))state.performanceMode='balanced';if(!['auto','1','2','3'].includes(state.immersionSetting))state.immersionSetting='auto';if(!['normal','strong'].includes(state.stickyStrength))state.stickyStrength='strong';els.performanceMode.value=state.performanceMode;els.immersion.value=state.immersionSetting;els.confidence.value=String(clamp(state.minScore,.35,.80));state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;els.deepVision.checked=state.deepVisionEnabled;els.autoFreeze.checked=state.autoFreezeEnabled;els.stickyStrength.value=state.stickyStrength;els.showBoxes.checked=state.showBoxes;els.diagnostics.checked=state.diagnostics}
+  function restoreControls(){if(!['eco','balanced','accuracy'].includes(state.performanceMode))state.performanceMode='balanced';if(!['auto','1','2','3'].includes(state.immersionSetting))state.immersionSetting='auto';if(!['normal','strong'].includes(state.stickyStrength))state.stickyStrength='strong';els.performanceMode.value=state.performanceMode;els.immersion.value=state.immersionSetting;els.confidence.value=String(clamp(state.minScore,.35,.80));state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;els.deepVision.checked=state.deepVisionEnabled;els.autoFreeze.checked=state.autoFreezeEnabled;els.stickyStrength.value=state.stickyStrength;els.showBoxes.checked=state.showBoxes;els.diagnostics.checked=state.diagnostics;els.fontSize.value=state.fontSize;els.haptics.checked=state.hapticsEnabled;applyUiPreferences()}
   function updateMemoryControls(){els.correctionCount.textContent=String(state.corrections.length);els.clearCorrections.disabled=!state.corrections.length}
 
   function recordHeavy(){const now=Date.now();state.telemetry.heavyTotal++;state.telemetry.heavyTimes.push(now);state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000)}
@@ -481,5 +527,5 @@
   function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
   function cap(s){return s?String(s).charAt(0).toUpperCase()+String(s).slice(1):''}
 
-  window.MiraDebug = { state, profile, selectObject, currentSentence, renderLesson, resetObservation, requestAnalysis, sampleFocus, computeDHash, hammingHex, setFrozen, resumeLive, renderHistory, mappedCandidates, estimateSkinRatio, estimateForegroundBox };
+  window.MiraDebug = { state, profile, selectObject, currentSentence, renderLesson, resetObservation, requestAnalysis, sampleFocus, computeDHash, hammingHex, setFrozen, resumeLive, renderHistory, mappedCandidates, estimateSkinRatio, estimateForegroundBox, setSheetSnap, changeSentence, startTutorial, advanceTutorial };
 })();

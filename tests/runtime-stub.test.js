@@ -14,7 +14,7 @@ els.get('performanceMode').value='balanced';els.get('immersionLevel').value='aut
 const modeBtns=['daily','actions','location','scene','quiz','immersion'].map(m=>{const e=new El();e.dataset.mode=m;return e});
 const demoBtns=['kore','sore','are'].map(m=>{const e=new El();e.dataset.demo=m;return e});
 els.get('demonstrativeControl').querySelectorAll=()=>demoBtns;
-const store=new Map([['mn-onboarded-v05','1']]);
+const store=new Map([['mn-v06-tutorial','done']]);
 const document={
   hidden:false,
   getElementById:id=>els.get(id)||new El(id),
@@ -27,13 +27,16 @@ const windowObj={document,localStorage,devicePixelRatio:1,addEventListener(){},s
 const context={window:windowObj,document,localStorage,navigator:{},console,performance:{now:()=>1},requestAnimationFrame:f=>{},setInterval:()=>0,setTimeout:(f)=>0,clearTimeout(){},Uint8ClampedArray,Date,Math,JSON,String,Number,Object,Array,Map,Set,RegExp,Error,Promise,globalThis:null,SpeechSynthesisUtterance:function(t){this.text=t}};
 context.globalThis=context;Object.assign(context,windowObj);windowObj.window=windowObj;windowObj.MiraDebug=undefined;
 vm.createContext(context);
-for(const f of ['recognition-policy.js','vision-engine.js','japanese-data.js','learning-engine.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',f),'utf8'),context,{filename:f});
+for(const f of ['recognition-policy.js','vision-engine.js','japanese-data.js','learning-engine.js','interaction-engine.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',f),'utf8'),context,{filename:f});
 const D=context.window.MiraDebug;assert(D,'MiraDebug');
-assert.equal(D.state.stickyStrength,'strong');assert.equal(D.state.autoFreezeEnabled,true);
+assert.equal(D.state.stickyStrength,'strong');assert.equal(D.state.autoFreezeEnabled,true);assert.equal(D.state.sheetSnap,'compact');
 D.state.autoFreezeEnabled=false;D.state.candidates=[{key:'utility_knife',score:.65},{key:'switch',score:.47}];
 D.selectObject('utility_knife',{class:'utility_knife',score:.65,bbox:[0,0,100,30]},{kind:'tentative',reason:'qa'});
 assert.equal(D.state.selectedKey,'utility_knife');assert.equal(els.get('jpWord').textContent,'カッターナイフ');assert(D.state.history.some(x=>x.key==='utility_knife'));
 assert(els.get('candidateStrip').children.length>=2,'candidate strip');
-D.setFrozen(true,'qa');assert.equal(D.state.frozen,true);assert(els.get('freezeBanner').classList.contains('hidden')===false);
+assert(els.get('primaryFlowAction').classList.contains('hidden'),'tentative result must not compete with confirmation');D.selectObject('utility_knife',{class:'utility_knife',score:.95,bbox:[0,0,100,30]},{kind:'stable',reason:'confirmed'});D.setFrozen(true,'qa');assert.equal(D.state.frozen,true);assert(els.get('freezeBanner').classList.contains('hidden')===false);assert.equal(els.get('primaryFlowAction').textContent,'▶ Continuar');D.setSheetSnap('medium',true);assert.equal(D.state.sheetSnap,'medium');assert.equal(els.get('lessonDetails').attrs['aria-hidden'],'false');D.changeSentence(1);assert(D.state.actionIndex>=1);
 D.resumeLive();assert.equal(D.state.frozen,false);assert.equal(D.state.selectedKey,null);
-console.log('runtime-stub: 8/8 passed');
+D.startTutorial(true);assert.equal(D.state.tutorial.active,true);assert.equal(D.state.tutorial.step,0);D.advanceTutorial();assert.equal(D.state.tutorial.step,1);D.advanceTutorial();assert.equal(D.state.tutorial.step,2);D.advanceTutorial();assert.equal(D.state.tutorial.step,3);D.advanceTutorial();assert.equal(D.state.tutorial.active,false);
+D.setSheetSnap('compact',false);els.get('lessonCard').classList.remove('hidden');const handle=els.get('expandLessonBtn');handle.listeners.pointerdown({clientY:700,pointerId:1});handle.listeners.pointermove({clientY:560,pointerId:1,preventDefault(){}});handle.listeners.pointerup({clientY:560,pointerId:1});assert.equal(D.state.sheetSnap,'medium');
+
+console.log('runtime-stub: 24/24 assertions passed');
