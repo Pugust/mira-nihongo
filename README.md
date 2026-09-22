@@ -1,27 +1,42 @@
-# Mira Nihongo V0.4 — Focus & Immersion
+# Mira Nihongo V0.5 — Stable Focus + Broad Recognition
 
-Aplicação web mobile-first para aprender japonês apontando a câmera para aquilo com que você interage no dia a dia.
+Aplicação web/PWA mobile-first para aprender japonês olhando para objetos do cotidiano.
 
-## Ideia central
-A V0.4 muda o ciclo de visão para **mirou → estabilizou → analisou → rastreou**. Um observador leve mede mudança e nitidez na região da mira. A inferência pesada só entra quando precisa e para depois do reconhecimento. Isso foi projetado para reduzir processamento contínuo e tornar a resposta mais rápida ao trocar de objeto.
+A V0.5 parte da V0.4 e muda a prioridade para **estabilidade depois do reconhecimento** e **rejeição de identificações absurdas**.
 
-> Importante: no navegador não há uma API universal que entregue a distância física real do foco da lente. O Mira estima o “objeto em foco” por região da mira, estabilidade, nitidez e geometria visual. Quando o dispositivo expõe autofocus contínuo, o app tenta ativá-lo.
+## Fluxo principal
 
-## Aprendizagem
-- **Cotidiano:** nome + frase útil com revelação gradual.
-- **Imersão:** reduz rōmaji/português para palavras já dominadas.
-- **Breakdown:** separa blocos da frase e explica partículas/verbos.
-- **Quero dizer algo:** transforma o objeto em produção ativa de japonês.
-- **Progresso por palavra:** cada item tem seu próprio nível de domínio.
-- **Cena:** tenta aproveitar relações reais entre objetos sem apresentar relações fracas como fatos.
+1. Mire em um objeto.
+2. O Focus-First espera a região estabilizar.
+3. A identificação combina detector, verificador, forma, escala, família semântica e contexto.
+4. Quando existe uma leitura útil, o quadro é congelado por padrão.
+5. Toda inferência automática é pausada enquanto você estuda, ouve, abre o breakdown ou corrige.
+6. Toque em **Continuar** para retornar à câmera e procurar o próximo objeto.
 
-## Publicação no GitHub Pages
-O `index.html` já está na raiz. Substitua os arquivos do repositório existente, faça commit e push. O Service Worker usa estratégia network-first para os arquivos locais, facilitando atualizações frequentes pelo GitHub Pages.
+## Novidades da V0.5
 
-## Dependências online
-A aplicação baixa TensorFlow.js, COCO-SSD e MobileNet das CDNs declaradas no `index.html`. O app não inclui código para enviar quadros da câmera para um backend próprio.
+- **Auto Freeze** após uma leitura, inclusive quando ela ainda precisa de confirmação.
+- Frame congelado real sobre a câmera; a lição permanece mesmo movimentando o celular.
+- O loop de foco não lê pixels nem roda IA enquanto congelado.
+- **Sticky Lock** quando o Auto Freeze estiver desligado: exige vários frames realmente diferentes antes de abandonar uma leitura.
+- Reconhecimento em camadas com candidatos e famílias semânticas.
+- Regras de geometria/escala para evitar confusões conhecidas.
+- Top candidatos visíveis em leituras incertas e no painel de correção.
+- Saída “não tenho certeza” quando os sinais não justificam uma palavra específica.
+- Heurísticas específicas para os testes físicos: estilete, mão, sapato, tampinha e categorias historicamente confusas.
+- Parte–todo para casos seguros, incluindo tampinha no topo de uma garrafa.
+- Histórico local dos últimos 10 objetos.
+- Vocabulário ampliado para **383 entradas**, com ferramentas, oficina/estoque, casa, cozinha, eletrônicos, corpo e partes de objetos.
+- Cartão Vivo, breakdown, produção ativa, cena e progresso individual por palavra continuam presentes.
 
-## Limites honestos
-- COCO-SSD e MobileNet não reconhecem qualquer objeto existente; o vocabulário manual/correção cobre objetos fora das classes dos modelos.
-- A redução de aquecimento é uma meta arquitetural. Temperatura, bateria e velocidade reais só podem ser validadas no aparelho físico.
-- Relações 3D são inferidas de geometria 2D e por isso são deliberadamente conservadoras.
+## Privacidade
+
+Os quadros são processados no navegador. O código do app não envia fotos da câmera para um servidor. Os modelos TensorFlow.js são obtidos das CDNs declaradas no `index.html` e executados localmente no navegador.
+
+## GitHub Pages
+
+Publique o conteúdo deste diretório na raiz da branch usada pelo Pages. O `index.html` já está na raiz e o Service Worker usa cache versionado da V0.5.
+
+## Limites importantes
+
+A V0.5 reduz falsos positivos e prefere incerteza a uma palavra errada, mas visão computacional no navegador não garante identificação correta de qualquer objeto. Precisão, aquecimento, autofocus e velocidade reais precisam ser validados no aparelho físico.

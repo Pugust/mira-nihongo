@@ -1,7 +1,7 @@
 {
   "name": "Mira Nihongo",
   "short_name": "Mira Nihongo",
-  "description": "Imersão cotidiana em japonês pela câmera: Focus-First, Cartão Vivo, breakdown e progresso por palavra.",
+  "description": "Imersão cotidiana em japonês pela câmera: Stable Focus, congelamento inteligente, reconhecimento em camadas e aprendizagem contextual.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
