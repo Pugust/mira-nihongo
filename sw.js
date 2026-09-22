@@ -1,6 +1,6 @@
 'use strict';
-const CACHE='mira-nihongo-v0-6-r1';
-const LOCAL=['./','./index.html','./css/app.css','./js/recognition-policy.js','./js/vision-engine.js','./js/japanese-data.js','./js/learning-engine.js','./js/interaction-engine.js','./js/app.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE='mira-nihongo-v0-7-r1';
+const LOCAL=['./','./index.html','./css/app.css','./js/recognition-policy.js','./js/vision-engine.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/interaction-engine.js','./js/app.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(LOCAL)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==self.location.origin)return;e.respondWith(fetch(e.request).then(r=>{if(r&&r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy))}return r}).catch(async()=>{const c=await caches.match(e.request);if(c)return c;if(e.request.mode==='navigate')return caches.match('./index.html');throw new Error('Offline e recurso ausente do cache.')}))});

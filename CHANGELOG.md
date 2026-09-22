@@ -1,41 +1,31 @@
-# Mira Nihongo V0.6 — Interaction & Flow
+# Mira Nihongo V0.7 — Adaptive Learning
 
-## Interface
-- Cabeçalho compacto; número da versão movido para `Sobre`.
-- Seletor de modo visualmente reduzido.
-- Mira reduzida para liberar mais área do objeto.
-- Japonês e frase permanecem como elementos de maior peso visual.
-- Anotações da câmera somem gradualmente quando o frame é congelado e podem ser reveladas temporariamente com toque.
+## Motor adaptativo
+- Novo módulo local `js/adaptive-learning.js`.
+- Perfil por palavra agora registra encontros, domínio, sucessos, pedidos de revisão, intervalo, próxima oportunidade de revisão e conteúdos já vistos.
+- Progresso antigo é migrado automaticamente para o formato V0.7.
+- Seleção de próxima frase considera domínio da palavra, quantidade de exposições e fraqueza das estruturas gramaticais relacionadas.
+- A frase escolhida fica fixa durante aquele encontro para impedir trocas inesperadas em re-renderizações.
 
-## Bottom sheet
-- Três snaps: compacto, médio e completo.
-- Drag vertical com feedback contínuo e snap ao soltar.
-- Toque na alça continua funcionando como fallback.
-- Novo objeto sempre retorna ao cartão compacto.
-- Conteúdo completo passa a rolar verticalmente somente quando necessário.
+## Revisão oportunista
+- Palavras familiares podem gerar uma pergunta curta quando reaparecem depois do intervalo de revisão.
+- A revisão não cria tarefas nem bloqueia o uso: a resposta aparece automaticamente após ~1,8 s ou por `Mostrar agora`.
+- `Já sei` aumenta domínio e espaça o próximo reencontro pedagógico.
+- `Quero revisar` reduz domínio e faz o Mira fornecer ajuda novamente mais cedo.
+- Revisão oportunista pode ser desligada nas configurações.
 
-## Gestos e fluxo
-- Swipe horizontal na frase para avançar/voltar exemplos.
-- `Outra frase` permanece em `⋯ Mais` como fallback explícito.
-- Um único botão dinâmico `Congelar / Continuar`.
-- Removidos os controles duplicados `Continuar` e `Continuar câmera`.
-- Leituras tentativas priorizam `É isso / Corrigir` e escondem a ação principal até confirmação.
-- Histórico continua acessível por botão, sem conflito com o gesto de voltar do Android.
+## Gramática contextual
+- Padrões de identificação, ação, localização e cena passam a ser rastreados.
+- Partículas como `は・が・を・に・で・の` entram no perfil gramatical conforme aparecem.
+- Verbos finais das frases também podem ser registrados como habilidades contextuais.
+- Feedback `Já sei / Quero revisar` reforça ou reduz o domínio das estruturas presentes na frase atual.
 
-## Aprendizagem
-- `Quero dizer algo` agora usa carrossel horizontal.
-- Ações secundárias agrupadas em `⋯ Mais`.
-- Dicas contextuais de primeira utilização para Breakdown e progressão por palavra.
-- Tutorial interativo em 4 etapas: mirar → puxar cartão → deslizar frase → corrigir.
-- Tutorial pode ser refeito em Configurações.
+## Interface pedagógica
+- Novo indicador de objetivo da lição atual.
+- `Meu aprendizado` mostra palavras vistas, em aprendizado, familiares, dominadas e revisões oportunas.
+- Estruturas mais encontradas aparecem com progresso local.
+- Sem streak, ranking, meta diária obrigatória ou fila punitiva.
 
-## Acessibilidade e sensação
-- Feedback háptico opcional para reconhecimento/congelamento/navegação.
-- Tamanho de texto configurável.
-- Áreas de toque principais mantidas amplas.
-- `:focus-visible` para navegação por teclado/dispositivos assistivos.
-- `prefers-reduced-motion` respeitado.
-
-## PWA
-- Cache atualizado para `mira-nihongo-v0-6-r1`.
-- Novo `interaction-engine.js` incluído no precache.
+## Compatibilidade
+- Stable Focus, Auto Freeze, Broad Recognition, bottom sheet, gestos, Breakdown, produção ativa, histórico, correções e 383 entradas da V0.6 foram preservados.
+- Cache PWA atualizado para `mira-nihongo-v0-7-r1`.

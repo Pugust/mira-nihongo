@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090b0f" />
-  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com fluxo por gestos e aprendizado contextual." />
+  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com aprendizado adaptativo e revisão contextual." />
   <title>Mira Nihongo</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
@@ -58,6 +58,7 @@
             </div>
             <button id="speakWordBtn" class="speak-btn" type="button" aria-label="Ouvir palavra">🔊</button>
           </div>
+          <div id="reviewPrompt" class="review-prompt hidden"><span>🧠 Revisão rápida</span><strong id="reviewQuestion">Tente lembrar antes de revelar.</strong><button id="revealReviewBtn" type="button">Mostrar agora</button></div>
           <div id="sentenceCompact" class="sentence-compact reveal-later">
             <div id="sentenceJp" class="sentence-jp">—</div>
             <div id="sentenceRomaji" class="sentence-romaji">—</div>
@@ -71,6 +72,7 @@
             <div><small>Frase do momento</small><div id="sentencePt" class="sentence-pt">—</div></div>
             <button id="speakSentenceBtn" class="soft-btn mini" type="button">🔊</button>
           </div>
+          <div id="learningObjective" class="learning-objective hidden"></div>
 
           <section class="learning-section">
             <button id="breakdownToggle" class="section-toggle" type="button"><span>🧩 Breakdown</span><small>Entender cada parte</small><b>⌄</b></button>
@@ -123,6 +125,7 @@
     </div>
     <button id="vocabBtn" class="wide-soft" type="button">⌕ Vocabulário manual</button>
     <button id="historyBtn" class="wide-soft" type="button">↶ Últimos objetos</button>
+    <button id="learningBtn" class="wide-soft" type="button">🧠 Meu aprendizado</button>
   </form></dialog>
 
   <dialog id="settingsDialog" class="sheet"><form method="dialog" class="sheet-card">
@@ -138,8 +141,9 @@
     <label class="switch-row"><span><strong>Diagnóstico</strong><small>Mostra confiança e carga estimada.</small></span><input id="diagnosticsToggle" type="checkbox" /></label>
     <label class="field"><span>Tamanho do texto</span><select id="fontSize"><option value="small">Compacto</option><option value="medium">Médio — recomendado</option><option value="large">Grande</option></select><small>Ajusta o conteúdo pedagógico sem mudar o tamanho dos alvos de toque.</small></label>
     <label class="switch-row"><span><strong>Feedback háptico</strong><small>Pulsos curtos ao reconhecer, congelar e confirmar.</small></span><input id="hapticsToggle" type="checkbox" checked /></label>
+    <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir progresso por palavra</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.6 · Interaction &amp; Flow</strong><p>Interface focada em uso com uma mão, gestos descobríveis e câmera dominante.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.7 · Adaptive Learning</strong><p>O conteúdo evolui por palavra e por estrutura, com revisão oportunista sem metas punitivas.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -148,6 +152,14 @@
   <dialog id="correctionDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>O que é isto?</h2><p>A imagem permanece congelada. Escolha um candidato ou pesquise a palavra certa.</p></div><button id="cancelCorrectionBtn" class="icon-btn dark" value="cancel">×</button></header><div id="correctionCandidates" class="correction-candidates hidden"><strong>Sugestões da visão</strong><div id="correctionCandidateList" class="candidate-strip light"></div></div><input id="correctionSearch" class="search" type="search" placeholder="Ex.: tampinha, estilete, caixa..." autocomplete="off" /><div id="correctionList" class="vocab-list"></div></form></dialog>
 
   <dialog id="historyDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>Últimos objetos</h2><p>Volte rapidamente ao que encontrou sem precisar mirar outra vez.</p></div><button class="icon-btn dark" value="cancel">×</button></header><div id="historyList" class="vocab-list"></div></form></dialog>
+
+  <dialog id="learningDialog" class="sheet"><form method="dialog" class="sheet-card tall">
+    <header><div><h2>Meu aprendizado</h2><p>Um retrato local do que já apareceu na sua rotina — sem streaks ou cobrança.</p></div><button class="icon-btn dark" value="cancel">×</button></header>
+    <div id="learningStats" class="learning-stats"></div>
+    <section class="learning-dashboard-section"><h3>Para revisar quando reaparecer</h3><div id="dueReviewList" class="learning-list"></div></section>
+    <section class="learning-dashboard-section"><h3>Estruturas que estão aparecendo</h3><div id="grammarProgressList" class="grammar-progress-list"></div></section>
+    <p class="dashboard-note">O Mira não cria uma lista de deveres: a revisão acontece quando algo volta a aparecer naturalmente na câmera.</p>
+  </form></dialog>
   <aside id="tutorialCoach" class="tutorial-coach hidden" role="status" aria-live="polite">
     <div class="coach-copy"><strong id="tutorialTitle">Tutorial rápido</strong><span id="tutorialText">Mire em um objeto.</span></div>
     <div class="coach-actions"><button id="tutorialSkipBtn" type="button">Pular</button><button id="tutorialNextBtn" type="button">Próxima</button></div>
@@ -161,6 +173,7 @@
   <script src="js/vision-engine.js"></script>
   <script src="js/japanese-data.js"></script>
   <script src="js/learning-engine.js"></script>
+  <script src="js/adaptive-learning.js"></script>
   <script src="js/interaction-engine.js"></script>
   <script src="js/app.js"></script>
 </body>

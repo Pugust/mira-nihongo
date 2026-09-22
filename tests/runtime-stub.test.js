@@ -14,7 +14,7 @@ els.get('performanceMode').value='balanced';els.get('immersionLevel').value='aut
 const modeBtns=['daily','actions','location','scene','quiz','immersion'].map(m=>{const e=new El();e.dataset.mode=m;return e});
 const demoBtns=['kore','sore','are'].map(m=>{const e=new El();e.dataset.demo=m;return e});
 els.get('demonstrativeControl').querySelectorAll=()=>demoBtns;
-const store=new Map([['mn-v06-tutorial','done']]);
+const store=new Map([['mn-v06-tutorial','done'],['mn-v07-learning',JSON.stringify({version:7,words:{},grammar:{},createdAt:1,updatedAt:1})]]);
 const document={
   hidden:false,
   getElementById:id=>els.get(id)||new El(id),
@@ -27,7 +27,7 @@ const windowObj={document,localStorage,devicePixelRatio:1,addEventListener(){},s
 const context={window:windowObj,document,localStorage,navigator:{},console,performance:{now:()=>1},requestAnimationFrame:f=>{},setInterval:()=>0,setTimeout:(f)=>0,clearTimeout(){},Uint8ClampedArray,Date,Math,JSON,String,Number,Object,Array,Map,Set,RegExp,Error,Promise,globalThis:null,SpeechSynthesisUtterance:function(t){this.text=t}};
 context.globalThis=context;Object.assign(context,windowObj);windowObj.window=windowObj;windowObj.MiraDebug=undefined;
 vm.createContext(context);
-for(const f of ['recognition-policy.js','vision-engine.js','japanese-data.js','learning-engine.js','interaction-engine.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',f),'utf8'),context,{filename:f});
+for(const f of ['recognition-policy.js','vision-engine.js','japanese-data.js','learning-engine.js','adaptive-learning.js','interaction-engine.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',f),'utf8'),context,{filename:f});
 const D=context.window.MiraDebug;assert(D,'MiraDebug');
 assert.equal(D.state.stickyStrength,'strong');assert.equal(D.state.autoFreezeEnabled,true);assert.equal(D.state.sheetSnap,'compact');
 D.state.autoFreezeEnabled=false;D.state.candidates=[{key:'utility_knife',score:.65},{key:'switch',score:.47}];
@@ -39,4 +39,6 @@ D.resumeLive();assert.equal(D.state.frozen,false);assert.equal(D.state.selectedK
 D.startTutorial(true);assert.equal(D.state.tutorial.active,true);assert.equal(D.state.tutorial.step,0);D.advanceTutorial();assert.equal(D.state.tutorial.step,1);D.advanceTutorial();assert.equal(D.state.tutorial.step,2);D.advanceTutorial();assert.equal(D.state.tutorial.step,3);D.advanceTutorial();assert.equal(D.state.tutorial.active,false);
 D.setSheetSnap('compact',false);els.get('lessonCard').classList.remove('hidden');const handle=els.get('expandLessonBtn');handle.listeners.pointerdown({clientY:700,pointerId:1});handle.listeners.pointermove({clientY:560,pointerId:1,preventDefault(){}});handle.listeners.pointerup({clientY:560,pointerId:1});assert.equal(D.state.sheetSnap,'medium');
 
-console.log('runtime-stub: 24/24 assertions passed');
+assert.equal(D.state.adaptiveReviewEnabled,true);assert.equal(D.state.learningStore.version,7);
+D.state.progress.utility_knife={seen:3,mastery:2,lastSeen:1,dueAt:1,intervalIndex:2,exposures:{}};D.state.selectedKey=null;D.selectObject('utility_knife',{class:'utility_knife',score:.95,bbox:[0,0,100,30]},{kind:'stable',reason:'review qa'});assert.equal(D.state.reviewActive,true);assert.equal(els.get('jpWord').textContent,'何？');els.get('revealReviewBtn').listeners.click();assert.equal(D.state.reviewActive,false);assert.equal(els.get('jpWord').textContent,'カッターナイフ');const stableSentence=D.currentSentence().jp;D.renderLesson();assert.equal(D.currentSentence().jp,stableSentence);const planKey=D.state.lessonPlan.key;D.changeSentence(1);assert.notEqual(D.state.lessonPlan.key,planKey);D.renderLearningDashboard();assert(els.get('learningStats').children.length===5);assert(els.get('grammarProgressList').children.length>=1);
+console.log('runtime-stub: 34/34 assertions passed');
