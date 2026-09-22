@@ -2,82 +2,23 @@
 
 (() => {
   const els = {
-    stage: document.getElementById('cameraStage'),
-    video: document.getElementById('camera'),
-    crop: document.getElementById('cropCanvas'),
-    boxes: document.getElementById('boxesLayer'),
-    status: document.getElementById('statusText'),
-    start: document.getElementById('startBtn'),
-    flip: document.getElementById('flipCameraBtn'),
-    settings: document.getElementById('settingsBtn'),
-    settingsDialog: document.getElementById('settingsDialog'),
-    study: document.getElementById('studyBtn'),
-    studyDialog: document.getElementById('studyDialog'),
-    studyModeIcon: document.getElementById('studyModeIcon'),
-    studyModeLabel: document.getElementById('studyModeLabel'),
-    vocabDialog: document.getElementById('vocabDialog'),
-    correctionDialog: document.getElementById('correctionDialog'),
-    correctionSuggestion: document.getElementById('correctionSuggestion'),
-    correctionSearch: document.getElementById('correctionSearch'),
-    correctionList: document.getElementById('correctionList'),
-    cancelCorrection: document.getElementById('cancelCorrectionBtn'),
-    onboarding: document.getElementById('onboardingDialog'),
-    onboardingContinue: document.getElementById('onboardingContinue'),
-    holdRing: document.getElementById('holdRing'),
-    emptyHint: document.getElementById('emptyHint'),
-    scan: document.getElementById('scanBtn'),
-    lessonCard: document.getElementById('lessonCard'),
-    expandLesson: document.getElementById('expandLessonBtn'),
-    lessonDetails: document.getElementById('lessonDetails'),
-    recognitionState: document.getElementById('recognitionState'),
-    tentativePanel: document.getElementById('tentativePanel'),
-    tentativeReason: document.getElementById('tentativeReason'),
-    confirm: document.getElementById('confirmBtn'),
-    correct: document.getElementById('correctBtn'),
-    learnThis: document.getElementById('learnThisBtn'),
-    progressHint: document.getElementById('progressHint'),
-    jpWord: document.getElementById('jpWord'),
-    kana: document.getElementById('kanaText'),
-    romaji: document.getElementById('romajiText'),
-    translation: document.getElementById('translationText'),
-    sentenceJp: document.getElementById('sentenceJp'),
-    sentenceRomaji: document.getElementById('sentenceRomaji'),
-    sentencePt: document.getElementById('sentencePt'),
-    quizPanel: document.getElementById('quizPanel'),
-    quizQuestion: document.getElementById('quizQuestion'),
-    reveal: document.getElementById('revealBtn'),
-    speakWord: document.getElementById('speakWordBtn'),
-    speakSentence: document.getElementById('speakSentenceBtn'),
-    nextAction: document.getElementById('nextActionBtn'),
-    freeze: document.getElementById('freezeBtn'),
-    immersion: document.getElementById('immersionLevel'),
-    confidence: document.getElementById('confidenceRange'),
-    confidenceValue: document.getElementById('confidenceValue'),
-    performanceMode: document.getElementById('performanceMode'),
-    deepVision: document.getElementById('deepVisionToggle'),
-    deepVisionStatus: document.getElementById('deepVisionStatus'),
-    showBoxes: document.getElementById('showBoxesToggle'),
-    diagnostics: document.getElementById('diagnosticsToggle'),
-    clearCorrections: document.getElementById('clearCorrectionsBtn'),
-    correctionCount: document.getElementById('correctionCount'),
-    resetProgress: document.getElementById('resetProgressBtn'),
-    demoControl: document.getElementById('demonstrativeControl'),
-    vocabBtn: document.getElementById('vocabBtn'),
-    vocabSearch: document.getElementById('vocabSearch'),
-    vocabList: document.getElementById('vocabList'),
-    toast: document.getElementById('toast')
+    stage: document.getElementById('cameraStage'), video: document.getElementById('camera'), focus: document.getElementById('focusCanvas'), detect: document.getElementById('detectCanvas'), crop: document.getElementById('cropCanvas'), boxes: document.getElementById('boxesLayer'),
+    status: document.getElementById('statusText'), start: document.getElementById('startBtn'), flip: document.getElementById('flipCameraBtn'), settings: document.getElementById('settingsBtn'), settingsDialog: document.getElementById('settingsDialog'),
+    study: document.getElementById('studyBtn'), studyDialog: document.getElementById('studyDialog'), studyModeIcon: document.getElementById('studyModeIcon'), studyModeLabel: document.getElementById('studyModeLabel'),
+    crosshairWrap: document.getElementById('crosshairWrap'), holdRing: document.getElementById('holdRing'), emptyHint: document.getElementById('emptyHint'), scan: document.getElementById('scanBtn'), loadChip: document.getElementById('loadChip'), loadText: document.getElementById('loadText'),
+    lessonCard: document.getElementById('lessonCard'), expandLesson: document.getElementById('expandLessonBtn'), lessonDetails: document.getElementById('lessonDetails'), recognitionState: document.getElementById('recognitionState'),
+    jpWord: document.getElementById('jpWord'), kana: document.getElementById('kanaText'), romaji: document.getElementById('romajiText'), translationInline: document.getElementById('translationInline'), readingRow: document.getElementById('readingRow'), sentenceCompact: document.getElementById('sentenceCompact'), sentenceJp: document.getElementById('sentenceJp'), sentenceRomaji: document.getElementById('sentenceRomaji'), sentencePt: document.getElementById('sentencePt'),
+    tentativePanel: document.getElementById('tentativePanel'), tentativeReason: document.getElementById('tentativeReason'), confirm: document.getElementById('confirmBtn'), correct: document.getElementById('correctBtn'),
+    breakdownToggle: document.getElementById('breakdownToggle'), breakdownPanel: document.getElementById('breakdownPanel'), breakdownTokens: document.getElementById('breakdownTokens'), tokenExplain: document.getElementById('tokenExplain'), patternBox: document.getElementById('patternBox'),
+    sayToggle: document.getElementById('saySomethingToggle'), sayPanel: document.getElementById('saySomethingPanel'), intentGrid: document.getElementById('intentGrid'), intentAnswer: document.getElementById('intentAnswer'), sceneLine: document.getElementById('sceneLine'),
+    speakWord: document.getElementById('speakWordBtn'), speakSentence: document.getElementById('speakSentenceBtn'), know: document.getElementById('knowBtn'), review: document.getElementById('reviewBtn'), nextAction: document.getElementById('nextActionBtn'), freeze: document.getElementById('freezeBtn'), learnThis: document.getElementById('learnThisBtn'), progressHint: document.getElementById('progressHint'),
+    immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'),
+    clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'),
+    vocabBtn: document.getElementById('vocabBtn'), vocabDialog: document.getElementById('vocabDialog'), vocabSearch: document.getElementById('vocabSearch'), vocabList: document.getElementById('vocabList'), correctionDialog: document.getElementById('correctionDialog'), correctionSearch: document.getElementById('correctionSearch'), correctionList: document.getElementById('correctionList'), cancelCorrection: document.getElementById('cancelCorrectionBtn'),
+    onboarding: document.getElementById('onboardingDialog'), onboardingContinue: document.getElementById('onboardingContinue'), toast: document.getElementById('toast')
   };
 
-  const MODE_META = {
-    explore: { icon: '👁', label: 'Explorar' },
-    actions: { icon: '⚡', label: 'Ações' },
-    location: { icon: '📍', label: 'Local' },
-    quiz: { icon: '🎯', label: 'Quiz' },
-    scene: { icon: '🧭', label: 'Cena' }
-  };
-
-  // MobileNet uses ImageNet labels. This map only accepts labels whose meaning is
-  // sufficiently close to a vocabulary entry. Unknown labels are deliberately ignored.
+  const MODE_META = { daily:{icon:'👁',label:'Cotidiano'}, actions:{icon:'⚡',label:'Ações'}, location:{icon:'📍',label:'Local'}, scene:{icon:'🧭',label:'Cena'}, quiz:{icon:'🎯',label:'Quiz'}, immersion:{icon:'◉',label:'Imersão'} };
   const VERIFIER_RULES = [
     [/bottlecap|bottle cap/i, 'bottle_cap'],
     [/electric fan/i, 'fan'],
@@ -195,1619 +136,226 @@
   ];
 
   const state = {
-    detector: null,
-    detectorError: null,
-    verifier: null,
-    verifierLoading: false,
-    verifierError: null,
-    stream: null,
-    cameraStarted: false,
-    facingMode: 'environment',
-    detecting: false,
-    verifying: false,
-    mode: 'explore',
-    demonstrative: localStorage.getItem('mn-demo') || 'kore',
-    immersionSetting: localStorage.getItem('mn-immersion') || 'auto',
-    minScore: finiteOr(localStorage.getItem('mn-score'), 0.50),
-    performanceMode: localStorage.getItem('mn-performance') || 'balanced',
-    avgDetectMs: 0,
-    showBoxes: localStorage.getItem('mn-boxes') === '1',
-    diagnostics: localStorage.getItem('mn-diagnostics') === '1',
-    deepVisionEnabled: localStorage.getItem('mn-deep-vision') !== '0',
-    deepVisionLoading: false,
-    deepProbeRunning: false,
-    lastDeepProbeAt: 0,
-    deepProbeInterval: 2600,
-    deepMissCount: 0,
-    lastCrosshairHash: null,
-    selectedPrediction: null,
-    selectedKey: null,
-    rawDetectorKey: null,
-    frozen: false,
-    preCorrectionFrozen: false,
-    actionIndex: 0,
-    quizRevealed: false,
-    history: [],
-    historySize: 5,
-    requiredVotes: 3,
-    missCount: 0,
-    lastPredictions: [],
-    detectionTimer: null,
-    verificationToken: 0,
-    lastVerifiedSignature: '',
-    currentCropHash: null,
-    verifierAlternative: null,
-    recognition: { kind: 'idle', reason: '', detectorScore: null, verifierScore: null, verifierLabel: '', deepScore: null, deepLabel: '' },
-    familiarity: readJson('mn-familiarity', {}),
-    corrections: readJson('mn-corrections', []),
-    detailsOpen: false,
-    toastTimer: null
+    detector:null, detectorError:null, verifier:null, verifierLoading:false, verifierError:null,
+    stream:null, cameraStarted:false, facingMode:'environment', analyzing:false, verifying:false,
+    mode:localStorage.getItem('mn-v04-mode')||'daily', demonstrative:localStorage.getItem('mn-demo')||'kore', immersionSetting:localStorage.getItem('mn-immersion')||'auto',
+    performanceMode:localStorage.getItem('mn-performance')||'balanced', minScore:finiteOr(localStorage.getItem('mn-score'),.50), deepVisionEnabled:localStorage.getItem('mn-deep-vision')!=='0', showBoxes:localStorage.getItem('mn-boxes')==='1', diagnostics:localStorage.getItem('mn-diagnostics')==='1',
+    selectedKey:null, selectedPrediction:null, rawDetectorKey:null, lastPredictions:[], recognition:{kind:'idle',reason:'',detectorScore:null,verifierScore:null,verifierLabel:''},
+    frozen:false, detailsOpen:false, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), progress:readJson('mn-v04-progress',{}),
+    focus:{nx:.5,ny:.45,phase:'observing',stable:0,moving:0,prevPixels:null,lastHash:null,trackingHash:null,loopTimer:null,lastAnalysisAt:0,lastMotion:1,lastSharpness:0},
+    revealPhase:0, revealTimer:null, analysisToken:0,
+    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0}, toastTimer:null
   };
 
   init();
 
-  function init() {
-    restoreControls();
-    bindEvents();
-    renderVocabList();
-    renderCorrectionList();
-    updateDemoButtons();
-    updateStudyButton();
-    updateMemoryControls();
-    updateDeepVisionStatus();
-
-    if (!localStorage.getItem('mn-onboarded-v03')) {
-      requestAnimationFrame(() => safeShowModal(els.onboarding));
-    }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
-
+  function init(){
+    restoreControls(); bindEvents(); renderVocabulary(els.vocabList,'',selectManual); renderVocabulary(els.correctionList,'',applyCorrection); updateDemoButtons(); updateStudyButton(); updateMemoryControls(); updateTelemetry();
+    if(!localStorage.getItem('mn-onboarded-v04')) requestAnimationFrame(()=>safeShowModal(els.onboarding));
+    if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     loadDetector();
+    setInterval(updateTelemetry,1200);
   }
 
-  function bindEvents() {
-    els.start.addEventListener('click', startCamera);
-    els.scan.addEventListener('click', () => runCrosshairDeepScan(true));
-    els.flip.addEventListener('click', flipCamera);
-    els.settings.addEventListener('click', () => safeShowModal(els.settingsDialog));
-    els.study.addEventListener('click', () => safeShowModal(els.studyDialog));
-    els.expandLesson.addEventListener('click', toggleLessonDetails);
-    els.vocabBtn.addEventListener('click', () => {
-      safeClose(els.studyDialog);
-      setTimeout(() => safeShowModal(els.vocabDialog), 0);
-    });
-    els.onboardingContinue.addEventListener('click', () => localStorage.setItem('mn-onboarded-v03', '1'));
-
-    document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setMode(btn.dataset.mode);
-        safeClose(els.studyDialog);
-      });
-    });
-
-    els.demoControl.querySelectorAll('[data-demo]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.demonstrative = btn.dataset.demo;
-        localStorage.setItem('mn-demo', state.demonstrative);
-        updateDemoButtons();
-        state.quizRevealed = false;
-        renderLesson();
-      });
-    });
-
-    els.immersion.addEventListener('change', () => {
-      state.immersionSetting = els.immersion.value;
-      localStorage.setItem('mn-immersion', state.immersionSetting);
-      renderLesson();
-    });
-
-    els.confidence.addEventListener('input', () => {
-      state.minScore = Number(els.confidence.value);
-      els.confidenceValue.value = `${Math.round(state.minScore * 100)}%`;
-      localStorage.setItem('mn-score', String(state.minScore));
-      state.history.length = 0;
-    });
-
-
-    els.performanceMode.addEventListener('change', async () => {
-      state.performanceMode = els.performanceMode.value;
-      localStorage.setItem('mn-performance', state.performanceMode);
-      state.avgDetectMs = 0;
-      if (state.cameraStarted) {
-        clearTimeout(state.detectionTimer);
-        clearSelection('Ajustando desempenho…');
-        try {
-          await openCamera(state.facingMode);
-          scheduleDetection(120);
-        } catch (error) {
-          console.warn('Não foi possível aplicar o novo perfil da câmera:', error);
-        }
-      }
-      showToast(`Desempenho: ${performanceProfile().label}.`);
-    });
-
-    els.deepVision.addEventListener('change', () => {
-      state.deepVisionEnabled = els.deepVision.checked;
-      localStorage.setItem('mn-deep-vision', state.deepVisionEnabled ? '1' : '0');
-      updateDeepVisionStatus();
-      if (state.deepVisionEnabled && state.cameraStarted) showToast('Visão detalhada será carregada apenas quando uma leitura precisar dela.');
-    });
-
-    els.showBoxes.addEventListener('change', () => {
-      state.showBoxes = els.showBoxes.checked;
-      localStorage.setItem('mn-boxes', state.showBoxes ? '1' : '0');
-      renderBoxes(state.lastPredictions, state.selectedPrediction);
-    });
-
-    els.diagnostics.addEventListener('change', () => {
-      state.diagnostics = els.diagnostics.checked;
-      localStorage.setItem('mn-diagnostics', state.diagnostics ? '1' : '0');
-      renderRecognitionState();
-      renderBoxes(state.lastPredictions, state.selectedPrediction);
-    });
-
-    els.speakWord.addEventListener('click', () => {
-      const item = currentItem();
-      if (!item) return;
-      speak(item.jp);
-      markFamiliar(state.selectedKey, 1);
-    });
-
-    els.speakSentence.addEventListener('click', () => {
-      const phrase = state.mode === 'quiz' && !state.quizRevealed ? currentQuizQuestion() : currentSentence();
-      if (!phrase) return;
-      speak(phrase.jp);
-      markFamiliar(state.selectedKey, 1);
-    });
-
-    els.nextAction.addEventListener('click', () => {
-      const item = currentItem();
-      if (!item) return;
-      const actions = item.actions?.length ? item.actions : [fallbackAction(item)];
-      state.actionIndex = (state.actionIndex + 1) % actions.length;
-      state.quizRevealed = false;
-      renderLesson();
-    });
-
-    els.freeze.addEventListener('click', () => setFrozen(!state.frozen));
-
-    els.reveal.addEventListener('click', () => {
-      if (state.quizRevealed) return;
-      state.quizRevealed = true;
-      markFamiliar(state.selectedKey, 2);
-      renderLesson();
-    });
-
-    els.confirm.addEventListener('click', () => {
-      const shouldRemember = Boolean(state.currentCropHash && state.rawDetectorKey && state.selectedKey && state.rawDetectorKey !== state.selectedKey);
-      const remembered = shouldRemember ? rememberCorrection(state.selectedKey) : false;
-      state.recognition = {
-        ...state.recognition,
-        kind: 'confirmed',
-        reason: remembered ? 'Confirmado por você e salvo como lembrança visual local.' : 'Confirmado por você.'
-      };
-      markFamiliar(state.selectedKey, 2);
-      renderLesson();
-      showToast(remembered ? 'Confirmado e lembrado neste aparelho.' : 'Confirmado para esta seleção.');
-    });
-
-    els.correct.addEventListener('click', openCorrection);
-    els.learnThis.addEventListener('click', openCorrection);
-    els.cancelCorrection.addEventListener('click', () => setTimeout(restoreFreezeAfterCorrection, 0));
-    els.correctionDialog.addEventListener('close', restoreFreezeAfterCorrection);
-
-    els.clearCorrections.addEventListener('click', () => {
-      state.corrections = [];
-      localStorage.removeItem('mn-corrections');
-      updateMemoryControls();
-      showToast('Correções visuais apagadas.');
-    });
-
-    els.resetProgress.addEventListener('click', () => {
-      state.familiarity = {};
-      localStorage.removeItem('mn-familiarity');
-      renderLesson();
-      showToast('Progresso de imersão redefinido.');
-    });
-
-    els.vocabSearch.addEventListener('input', renderVocabList);
-    els.correctionSearch.addEventListener('input', renderCorrectionList);
-
-    window.addEventListener('resize', () => renderBoxes(state.lastPredictions, state.selectedPrediction));
-    window.addEventListener('pagehide', stopCamera);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && window.speechSynthesis) window.speechSynthesis.cancel();
-    });
+  function bindEvents(){
+    els.start.addEventListener('click',startCamera); els.flip.addEventListener('click',flipCamera); els.settings.addEventListener('click',()=>safeShowModal(els.settingsDialog)); els.study.addEventListener('click',()=>safeShowModal(els.studyDialog)); els.scan.addEventListener('click',()=>requestAnalysis(true));
+    els.stage.addEventListener('pointerup',handleStageTap);
+    els.expandLesson.addEventListener('click',toggleDetails); els.breakdownToggle.addEventListener('click',()=>togglePanel(els.breakdownPanel)); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
+    els.intentGrid.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(b)showIntent(b.dataset.intent)});
+    els.speakWord.addEventListener('click',()=>{const i=currentItem();if(i)speak(i.jp)}); els.speakSentence.addEventListener('click',()=>{const s=currentSentence();if(s)speak(s.jp)});
+    els.know.addEventListener('click',()=>adjustMastery(1)); els.review.addEventListener('click',()=>adjustMastery(-1)); els.nextAction.addEventListener('click',()=>{state.actionIndex++;state.quizRevealed=false;renderLesson()}); els.freeze.addEventListener('click',()=>setFrozen(!state.frozen));
+    els.confirm.addEventListener('click',confirmSelection); els.correct.addEventListener('click',openCorrection); els.learnThis.addEventListener('click',openCorrection); els.cancelCorrection.addEventListener('click',()=>{});
+    els.vocabBtn.addEventListener('click',()=>{safeClose(els.studyDialog);setTimeout(()=>safeShowModal(els.vocabDialog),0)}); els.vocabSearch.addEventListener('input',()=>renderVocabulary(els.vocabList,els.vocabSearch.value,selectManual)); els.correctionSearch.addEventListener('input',()=>renderVocabulary(els.correctionList,els.correctionSearch.value,applyCorrection));
+    document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.mode);safeClose(els.studyDialog)}));
+    els.demoControl.querySelectorAll('[data-demo]').forEach(b=>b.addEventListener('click',()=>{state.demonstrative=b.dataset.demo;localStorage.setItem('mn-demo',state.demonstrative);updateDemoButtons();renderLesson()}));
+    els.performanceMode.addEventListener('change',async()=>{state.performanceMode=els.performanceMode.value;localStorage.setItem('mn-performance',state.performanceMode);if(state.cameraStarted){await openCamera(state.facingMode);resetObservation('Perfil atualizado')}showToast(`Perfil ${profile().label}.`)});
+    els.immersion.addEventListener('change',()=>{state.immersionSetting=els.immersion.value;localStorage.setItem('mn-immersion',state.immersionSetting);renderLesson()});
+    els.confidence.addEventListener('input',()=>{state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;localStorage.setItem('mn-score',String(state.minScore))});
+    els.deepVision.addEventListener('change',()=>{state.deepVisionEnabled=els.deepVision.checked;localStorage.setItem('mn-deep-vision',state.deepVisionEnabled?'1':'0')});
+    els.showBoxes.addEventListener('change',()=>{state.showBoxes=els.showBoxes.checked;localStorage.setItem('mn-boxes',state.showBoxes?'1':'0');renderBoxes()});
+    els.diagnostics.addEventListener('change',()=>{state.diagnostics=els.diagnostics.checked;localStorage.setItem('mn-diagnostics',state.diagnostics?'1':'0');updateTelemetry();renderRecognitionState()});
+    els.clearCorrections.addEventListener('click',()=>{state.corrections=[];localStorage.removeItem('mn-corrections');updateMemoryControls();showToast('Correções visuais apagadas.')});
+    els.resetProgress.addEventListener('click',()=>{state.progress={};localStorage.removeItem('mn-v04-progress');renderLesson();showToast('Progresso por palavra redefinido.')});
+    els.onboardingContinue.addEventListener('click',()=>localStorage.setItem('mn-onboarded-v04','1'));
+    window.addEventListener('resize',()=>{positionCrosshair();renderBoxes()}); window.addEventListener('pagehide',stopCamera); document.addEventListener('visibilitychange',()=>{if(document.hidden&&window.speechSynthesis)window.speechSynthesis.cancel()});
   }
 
-  async function loadDetector() {
+  async function loadDetector(){
     setStatus('Carregando detector…');
-    try {
-      if (!window.tf || !window.cocoSsd) throw new Error('Bibliotecas de IA indisponíveis.');
-      try {
-        await tf.setBackend('webgl');
-      } catch (_) {
-        await tf.setBackend('cpu');
-      }
-      await tf.ready();
-      state.detector = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
-      setStatus(state.cameraStarted ? 'Mire em um objeto' : 'IA pronta · abra a câmera');
-      if (state.cameraStarted) scheduleDetection(80);
-    } catch (error) {
-      state.detectorError = error;
-      setStatus('IA visual indisponível · use Vocabulário');
-      showToast('A IA visual não carregou. O vocabulário manual continua funcionando.', 4500);
-      console.error(error);
-    }
+    try{if(!window.tf||!window.cocoSsd)throw new Error('Bibliotecas indisponíveis');try{await tf.setBackend('webgl')}catch(_){await tf.setBackend('cpu')}await tf.ready();state.detector=await cocoSsd.load({base:'lite_mobilenet_v2'});setStatus(state.cameraStarted?'Mire e estabilize':'IA pronta · abra a câmera');if(state.cameraStarted)startFocusLoop()}
+    catch(e){state.detectorError=e;setStatus('IA indisponível · use Vocabulário');showToast('Detector visual não carregou. O vocabulário manual continua ativo.',4200);console.error(e)}
   }
 
-  async function ensureVerifier() {
-    if (state.verifier || state.verifierLoading || state.verifierError) return state.verifier;
-    if (!window.mobilenet) {
-      state.verifierError = new Error('MobileNet indisponível.');
-      return null;
-    }
-    state.verifierLoading = true;
-    updateDeepVisionStatus();
-    try {
-      state.verifier = await mobilenet.load({ version: 2, alpha: 0.50 });
-      updateDeepVisionStatus();
-      return state.verifier;
-    } catch (error) {
-      state.verifierError = error;
-      updateDeepVisionStatus();
-      console.warn('Visão detalhada indisponível:', error);
-      return null;
-    } finally {
-      state.verifierLoading = false;
-      updateDeepVisionStatus();
-    }
+  async function ensureVerifier(){
+    if(state.verifier||state.verifierLoading||state.verifierError)return state.verifier;
+    if(!window.mobilenet){state.verifierError=new Error('MobileNet indisponível');return null}
+    state.verifierLoading=true;
+    try{state.verifier=await mobilenet.load({version:2,alpha:.50});return state.verifier}catch(e){state.verifierError=e;console.warn(e);return null}finally{state.verifierLoading=false}
   }
 
-  function updateDeepVisionStatus() {
-    if (!els.deepVisionStatus) return;
-    if (!state.deepVisionEnabled) {
-      els.deepVisionStatus.textContent = 'Visão detalhada: desligada';
+  async function startCamera(){
+    if(!navigator.mediaDevices?.getUserMedia){showToast('Câmera web não disponível. Use HTTPS.',4500);return}
+    els.start.disabled=true;setStatus('Pedindo acesso à câmera…');
+    try{await openCamera(state.facingMode);state.cameraStarted=true;els.start.classList.add('hidden');resetObservation('Mire em algo');startFocusLoop()}catch(e){console.error(e);els.start.disabled=false;setStatus(e?.name==='NotAllowedError'?'Permissão da câmera negada':'Não foi possível abrir a câmera');showToast('Verifique a permissão da câmera.',4200)}
+  }
+
+  async function openCamera(mode){
+    stopStreamOnly();const p=profile();state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:mode},width:{ideal:p.width},height:{ideal:p.height},frameRate:{ideal:p.fps,max:p.maxFps}}});els.video.srcObject=state.stream;await els.video.play();await waitForVideo();const track=state.stream.getVideoTracks()[0];state.facingMode=track?.getSettings?.().facingMode||mode;els.stage.classList.toggle('camera-user',state.facingMode==='user');await tryEnableContinuousAutofocus(track);positionCrosshair()
+  }
+  async function flipCamera(){if(!state.cameraStarted)return;state.facingMode=state.facingMode==='environment'?'user':'environment';try{await openCamera(state.facingMode);resetObservation('Câmera trocada')}catch(e){showToast('Não consegui trocar de câmera.')}}
+  async function tryEnableContinuousAutofocus(track){try{const caps=track?.getCapabilities?.();if(caps?.focusMode?.includes?.('continuous'))await track.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(_){/* recurso opcional do navegador/câmera */}}
+  function waitForVideo(){if(els.video.videoWidth)return Promise.resolve();return new Promise(r=>{const done=()=>r();els.video.addEventListener('loadedmetadata',done,{once:true});setTimeout(done,1500)})}
+  function stopStreamOnly(){if(state.stream){state.stream.getTracks().forEach(t=>t.stop());state.stream=null}}
+  function stopCamera(){clearTimeout(state.focus.loopTimer);clearTimeout(state.revealTimer);stopStreamOnly()}
+
+  function profile(){const ps={eco:{label:'Econômico',width:480,height:360,fps:15,maxFps:18,sampleMs:320,required:2,motion:.040,change:.115,detectRatio:.54,deepRatio:.30},balanced:{label:'Equilibrado',width:640,height:480,fps:18,maxFps:22,sampleMs:230,required:2,motion:.035,change:.105,detectRatio:.62,deepRatio:.28},accuracy:{label:'Precisão',width:960,height:540,fps:22,maxFps:25,sampleMs:170,required:3,motion:.030,change:.095,detectRatio:.68,deepRatio:.25}};return ps[state.performanceMode]||ps.balanced}
+
+  function startFocusLoop(){clearTimeout(state.focus.loopTimer);const tick=()=>{focusTick().finally(()=>{state.focus.loopTimer=setTimeout(tick,profile().sampleMs)})};tick()}
+  async function focusTick(){
+    if(!state.cameraStarted||document.hidden||els.video.readyState<2||!els.video.videoWidth)return;
+    const sample=sampleFocus();state.telemetry.focusSamples++;state.focus.lastMotion=sample.motion;state.focus.lastSharpness=sample.sharpness;
+    if(state.frozen){setPhase('tracking');return}
+    if(state.focus.phase==='tracking'){
+      const d=state.focus.trackingHash?hammingHex(sample.hash,state.focus.trackingHash):0;
+      const changed=sample.motion>profile().change||d>18;
+      state.focus.moving=changed?state.focus.moving+1:Math.max(0,state.focus.moving-1);
+      if(state.focus.moving>=2){resetObservation('A mira mudou · buscando novo objeto')}
       return;
     }
-    if (state.verifier) {
-      els.deepVisionStatus.textContent = 'Visão detalhada: pronta · executa apenas quando necessária';
-      return;
-    }
-    if (state.verifierLoading) {
-      els.deepVisionStatus.textContent = 'Visão detalhada: preparando modelo leve…';
-      return;
-    }
-    if (state.verifierError) {
-      els.deepVisionStatus.textContent = 'Visão detalhada: indisponível · detector e correção manual continuam ativos';
-      return;
-    }
-    els.deepVisionStatus.textContent = state.cameraStarted
-      ? 'Visão detalhada: em espera · será carregada somente quando necessária'
-      : 'Visão detalhada: aguardando câmera';
-  }
-
-  async function startCamera() {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      showToast('Este navegador não liberou acesso à câmera. Abra o site por HTTPS.', 5000);
-      return;
-    }
-
-    els.start.disabled = true;
-    setStatus('Pedindo acesso à câmera…');
-
-    try {
-      await openCamera(state.facingMode);
-      state.cameraStarted = true;
-      els.start.classList.add('hidden');
-      setStatus(state.detector ? 'Mire em um objeto' : 'Câmera pronta · carregando IA…');
-      if (state.detector) scheduleDetection(80);
-    } catch (error) {
-      console.error(error);
-      let message = 'Não foi possível abrir a câmera.';
-      if (error?.name === 'NotAllowedError') message = 'Permissão da câmera negada. Libere-a nas permissões do site.';
-      if (error?.name === 'NotFoundError') message = 'Nenhuma câmera compatível foi encontrada.';
-      setStatus(message);
-      showToast(message, 5000);
-      els.start.disabled = false;
-    }
-  }
-
-  async function openCamera(mode) {
-    stopStreamOnly();
-    const perf = performanceProfile();
-    const constraints = {
-      audio: false,
-      video: {
-        facingMode: { ideal: mode },
-        width: { ideal: perf.width },
-        height: { ideal: perf.height },
-        frameRate: { ideal: perf.fps, max: perf.maxFps }
-      }
-    };
-    state.stream = await navigator.mediaDevices.getUserMedia(constraints);
-    els.video.srcObject = state.stream;
-    await els.video.play();
-    await waitForVideoDimensions();
-
-    const actual = state.stream.getVideoTracks()[0]?.getSettings?.().facingMode;
-    state.facingMode = actual || mode;
-    els.stage.classList.toggle('camera-user', state.facingMode === 'user');
-  }
-
-  async function flipCamera() {
-    if (!state.cameraStarted) return;
-    state.facingMode = state.facingMode === 'environment' ? 'user' : 'environment';
-    setFrozen(false);
-    clearSelection('Trocando câmera…');
-    try {
-      await openCamera(state.facingMode);
-      setStatus(state.detector ? 'Mire em um objeto' : 'Câmera pronta');
-    } catch (error) {
-      showToast('Não consegui trocar de câmera.');
-      console.error(error);
-    }
-  }
-
-  function waitForVideoDimensions() {
-    if (els.video.videoWidth && els.video.videoHeight) return Promise.resolve();
-    return new Promise(resolve => {
-      const done = () => {
-        els.video.removeEventListener('loadedmetadata', done);
-        resolve();
-      };
-      els.video.addEventListener('loadedmetadata', done, { once: true });
-      setTimeout(done, 1600);
-    });
-  }
-
-  function stopStreamOnly() {
-    if (state.stream) {
-      state.stream.getTracks().forEach(track => track.stop());
-      state.stream = null;
-    }
-  }
-
-  function stopCamera() {
-    clearTimeout(state.detectionTimer);
-    stopStreamOnly();
-  }
-
-  function performanceProfile() {
-    const profiles = {
-      eco: { label: 'Econômico', width: 480, height: 360, fps: 15, maxFps: 18, detectInterval: 950, detailInterval: 3600 },
-      balanced: { label: 'Equilibrado', width: 640, height: 480, fps: 18, maxFps: 22, detectInterval: 650, detailInterval: 2600 },
-      accuracy: { label: 'Precisão', width: 960, height: 540, fps: 24, maxFps: 26, detectInterval: 450, detailInterval: 1700 }
-    };
-    return profiles[state.performanceMode] || profiles.balanced;
-  }
-
-  function nextDetectionDelay() {
-    const profile = performanceProfile();
-    let delay = profile.detectInterval;
-    if (state.selectedKey && ['stable', 'memory', 'deep'].includes(state.recognition.kind)) delay *= 1.65;
-    if (state.verifying || state.deepProbeRunning) delay = Math.max(delay, 1100);
-    if (state.avgDetectMs > 0) delay = Math.max(delay, Math.min(1700, state.avgDetectMs * 1.35));
-    return Math.round(Math.min(1800, Math.max(320, delay)));
-  }
-
-  function scheduleDetection(delay = 430) {
-    clearTimeout(state.detectionTimer);
-    state.detectionTimer = setTimeout(detectFrame, delay);
-  }
-
-  async function detectFrame() {
-    if (!state.detector || !state.cameraStarted || state.detecting || document.hidden) {
-      scheduleDetection(650);
-      return;
-    }
-    if (els.video.readyState < 2 || !els.video.videoWidth) {
-      scheduleDetection(350);
-      return;
-    }
-
-    state.detecting = true;
-    const startedAt = performance.now();
-    try {
-      const predictions = await state.detector.detect(els.video, 10, state.minScore);
-      state.lastPredictions = predictions.filter(p => JAPANESE_DB[p.class]);
-      const target = chooseTarget(state.lastPredictions);
-
-      if (!state.frozen) {
-        updateTemporalTarget(target);
-        if (!target) maybeAutoDeepProbe();
-      }
-      renderBoxes(state.lastPredictions, state.selectedPrediction || target);
-    } catch (error) {
-      console.error(error);
-      setStatus('Falha temporária na detecção');
-    } finally {
-      const elapsed = Math.max(1, performance.now() - startedAt);
-      state.avgDetectMs = state.avgDetectMs ? state.avgDetectMs * 0.78 + elapsed * 0.22 : elapsed;
-      state.detecting = false;
-      scheduleDetection(nextDetectionDelay());
-    }
-  }
-
-  function chooseTarget(predictions) {
-    if (!predictions.length) return null;
-    const { x, y } = crosshairPointInVideo();
-    const containing = predictions.filter(p => pointInBox(x, y, p.bbox));
-
-    if (containing.length) {
-      return containing.sort((a, b) => scoreTarget(b, x, y) - scoreTarget(a, x, y))[0];
-    }
-
-    const maxDistance = Math.min(els.video.videoWidth, els.video.videoHeight) * 0.10;
-    const near = predictions
-      .map(p => ({ p, d: distanceToBox(x, y, p.bbox) }))
-      .filter(v => v.d <= maxDistance)
-      .sort((a, b) => a.d - b.d || b.p.score - a.p.score);
-    return near[0]?.p || null;
-  }
-
-  function updateTemporalTarget(target) {
-    state.history.push(target ? { class: target.class, score: target.score, prediction: target } : null);
-    if (state.history.length > state.historySize) state.history.shift();
-
-    if (!target) {
-      // A seleção da Visão detalhada não depende das 80 caixas do COCO. Mantemos a
-      // palavra visível e a reavaliamos por recortes periódicos em vez de apagá-la.
-      if (state.rawDetectorKey === '__crosshair__' && state.selectedKey) {
-        state.missCount = 0;
-        els.holdRing.className = state.recognition.kind === 'tentative' ? 'hold-ring verifying' : 'hold-ring locked';
-        setStatus(state.deepProbeRunning ? 'Visão detalhada analisando…' : 'Visão detalhada acompanhando a mira…');
-        return;
-      }
-
-      state.missCount += 1;
-      els.holdRing.className = 'hold-ring';
-      setStatus('Procurando objeto na mira…');
-      if (state.missCount >= 3 && state.selectedKey) {
-        clearSelection('Procurando objeto na mira…');
-      } else if (!state.selectedKey) {
-        showEmptyState('Aponte para algo', state.deepVisionEnabled
-          ? 'O detector não encontrou uma classe comum. A visão detalhada tentará a região central.'
-          : 'Mantenha a mira no objeto por um instante.');
-      }
-      return;
-    }
-
-    state.missCount = 0;
-    const recent = state.history.filter(Boolean);
-    if (recent.length < state.requiredVotes) {
-      els.holdRing.className = 'hold-ring loading';
-      setStatus('Estabilizando leitura…');
-      return;
-    }
-
-    const votes = new Map();
-    for (const entry of recent) {
-      const value = votes.get(entry.class) || { count: 0, sum: 0, best: entry.prediction };
-      value.count += 1;
-      value.sum += entry.score;
-      if (entry.score > value.best.score) value.best = entry.prediction;
-      votes.set(entry.class, value);
-    }
-
-    const winner = [...votes.entries()]
-      .map(([key, value]) => ({ key, ...value, avg: value.sum / value.count }))
-      .sort((a, b) => b.count - a.count || b.avg - a.avg)[0];
-
-    if (!winner || winner.count < state.requiredVotes) {
-      els.holdRing.className = 'hold-ring loading';
-      setStatus('Comparando leituras…');
-      return;
-    }
-
-    const selected = winner.best;
-    const signature = `${winner.key}:${quantizedBoxSignature(selected.bbox)}`;
-    const changed = state.rawDetectorKey !== winner.key || state.lastVerifiedSignature !== signature;
-
-    state.selectedPrediction = selected;
-    state.rawDetectorKey = winner.key;
-    els.holdRing.className = 'hold-ring verifying';
-
-    if (changed) {
-      selectObject(winner.key, selected, {
-        source: 'detector',
-        recognition: {
-          kind: 'checking',
-          reason: 'Segunda checagem visual em andamento.',
-          detectorScore: winner.avg,
-          verifierScore: null,
-          verifierLabel: ''
-        }
-      });
-      state.lastVerifiedSignature = signature;
-      verifyStableTarget(selected, winner.avg, signature);
-    } else if (!state.verifying) {
-      els.holdRing.className = state.recognition.kind === 'tentative' ? 'hold-ring verifying' : 'hold-ring locked';
-    }
-  }
-
-  async function verifyStableTarget(prediction, detectorScore, signature) {
-    const token = ++state.verificationToken;
-    state.verifying = true;
-    state.verifierAlternative = null;
-    setStatus('Checando o objeto…');
-
-    try {
-      drawCrop(prediction);
-      const snapshot = cloneCanvas(els.crop);
-      let memorySnapshot = snapshot;
-      if (prediction.class === 'person' && window.MiraRecognitionPolicy?.makeCrosshairBox) {
-        const point = crosshairPointInVideo();
-        const focusBox = window.MiraRecognitionPolicy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, 0.34);
-        memorySnapshot = cropFromBbox(focusBox, 256);
-      }
-      state.currentCropHash = computeDHash(memorySnapshot);
-
-      const remembered = findRememberedCorrection(state.currentCropHash, prediction.class);
-      if (remembered && token === state.verificationToken) {
-        const memoryPrediction = { ...prediction, class: remembered.key, _deep: true };
-        selectObject(remembered.key, memoryPrediction, {
-          source: 'memory',
-          rawDetectorKey: prediction.class,
-          recognition: {
-            kind: 'memory',
-            reason: 'Reconhecido por uma correção que você salvou neste aparelho.',
-            detectorScore,
-            verifierScore: null,
-            verifierLabel: '',
-            deepScore: null,
-            deepLabel: ''
-          }
-        });
-        els.holdRing.className = 'hold-ring locked';
-        renderBoxes(state.lastPredictions, memoryPrediction);
-        setStatus('Lembrança local aplicada');
-        return;
-      }
-
-      const verifier = state.deepVisionEnabled ? await ensureVerifier() : null;
-      if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return;
-
-      let classes = [];
-      let mapped = null;
-      let top = null;
-      const policy = window.MiraRecognitionPolicy;
-      if (verifier) {
-        // COCO can label an entire visible limb as "person". For that broad class,
-        // the quick verifier receives the user's crosshair crop rather than the
-        // whole person box, which gives shoes and other local details a fair chance.
-        let quickSnapshot = snapshot;
-        if (prediction.class === 'person' && policy?.makeCrosshairBox) {
-          const point = crosshairPointInVideo();
-          const focusBox = policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, 0.34);
-          quickSnapshot = cropFromBbox(focusBox, 256);
-        }
-        classes = await verifier.classify(quickSnapshot, 5);
-        if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return;
-        mapped = classes
-          .map(result => ({ ...result, key: mapVerifierLabel(result.className) }))
-          .filter(result => result.key && JAPANESE_DB[result.key])
-          .sort((a, b) => b.probability - a.probability)[0] || null;
-        top = classes[0] || null;
-      }
-
-      const highConfusion = Boolean(policy?.isHighConfusion?.(prediction.class));
-
-      if (!verifier) {
-        const strong = detectorScore >= 0.82 && !highConfusion;
-        state.recognition = {
-          kind: strong ? 'stable' : 'tentative',
-          reason: strong
-            ? 'Detector principal está consistente; verificadores adicionais não ficaram disponíveis.'
-            : highConfusion
-              ? 'Esta categoria já apresentou confusões em testes reais e a checagem adicional não ficou disponível. Confirme ou corrija.'
-              : 'Confiança moderada e verificadores adicionais indisponíveis. Confirme antes de memorizar.',
-          detectorScore,
-          verifierScore: null,
-          verifierLabel: '',
-          deepScore: null,
-          deepLabel: ''
-        };
-        renderLesson();
-        els.holdRing.className = strong ? 'hold-ring locked' : 'hold-ring verifying';
-        setStatus(strong ? 'Reconhecimento estável' : 'Leitura incerta · confirme ou corrija');
-        return;
-      }
-
-      const same = mapped?.key === prediction.class;
-      const strongAlternative = mapped && mapped.key !== prediction.class && mapped.probability >= 0.30;
-      const moderateAlternative = mapped && mapped.key !== prediction.class && mapped.probability >= 0.16;
-      const regressionPairs = new Set([
-        'frisbee>bottle_cap',
-        'skateboard>utility_knife',
-        'suitcase>cardboard_box',
-        'oven>cardboard_box',
-        'person>shoe'
-      ]);
-      const regressionOverride = Boolean(mapped && regressionPairs.has(`${prediction.class}>${mapped.key}`) && mapped.probability >= 0.075);
-
-      if (regressionOverride) {
-        const confident = mapped.probability >= 0.18;
-        state.verifierAlternative = null;
-        selectObject(mapped.key, { ...prediction, class: mapped.key, _deep: true }, {
-          source: 'verifier',
-          rawDetectorKey: prediction.class,
-          recognition: {
-            kind: confident ? 'stable' : 'tentative',
-            reason: confident
-              ? `A visão detalhada corrigiu uma confusão conhecida para “${JAPANESE_DB[mapped.key].pt}”.`
-              : `A visão detalhada sugere “${JAPANESE_DB[mapped.key].pt}” para uma classe que costuma confundir. Confirme antes de memorizar.`,
-            detectorScore,
-            verifierScore: mapped.probability,
-            verifierLabel: mapped.className,
-            deepScore: null,
-            deepLabel: ''
-          }
-        });
-        els.holdRing.className = confident ? 'hold-ring locked' : 'hold-ring verifying';
-        setStatus(confident ? 'Reconhecimento corrigido e estável' : 'Talvez seja · confirme ou corrija');
-      } else if (prediction.class === 'person' && (!mapped || mapped.probability < 0.12)) {
-        const [,, bw, bh] = prediction.bbox;
-        const aspect = bw / Math.max(1, bh);
-        if (aspect >= 0.80 && JAPANESE_DB.hand) {
-          state.verifierAlternative = null;
-          selectObject('hand', { ...prediction, class: 'hand', _deep: true }, {
-            source: 'heuristic',
-            rawDetectorKey: 'person',
-            recognition: {
-              kind: 'tentative',
-              reason: 'O detector viu “pessoa”, mas a caixa é larga e a mira parece focar uma parte do corpo. A V0.3 sugere “mão”, sem tratar isso como certeza.',
-              detectorScore,
-              verifierScore: top?.probability ?? null,
-              verifierLabel: top?.className || '',
-              deepScore: null,
-              deepLabel: ''
-            }
-          });
-        } else {
-          if (aspect >= 0.72) state.verifierAlternative = { key: 'hand', probability: 0, className: 'heurística de parte do corpo' };
-          state.recognition = {
-            kind: 'tentative',
-            reason: aspect >= 0.72
-              ? 'O detector viu “pessoa”, mas a forma e a mira podem estar focando apenas uma parte do corpo. “Mão” aparece como sugestão de correção.'
-              : '“Pessoa” é uma classe muito ampla. Confirme antes de memorizar quando a mira estiver em mão, pé ou calçado.',
-            detectorScore,
-            verifierScore: top?.probability ?? null,
-            verifierLabel: top?.className || '',
-            deepScore: null,
-            deepLabel: ''
-          };
-          renderLesson();
-        }
-        els.holdRing.className = 'hold-ring verifying';
-        setStatus('Parte do corpo · confirme');
-      } else if (same) {
-        state.recognition = {
-          kind: 'stable',
-          reason: 'Detector e verificador rápido são compatíveis.',
-          detectorScore,
-          verifierScore: mapped.probability,
-          verifierLabel: mapped.className,
-          deepScore: null,
-          deepLabel: ''
-        };
-        els.holdRing.className = 'hold-ring locked';
-        setStatus('Reconhecimento estável');
-      } else if (strongAlternative && (detectorScore < 0.82 || highConfusion)) {
-        state.verifierAlternative = mapped;
-        selectObject(mapped.key, { ...prediction, class: mapped.key }, {
-          source: 'verifier',
-          rawDetectorKey: prediction.class,
-          recognition: {
-            kind: 'tentative',
-            reason: `O verificador rápido sugere “${JAPANESE_DB[mapped.key].pt}”. Confirme antes de memorizar.`,
-            detectorScore,
-            verifierScore: mapped.probability,
-            verifierLabel: mapped.className,
-            deepScore: null,
-            deepLabel: ''
-          }
-        });
-        els.holdRing.className = 'hold-ring verifying';
-        setStatus('Talvez seja · confirme ou corrija');
-      } else if (moderateAlternative || detectorScore < 0.72 || highConfusion) {
-        state.verifierAlternative = moderateAlternative ? mapped : null;
-        state.recognition = {
-          kind: 'tentative',
-          reason: moderateAlternative
-            ? `Os modelos rápidos discordaram. Outra possibilidade: ${JAPANESE_DB[mapped.key].pt}.`
-            : highConfusion
-              ? 'Esta categoria é propensa a confusão e não recebeu confirmação suficiente. Confirme ou corrija.'
-              : 'A leitura ainda não está segura o suficiente para ensinar como certeza.',
-          detectorScore,
-          verifierScore: mapped?.probability ?? top?.probability ?? null,
-          verifierLabel: mapped?.className || top?.className || '',
-          deepScore: null,
-          deepLabel: ''
-        };
-        renderLesson();
-        els.holdRing.className = 'hold-ring verifying';
-        setStatus('Leitura incerta · confirme ou corrija');
-      } else {
-        state.recognition = {
-          kind: 'stable',
-          reason: 'O detector ficou estável e o verificador rápido não encontrou conflito forte.',
-          detectorScore,
-          verifierScore: mapped?.probability ?? top?.probability ?? null,
-          verifierLabel: mapped?.className || top?.className || '',
-          deepScore: null,
-          deepLabel: ''
-        };
-        els.holdRing.className = 'hold-ring locked';
-        setStatus('Reconhecimento estável');
-      }
-      renderLesson();
-    } catch (error) {
-      console.warn('Falha na cadeia de verificação:', error);
-      if (token !== state.verificationToken) return;
-      const highConfusion = Boolean(window.MiraRecognitionPolicy?.isHighConfusion?.(prediction.class));
-      const safeStrong = detectorScore >= 0.82 && !highConfusion;
-      state.recognition = {
-        kind: safeStrong ? 'stable' : 'tentative',
-        reason: safeStrong
-          ? 'Detector principal está consistente; a checagem adicional falhou nesta leitura.'
-          : highConfusion
-            ? 'A checagem adicional falhou numa categoria propensa a confusão. Confirme ou corrija.'
-            : 'A checagem adicional falhou; confirme ou corrija antes de memorizar.',
-        detectorScore,
-        verifierScore: null,
-        verifierLabel: '',
-        deepScore: null,
-        deepLabel: ''
-      };
-      renderLesson();
-      els.holdRing.className = state.recognition.kind === 'stable' ? 'hold-ring locked' : 'hold-ring verifying';
-    } finally {
-      if (token === state.verificationToken) state.verifying = false;
-    }
-  }
-
-
-  function maybeAutoDeepProbe() {
-    if (!state.deepVisionEnabled || state.deepProbeRunning || state.verifying || state.frozen || !state.cameraStarted) return;
-    if (state.missCount < 2) return;
-    const now = Date.now();
-    const backoff = 1 + Math.min(3, state.deepMissCount) * 0.65;
-    const interval = performanceProfile().detailInterval * backoff;
-    if (now - state.lastDeepProbeAt < interval) return;
-    state.lastDeepProbeAt = now;
-    runCrosshairDeepScan(false);
-  }
-
-  async function runCrosshairDeepScan(manual = false) {
-    if (!state.cameraStarted || !els.video.videoWidth) {
-      if (manual) showToast('Abra a câmera primeiro.');
-      return;
-    }
-    if (!state.deepVisionEnabled) {
-      if (manual) showToast('Ative “Visão detalhada” nas configurações.');
-      return;
-    }
-    if (state.deepProbeRunning || state.verifying) return;
-
-    state.deepProbeRunning = true;
-    els.scan.disabled = true;
-    const token = ++state.verificationToken;
-    try {
-      const policy = window.MiraRecognitionPolicy;
-      const point = crosshairPointInVideo();
-      const ratio = state.performanceMode === 'accuracy' ? 0.34 : 0.40;
-      const bbox = policy?.makeCrosshairBox
-        ? policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, ratio)
-        : [Math.max(0, point.x - 120), Math.max(0, point.y - 120), 240, 240];
-      const snapshot = cropFromBbox(bbox, 224);
-      const hash = computeDHash(snapshot);
-      const movedFar = Boolean(state.rawDetectorKey === '__crosshair__' && state.lastCrosshairHash && hammingHex(hash, state.lastCrosshairHash) > 18);
-      state.lastCrosshairHash = hash;
-      state.currentCropHash = hash;
-
-      const remembered = findRememberedCorrection(hash, '__crosshair__');
-      if (remembered && token === state.verificationToken) {
-        const prediction = { class: remembered.key, score: 1, bbox, _deep: true };
-        selectObject(remembered.key, prediction, {
-          rawDetectorKey: '__crosshair__',
-          recognition: { kind: 'memory', reason: 'A região lembra uma correção visual salva neste aparelho.', detectorScore: null, verifierScore: null, verifierLabel: '', deepScore: null, deepLabel: '' }
-        });
-        state.deepMissCount = 0;
-        renderBoxes(state.lastPredictions, prediction);
-        els.holdRing.className = 'hold-ring locked';
-        setStatus('Lembrança local aplicada');
-        return;
-      }
-
-      setStatus(state.verifier ? 'Visão detalhada analisando a mira…' : 'Preparando visão detalhada…');
-      const verifier = await ensureVerifier();
-      if (token !== state.verificationToken || !verifier) return;
-      const classes = await verifier.classify(snapshot, 10);
-      if (token !== state.verificationToken) return;
-
-      const mapped = classes
-        .map((result, index) => ({ ...result, rank: index, key: mapVerifierLabel(result.className) }))
-        .filter(result => result.key && JAPANESE_DB[result.key])
-        .sort((a, b) => b.probability - a.probability)[0] || null;
-
-      const topRaw = classes[0] || null;
-      const strongKeys = new Set(['fan', 'bottle_cap', 'shoe', 'utility_knife', 'cardboard_box', 'box', 'plate', 'mug', 'kettle', 'trash_bin']);
-      const accept = Boolean(mapped && ((mapped.rank <= 2 && mapped.probability >= 0.075) || mapped.probability >= 0.16));
-      const stable = Boolean(accept && (mapped.probability >= 0.22 || (strongKeys.has(mapped.key) && mapped.rank <= 1 && mapped.probability >= 0.10)));
-
-      if (!accept) {
-        state.deepMissCount += 1;
-        if (manual) showToast('Ainda não tenho confiança suficiente. Aproxime a mira ou use Corrigir.');
-        if (state.rawDetectorKey === '__crosshair__' && state.selectedKey && (movedFar || state.deepMissCount >= 2)) clearSelection('Visão detalhada · leitura inconclusiva');
-        if (!state.selectedKey) showEmptyState('Ainda não tenho certeza', 'Aproxime-se do objeto, mantenha a mira ou use o vocabulário manual.');
-        setStatus('Visão detalhada · leitura inconclusiva');
-        return;
-      }
-
-      state.deepMissCount = 0;
-      const prediction = { class: mapped.key, score: mapped.probability, bbox, _deep: true };
-      selectObject(mapped.key, prediction, {
-        rawDetectorKey: '__crosshair__',
-        recognition: {
-          kind: stable ? 'deep' : 'tentative',
-          reason: stable ? 'A visão detalhada identificou a região da mira.' : 'A visão detalhada encontrou uma possibilidade; confirme antes de memorizar.',
-          detectorScore: null,
-          verifierScore: mapped.probability,
-          verifierLabel: mapped.className,
-          deepScore: null,
-          deepLabel: topRaw?.className || ''
-        }
-      });
-      renderBoxes(state.lastPredictions, prediction);
-      els.holdRing.className = stable ? 'hold-ring locked' : 'hold-ring verifying';
-      setStatus(stable ? 'Visão detalhada · reconhecimento estável' : 'Visão detalhada · confirme ou corrija');
-    } catch (error) {
-      console.warn('Falha ao analisar a mira:', error);
-      if (manual) showToast('A visão detalhada não ficou disponível. Corrigir/Vocabulário continuam ativos.', 4000);
-      setStatus('Visão detalhada indisponível · detector comum ativo');
-    } finally {
-      state.deepProbeRunning = false;
-      els.scan.disabled = false;
-      updateDeepVisionStatus();
-    }
-  }
-
-  function cloneCanvas(source) {
-    const canvas = document.createElement('canvas');
-    canvas.width = source.width;
-    canvas.height = source.height;
-    canvas.getContext('2d', { willReadFrequently: true }).drawImage(source, 0, 0);
-    return canvas;
-  }
-
-  function cropFromBbox(bbox, size = 256) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const [x, y, w, h] = bbox;
-    const sx = clamp(x, 0, els.video.videoWidth - 1);
-    const sy = clamp(y, 0, els.video.videoHeight - 1);
-    const sw = clamp(w, 1, els.video.videoWidth - sx);
-    const sh = clamp(h, 1, els.video.videoHeight - sy);
-    ctx.drawImage(els.video, sx, sy, sw, sh, 0, 0, size, size);
-    return canvas;
-  }
-
-  function makeSyntheticPrediction(key, score) {
-    const policy = window.MiraRecognitionPolicy;
-    const point = crosshairPointInVideo();
-    const bbox = policy?.makeCrosshairBox
-      ? policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, 0.34)
-      : [Math.max(0, point.x - 120), Math.max(0, point.y - 120), 240, 240];
-    return { class: key, score: score || 0, bbox, _deep: true };
-  }
-
-  function drawCrop(prediction) {
-    const ctx = els.crop.getContext('2d', { willReadFrequently: true });
-    const [x, y, w, h] = prediction.bbox;
-    const pad = Math.max(w, h) * 0.10;
-    const sx = clamp(x - pad, 0, els.video.videoWidth);
-    const sy = clamp(y - pad, 0, els.video.videoHeight);
-    const sw = clamp(w + pad * 2, 1, els.video.videoWidth - sx);
-    const sh = clamp(h + pad * 2, 1, els.video.videoHeight - sy);
-    ctx.clearRect(0, 0, els.crop.width, els.crop.height);
-    ctx.drawImage(els.video, sx, sy, sw, sh, 0, 0, els.crop.width, els.crop.height);
-  }
-
-  function computeDHash(sourceCanvas) {
-    const tiny = document.createElement('canvas');
-    tiny.width = 9;
-    tiny.height = 8;
-    const ctx = tiny.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(sourceCanvas, 0, 0, 9, 8);
-    const data = ctx.getImageData(0, 0, 9, 8).data;
-    let bits = '';
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
-        const i1 = (y * 9 + x) * 4;
-        const i2 = (y * 9 + x + 1) * 4;
-        const g1 = data[i1] * 0.299 + data[i1 + 1] * 0.587 + data[i1 + 2] * 0.114;
-        const g2 = data[i2] * 0.299 + data[i2 + 1] * 0.587 + data[i2 + 2] * 0.114;
-        bits += g1 > g2 ? '1' : '0';
-      }
-    }
-    let hex = '';
-    for (let i = 0; i < 64; i += 4) hex += parseInt(bits.slice(i, i + 4), 2).toString(16);
-    return hex.padStart(16, '0');
-  }
-
-  function findRememberedCorrection(hash, rawClass) {
-    if (!hash || !rawClass) return null;
-    let best = null;
-    for (const entry of state.corrections) {
-      if (!entry || entry.rawClass !== rawClass || !JAPANESE_DB[entry.key] || !entry.hash) continue;
-      const distance = hammingHex(hash, entry.hash);
-      if (distance <= 7 && (!best || distance < best.distance)) best = { ...entry, distance };
-    }
-    return best;
-  }
-
-  function rememberCorrection(key) {
-    if (!state.currentCropHash || !state.rawDetectorKey || !key) return false;
-    state.corrections = state.corrections
-      .filter(entry => !(entry.rawClass === state.rawDetectorKey && entry.hash === state.currentCropHash))
-      .slice(-39);
-    state.corrections.push({
-      hash: state.currentCropHash,
-      rawClass: state.rawDetectorKey,
-      key,
-      at: Date.now()
-    });
-    localStorage.setItem('mn-corrections', JSON.stringify(state.corrections));
-    updateMemoryControls();
-    return true;
-  }
-
-  function hammingHex(a, b) {
-    if (!a || !b || a.length !== b.length) return Infinity;
-    const bitCount = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
-    let distance = 0;
-    for (let i = 0; i < a.length; i++) {
-      const x = parseInt(a[i], 16) ^ parseInt(b[i], 16);
-      distance += bitCount[x];
-    }
-    return distance;
-  }
-
-  function mapVerifierLabel(label) {
-    for (const [pattern, key] of VERIFIER_RULES) {
-      if (pattern.test(label)) return key;
-    }
-    return null;
-  }
-
-  function selectObject(key, prediction = null, options = {}) {
-    if (!JAPANESE_DB[key]) return;
-    const previousKey = state.selectedKey;
-    state.selectedKey = key;
-    state.selectedPrediction = prediction;
-    if (options.rawDetectorKey) state.rawDetectorKey = options.rawDetectorKey;
-    if (options.recognition) state.recognition = options.recognition;
-    if (previousKey !== key) {
-      state.actionIndex = 0;
-      state.quizRevealed = false;
-    }
-    els.emptyHint.classList.add('hidden');
-    els.lessonCard.classList.remove('hidden');
-    renderLesson();
-  }
-
-  function clearSelection(status = '') {
-    state.verificationToken += 1;
-    state.history.length = 0;
-    state.missCount = 0;
-    state.selectedPrediction = null;
-    state.selectedKey = null;
-    state.rawDetectorKey = null;
-    state.currentCropHash = null;
-    state.verifierAlternative = null;
-    state.deepMissCount = 0;
-    state.lastCrosshairHash = null;
-    state.lastVerifiedSignature = '';
-    state.recognition = { kind: 'idle', reason: '', detectorScore: null, verifierScore: null, verifierLabel: '', deepScore: null, deepLabel: '' };
-    els.lessonCard.classList.add('hidden');
-    els.holdRing.className = 'hold-ring';
-    showEmptyState('Aponte para algo', state.deepVisionEnabled
-      ? 'Mantenha a mira no objeto. A Visão detalhada entra quando as 80 classes comuns não bastam.'
-      : 'Mantenha a mira no objeto por um instante.');
-    if (status) setStatus(status);
-  }
-
-  function currentItem() {
-    return state.selectedKey ? JAPANESE_DB[state.selectedKey] : null;
-  }
-
-  function currentSentence() {
-    const item = currentItem();
-    if (!item) return null;
-    const demo = DEMONSTRATIVES[state.demonstrative];
-
-    if (state.mode === 'actions') {
-      const actions = item.actions?.length ? item.actions : [fallbackAction(item)];
-      return actions[state.actionIndex % actions.length];
-    }
-
-    if (state.mode === 'location') {
-      const verb = item.animate ? 'います' : 'あります';
-      const verbRomaji = item.animate ? 'imasu' : 'arimasu';
-      return {
-        jp: `${demo.place}に${item.jp}が${verb}。`,
-        romaji: `${capitalize(demo.placeRomaji)} ni ${item.romaji} ga ${verbRomaji}.`,
-        pt: `${capitalize(item.pt)} está ${demo.placePt}.`
-      };
-    }
-
-    if (state.mode === 'scene') {
-      const relation = currentSceneRelation();
-      if (relation) return relation;
-      const verb = item.animate ? 'います' : 'あります';
-      const verbRomaji = item.animate ? 'imasu' : 'arimasu';
-      return {
-        jp: `${demo.place}に${item.jp}が${verb}。`,
-        romaji: `${capitalize(demo.placeRomaji)} ni ${item.romaji} ga ${verbRomaji}.`,
-        pt: `Ainda não encontrei uma relação segura com outro objeto; ${item.pt} está ${demo.placePt}.`
-      };
-    }
-
-    if (state.mode === 'quiz') {
-      if (state.selectedKey === 'person') {
-        return { jp: '人が見えます。', romaji: 'Hito ga miemasu.', pt: 'Vejo uma pessoa.' };
-      }
-      return {
-        jp: `${item.jp}です。`,
-        romaji: `${capitalize(item.romaji)} desu.`,
-        pt: `Resposta: ${item.pt}.`
-      };
-    }
-
-    if (state.selectedKey === 'person') {
-      const personDemo = {
-        kore: { jp: 'この人', romaji: 'kono hito', pt: 'esta pessoa' },
-        sore: { jp: 'その人', romaji: 'sono hito', pt: 'essa pessoa' },
-        are: { jp: 'あの人', romaji: 'ano hito', pt: 'aquela pessoa' }
-      }[state.demonstrative];
-      return {
-        jp: `${personDemo.jp}がいます。`,
-        romaji: `${capitalize(personDemo.romaji)} ga imasu.`,
-        pt: `${capitalize(personDemo.pt)} está aqui/ali.`
-      };
-    }
-
-    return {
-      jp: `${demo.thing}は${item.jp}です。`,
-      romaji: `${capitalize(demo.romaji)} wa ${item.romaji} desu.`,
-      pt: `${capitalize(demo.pt)}: ${item.pt}.`
-    };
-  }
-
-  function currentSceneRelation() {
-    const item = currentItem();
-    const target = state.selectedPrediction;
-    const policy = window.MiraRecognitionPolicy;
-    if (!item || !target?.bbox || !policy?.inferSceneRelation) return null;
-
-    const others = state.lastPredictions.filter(p => {
-      if (!p?.bbox || !JAPANESE_DB[p.class]) return false;
-      if (target._deep && state.rawDetectorKey && p.class === state.rawDetectorKey) return false;
-      return bboxIoU(p.bbox, target.bbox) < 0.72;
-    });
-    const found = policy.inferSceneRelation(target, others);
-    if (!found || !JAPANESE_DB[found.other.class]) return null;
-
-    const other = JAPANESE_DB[found.other.class];
-    const relationMap = {
-      on: { jp: '上', romaji: 'ue', pt: 'em cima de' },
-      above: { jp: '上', romaji: 'ue', pt: 'acima de' },
-      below: { jp: '下', romaji: 'shita', pt: 'abaixo de' },
-      inside: { jp: '中', romaji: 'naka', pt: 'dentro de' },
-      left: { jp: '左', romaji: 'hidari', pt: 'à esquerda de' },
-      right: { jp: '右', romaji: 'migi', pt: 'à direita de' }
-    };
-    const rel = relationMap[found.relation];
-    if (!rel) return null;
-    const verb = item.animate ? 'います' : 'あります';
-    const verbRomaji = item.animate ? 'imasu' : 'arimasu';
-    return {
-      jp: `${item.jp}は${other.jp}の${rel.jp}に${verb}。`,
-      romaji: `${capitalize(item.romaji)} wa ${other.romaji} no ${rel.romaji} ni ${verbRomaji}.`,
-      pt: `${capitalize(item.pt)} está ${rel.pt} ${other.pt}.`
-    };
-  }
-
-  function currentQuizQuestion() {
-    const item = currentItem();
-    if (!item) return null;
-    if (state.selectedKey === 'person') {
-      return { jp: '何が見えますか？', romaji: 'Nani ga miemasu ka?', pt: 'O que você vê?' };
-    }
-    const demo = DEMONSTRATIVES[state.demonstrative];
-    return {
-      jp: `${demo.thing}は何ですか？`,
-      romaji: `${capitalize(demo.romaji)} wa nan desu ka?`,
-      pt: `O que é ${demo.pt}?`
-    };
-  }
-
-  function renderLesson() {
-    const item = currentItem();
-    if (!item) return;
-    const sentence = currentSentence();
-    const immersion = effectiveImmersionLevel(state.selectedKey);
-
-    els.jpWord.textContent = item.jp;
-    els.kana.textContent = item.kana;
-    els.romaji.textContent = item.romaji;
-    els.translation.textContent = item.pt;
-
-    const inQuiz = state.mode === 'quiz';
-    els.quizPanel.classList.toggle('hidden', !inQuiz);
-    els.jpWord.classList.toggle('hidden', inQuiz && !state.quizRevealed);
-    els.kana.classList.toggle('hidden', inQuiz && !state.quizRevealed);
-    els.romaji.classList.toggle('hidden', (inQuiz && !state.quizRevealed) || immersion >= 3);
-    els.speakWord.classList.toggle('hidden', inQuiz && !state.quizRevealed);
-    els.sentenceJp.parentElement.classList.toggle('hidden', inQuiz && !state.quizRevealed);
-
-    if (inQuiz) {
-      const question = currentQuizQuestion();
-      els.quizQuestion.textContent = question.jp;
-      els.reveal.textContent = state.quizRevealed ? 'Resposta revelada' : 'Revelar resposta';
-      els.reveal.disabled = state.quizRevealed;
-    }
-
-    els.sentenceJp.textContent = sentence.jp;
-    els.sentenceRomaji.textContent = sentence.romaji;
-    els.sentencePt.textContent = sentence.pt;
-
-    els.translation.classList.toggle('hidden', (inQuiz && !state.quizRevealed) || immersion >= 2);
-    els.sentenceRomaji.classList.toggle('hidden', immersion >= 3);
-    els.sentencePt.classList.toggle('hidden', immersion >= 2);
-
-    const actionCount = item.actions?.length || 1;
-    els.nextAction.classList.toggle('hidden', state.mode !== 'actions' || actionCount <= 1);
-
-    renderRecognitionState();
-    renderProgress();
-  }
-
-  function renderRecognitionState() {
-    if (!state.selectedKey) return;
-    const r = state.recognition;
-    let label = 'Reconhecimento estável';
-    if (r.kind === 'checking') label = 'Checando visão…';
-    if (r.kind === 'tentative') label = 'Talvez seja';
-    if (r.kind === 'manual') label = 'Escolhido por você';
-    if (r.kind === 'memory') label = 'Lembrança local';
-    if (r.kind === 'confirmed') label = 'Confirmado por você';
-    if (r.kind === 'verifier') label = 'Segunda checagem';
-    if (r.kind === 'deep') label = 'Visão detalhada';
-
-    if (state.diagnostics) {
-      const detector = Number.isFinite(r.detectorScore) ? ` · det. ${Math.round(r.detectorScore * 100)}%` : '';
-      const verifier = Number.isFinite(r.verifierScore) ? ` · 2ª ${Math.round(r.verifierScore * 100)}%` : '';
-      const deep = Number.isFinite(r.deepScore) ? ` · ampla ${Math.round(r.deepScore * 100)}%` : '';
-      label += `${detector}${verifier}${deep}`;
-    }
-
-    els.recognitionState.textContent = label;
-    els.recognitionState.classList.toggle('tentative', r.kind === 'tentative' || r.kind === 'checking');
-    els.recognitionState.classList.toggle('deep', r.kind === 'deep');
-
-    const uncertain = r.kind === 'tentative' || r.kind === 'checking';
-    els.tentativePanel.classList.toggle('hidden', !uncertain);
-    els.tentativeReason.textContent = r.reason || 'A leitura ainda não está segura.';
-    els.confirm.disabled = r.kind === 'checking';
-
-    if (state.diagnostics && r.kind !== 'checking') {
-      const extra = [];
-      if (r.verifierLabel) extra.push(`rápida: ${r.verifierLabel}`);
-      if (r.deepLabel) extra.push(`ampla: ${r.deepLabel}`);
-      if (extra.length) els.tentativeReason.textContent = `${r.reason} · ${extra.join(' · ')}`;
-    }
-  }
-
-  function renderProgress() {
-    const score = state.familiarity[state.selectedKey] || 0;
-    const level = effectiveImmersionLevel(state.selectedKey);
-    if (state.immersionSetting === 'auto') {
-      let next = 'nível máximo';
-      if (level === 1) next = `${Math.max(0, 3 - score)} interações para ocultar português`;
-      if (level === 2) next = `${Math.max(0, 8 - score)} interações para ocultar rōmaji`;
-      els.progressHint.textContent = `Imersão progressiva · nível ${level}/3 · ${score} interações intencionais · ${next}.`;
-    } else {
-      els.progressHint.textContent = `Imersão fixa · nível ${level}/3.`;
-    }
-  }
-
-  function effectiveImmersionLevel(key) {
-    if (state.immersionSetting !== 'auto') {
-      const level = Number(state.immersionSetting);
-      return [1, 2, 3].includes(level) ? level : 1;
-    }
-    const score = state.familiarity[key] || 0;
-    if (score >= 8) return 3;
-    if (score >= 3) return 2;
-    return 1;
-  }
-
-  function markFamiliar(key, amount) {
-    if (!key) return;
-    state.familiarity[key] = Math.min(50, (state.familiarity[key] || 0) + amount);
-    localStorage.setItem('mn-familiarity', JSON.stringify(state.familiarity));
-    renderLesson();
-  }
-
-  function setMode(mode) {
-    if (!MODE_META[mode]) return;
-    state.mode = mode;
-    state.actionIndex = 0;
-    state.quizRevealed = false;
-    document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-    updateStudyButton();
-    renderLesson();
-  }
-
-  function updateStudyButton() {
-    const meta = MODE_META[state.mode];
-    els.studyModeIcon.textContent = meta.icon;
-    els.studyModeLabel.textContent = meta.label;
-  }
-
-  function toggleLessonDetails() {
-    state.detailsOpen = !state.detailsOpen;
-    els.lessonCard.classList.toggle('expanded', state.detailsOpen);
-    els.expandLesson.setAttribute('aria-expanded', String(state.detailsOpen));
-    els.lessonDetails.setAttribute('aria-hidden', String(!state.detailsOpen));
-  }
-
-  function setFrozen(value) {
-    state.frozen = Boolean(value);
-    els.freeze.classList.toggle('active', state.frozen);
-    els.freeze.textContent = state.frozen ? '✓ Travado' : '⌾ Travar';
-    if (state.frozen) showToast('Objeto travado.');
-  }
-
-  function openCorrection() {
-    if (!state.selectedKey) return;
-    state.preCorrectionFrozen = state.frozen;
-    setFrozen(true);
-    els.correctionSearch.value = '';
-    renderCorrectionSuggestion();
-    renderCorrectionList();
-    safeShowModal(els.correctionDialog);
-  }
-
-  function restoreFreezeAfterCorrection() {
-    setFrozen(state.preCorrectionFrozen);
-  }
-
-  function renderCorrectionSuggestion() {
-    els.correctionSuggestion.replaceChildren();
-    const alt = state.verifierAlternative;
-    if (!alt || !JAPANESE_DB[alt.key] || alt.key === state.selectedKey) {
-      els.correctionSuggestion.classList.add('hidden');
-      return;
-    }
-    const item = JAPANESE_DB[alt.key];
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'suggestion-btn';
-    btn.textContent = `Sugestão visual: ${item.jp} · ${item.romaji} · ${item.pt}`;
-    btn.addEventListener('click', () => applyCorrection(alt.key));
-    els.correctionSuggestion.appendChild(btn);
-    els.correctionSuggestion.classList.remove('hidden');
-  }
-
-  function applyCorrection(key) {
-    if (!JAPANESE_DB[key]) return;
-    const remembered = rememberCorrection(key);
-    state.verifierAlternative = null;
-    selectObject(key, state.selectedPrediction, {
-      rawDetectorKey: state.rawDetectorKey,
-      recognition: {
-        kind: 'manual',
-        reason: remembered
-          ? 'Correção salva localmente para uma imagem visualmente parecida.'
-          : 'Escolhido manualmente por você.',
-        detectorScore: state.recognition.detectorScore,
-        verifierScore: null,
-        verifierLabel: '',
-        deepScore: null,
-        deepLabel: ''
-      }
-    });
-    markFamiliar(key, 2);
-    safeClose(els.correctionDialog);
-    showToast(remembered ? 'Corrigido e lembrado neste aparelho.' : 'Corrigido para esta seleção.');
-  }
-
-  function renderBoxes(predictions, target) {
-    els.boxes.replaceChildren();
-    if (!state.cameraStarted || !els.video.videoWidth) return;
-    const m = videoCoverMetrics();
-    let targetRendered = false;
-
-    predictions.forEach((p, index) => {
-      const isTarget = target && samePredictionIdentity(p, target);
-      if (!state.showBoxes && !isTarget) return;
-      appendDetectionBox(p, index, isTarget, m, false);
-      if (isTarget) targetRendered = true;
-    });
-
-    // Deep vision may identify a smaller object inside a broad COCO box (e.g.
-    // hand/shoe inside "person") or may work without any COCO box at all.
-    if (target?.bbox && JAPANESE_DB[target.class] && !targetRendered) {
-      appendDetectionBox(target, -1, true, m, Boolean(target._deep));
-    }
-  }
-
-  function appendDetectionBox(p, index, isTarget, m, synthetic) {
-    const item = JAPANESE_DB[p.class];
-    if (!item) return;
-    const [x, y, w, h] = p.bbox;
-    const box = document.createElement('button');
-    box.type = 'button';
-    box.className = 'detection-box';
-    if (isTarget) box.classList.add('selected');
-    if (synthetic) box.classList.add('deep-selected');
-    if (!state.showBoxes) box.classList.add('subtle');
-    box.style.left = `${m.ox + x * m.scale}px`;
-    box.style.top = `${m.oy + y * m.scale}px`;
-    box.style.width = `${w * m.scale}px`;
-    box.style.height = `${h * m.scale}px`;
-
-    const label = document.createElement('span');
-    label.textContent = state.diagnostics && Number.isFinite(p.score)
-      ? `${item.jp} · ${Math.round(p.score * 100)}%`
-      : item.jp;
-    box.appendChild(label);
-    box.setAttribute('aria-label', `Selecionar ${item.pt}`);
-
-    if (index >= 0 && !synthetic) {
-      box.dataset.index = String(index);
-      box.addEventListener('click', () => {
-        state.history.length = 0;
-        state.rawDetectorKey = p.class;
-        state.selectedPrediction = p;
-        selectObject(p.class, p, {
-          recognition: {
-            kind: 'tentative',
-            reason: 'Selecionado por toque. Vou conferir a região antes de tratar como certeza.',
-            detectorScore: p.score,
-            verifierScore: null,
-            verifierLabel: '',
-            deepScore: null,
-            deepLabel: ''
-          }
-        });
-        const sig = `${p.class}:${quantizedBoxSignature(p.bbox)}`;
-        state.lastVerifiedSignature = sig;
-        verifyStableTarget(p, p.score, sig);
-      });
-    } else {
-      box.tabIndex = -1;
-      box.setAttribute('aria-hidden', 'true');
-    }
-    els.boxes.appendChild(box);
-  }
-
-  function renderVocabList() {
-    renderVocabularyInto(els.vocabList, els.vocabSearch.value || '', (key) => {
-      state.verificationToken += 1;
-      state.verifierAlternative = null;
-      state.currentCropHash = null;
-      state.rawDetectorKey = null;
-      selectObject(key, null, {
-        recognition: { kind: 'manual', reason: 'Escolhido no vocabulário.', detectorScore: null, verifierScore: null, verifierLabel: '', deepScore: null, deepLabel: '' }
-      });
-      safeClose(els.vocabDialog);
-      setFrozen(true);
-      setStatus(`Vocabulário manual · ${JAPANESE_DB[key].jp}`);
-      markFamiliar(key, 1);
-    });
-  }
-
-  function renderCorrectionList() {
-    renderVocabularyInto(els.correctionList, els.correctionSearch.value || '', applyCorrection);
-  }
-
-  function renderVocabularyInto(container, rawQuery, onChoose) {
-    const query = normalize(rawQuery);
-    const entries = Object.entries(JAPANESE_DB)
-      .filter(([key, item]) => {
-        if (!query) return true;
-        return [key, item.jp, item.kana, item.romaji, item.pt, ...(item.aliases || [])].some(v => normalize(v).includes(query));
-      })
-      .sort((a, b) => a[1].pt.localeCompare(b[1].pt, 'pt-BR'));
-
-    container.replaceChildren();
-    entries.forEach(([key, item]) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'vocab-item';
-      btn.innerHTML = '<span class="main"><span class="jp"></span><span class="sub"></span></span><span class="pt"></span>';
-      btn.querySelector('.jp').textContent = item.jp;
-      btn.querySelector('.sub').textContent = `${item.kana} · ${item.romaji}`;
-      btn.querySelector('.pt').textContent = item.pt;
-      btn.addEventListener('click', () => onChoose(key));
-      container.appendChild(btn);
-    });
-  }
-
-  function crosshairPointInVideo() {
-    const metrics = videoCoverMetrics();
-    const stageRect = els.stage.getBoundingClientRect();
-    const targetEl = document.querySelector('.crosshair-wrap');
-    const targetRect = targetEl.getBoundingClientRect();
-    let cx = targetRect.left + targetRect.width / 2 - stageRect.left;
-    const cy = targetRect.top + targetRect.height / 2 - stageRect.top;
-
-    if (state.facingMode === 'user') cx = metrics.cw - cx;
-
-    return {
-      x: (cx - metrics.ox) / metrics.scale,
-      y: (cy - metrics.oy) / metrics.scale
-    };
-  }
-
-  function videoCoverMetrics() {
-    const cw = els.stage.clientWidth;
-    const ch = els.stage.clientHeight;
-    const vw = els.video.videoWidth || 1;
-    const vh = els.video.videoHeight || 1;
-    const scale = Math.max(cw / vw, ch / vh);
-    const rw = vw * scale;
-    const rh = vh * scale;
-    return { cw, ch, vw, vh, scale, ox: (cw - rw) / 2, oy: (ch - rh) / 2 };
-  }
-
-  function pointInBox(x, y, bbox) {
-    return x >= bbox[0] && x <= bbox[0] + bbox[2] && y >= bbox[1] && y <= bbox[1] + bbox[3];
-  }
-
-  function distanceToBox(x, y, bbox) {
-    const dx = Math.max(bbox[0] - x, 0, x - (bbox[0] + bbox[2]));
-    const dy = Math.max(bbox[1] - y, 0, y - (bbox[1] + bbox[3]));
-    return Math.hypot(dx, dy);
-  }
-
-  function scoreTarget(prediction, x, y) {
-    const [bx, by, bw, bh] = prediction.bbox;
-    const cx = bx + bw / 2;
-    const cy = by + bh / 2;
-    const diagonal = Math.hypot(els.video.videoWidth || 1, els.video.videoHeight || 1);
-    const centerPenalty = Math.hypot(cx - x, cy - y) / Math.max(1, diagonal);
-    const areaBonus = Math.min(0.08, (bw * bh) / Math.max(1, els.video.videoWidth * els.video.videoHeight) * 0.18);
-    return prediction.score + areaBonus - centerPenalty * 0.18;
-  }
-
-  function quantizedBoxSignature(bbox) {
-    const vw = els.video.videoWidth || 1;
-    const vh = els.video.videoHeight || 1;
-    const cx = bbox[0] + bbox[2] / 2;
-    const cy = bbox[1] + bbox[3] / 2;
-    const qx = Math.round((cx / vw) * 5);
-    const qy = Math.round((cy / vh) * 5);
-    const qw = Math.round((bbox[2] / vw) * 5);
-    const qh = Math.round((bbox[3] / vh) * 5);
-    return `${qx},${qy},${qw},${qh}`;
-  }
-
-  function samePredictionIdentity(a, b) {
-    if (!a || !b || a.class !== b.class) return false;
-    const acx = a.bbox[0] + a.bbox[2] / 2;
-    const acy = a.bbox[1] + a.bbox[3] / 2;
-    const bcx = b.bbox[0] + b.bbox[2] / 2;
-    const bcy = b.bbox[1] + b.bbox[3] / 2;
-    const scale = Math.max(40, Math.min(a.bbox[2] + a.bbox[3], b.bbox[2] + b.bbox[3]) / 4);
-    return Math.hypot(acx - bcx, acy - bcy) <= scale;
-  }
-
-  function bboxIoU(a, b) {
-    if (!a || !b) return 0;
-    const x1 = Math.max(a[0], b[0]);
-    const y1 = Math.max(a[1], b[1]);
-    const x2 = Math.min(a[0] + a[2], b[0] + b[2]);
-    const y2 = Math.min(a[1] + a[3], b[1] + b[3]);
-    const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
-    const union = Math.max(1, a[2] * a[3] + b[2] * b[3] - inter);
-    return inter / union;
-  }
-
-  function showEmptyState(title, subtitle) {
-    els.emptyHint.querySelector('strong').textContent = title;
-    els.emptyHint.querySelector('span').textContent = subtitle;
-    els.emptyHint.classList.remove('hidden');
-  }
-
-  function restoreControls() {
-    const immersionValues = ['auto', '1', '2', '3'];
-    if (!immersionValues.includes(state.immersionSetting)) state.immersionSetting = 'auto';
-    els.immersion.value = state.immersionSetting;
-    if (!['eco', 'balanced', 'accuracy'].includes(state.performanceMode)) state.performanceMode = 'balanced';
-    els.performanceMode.value = state.performanceMode;
-    els.confidence.value = String(clamp(state.minScore, 0.35, 0.80));
-    state.minScore = Number(els.confidence.value);
-    els.confidenceValue.value = `${Math.round(state.minScore * 100)}%`;
-    els.deepVision.checked = state.deepVisionEnabled;
-    els.showBoxes.checked = state.showBoxes;
-    els.diagnostics.checked = state.diagnostics;
-  }
-
-  function updateMemoryControls() {
-    if (els.correctionCount) els.correctionCount.textContent = String(state.corrections.length);
-    if (els.clearCorrections) els.clearCorrections.disabled = state.corrections.length === 0;
-  }
-
-  function updateDemoButtons() {
-    els.demoControl.querySelectorAll('[data-demo]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.demo === state.demonstrative);
-    });
-  }
-
-  function normalize(value) {
-    return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  }
-
-  function speak(text) {
-    if (!('speechSynthesis' in window)) {
-      showToast('Síntese de voz não disponível neste navegador.');
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ja-JP';
-    utterance.rate = 0.88;
-    const voices = window.speechSynthesis.getVoices();
-    const jaVoice = voices.find(v => /^ja(-|_)/i.test(v.lang));
-    if (jaVoice) utterance.voice = jaVoice;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function setStatus(text) {
-    els.status.textContent = text;
-  }
-
-  function showToast(message, ms = 2400) {
-    clearTimeout(state.toastTimer);
-    els.toast.textContent = message;
-    els.toast.classList.add('show');
-    state.toastTimer = setTimeout(() => els.toast.classList.remove('show'), ms);
-  }
-
-  function safeShowModal(dialog) {
-    if (!dialog?.open && typeof dialog?.showModal === 'function') dialog.showModal();
-  }
-
-  function safeClose(dialog) {
-    if (dialog?.open && typeof dialog?.close === 'function') dialog.close();
-  }
-
-  function finiteOr(value, fallback) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : fallback;
-  }
-
-  function readJson(key, fallback) {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(key));
-      return parsed ?? fallback;
-    } catch (_) {
-      return fallback;
-    }
-  }
-
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-  }
+    const stable=sample.motion<profile().motion&&sample.sharpness>.025;
+    state.focus.stable=stable?state.focus.stable+1:0;
+    setPhase(state.focus.stable?'focusing':'observing');
+    if(state.focus.stable>=profile().required&&!state.analyzing&&!state.verifying&&Date.now()-state.focus.lastAnalysisAt>450){requestAnalysis(false)}
+  }
+
+  function sampleFocus(){
+    const box=focusBox(profile().deepRatio);drawVideoBoxToCanvas(box,els.focus);const ctx=els.focus.getContext('2d',{willReadFrequently:true});const {data,width,height}=ctx.getImageData(0,0,els.focus.width,els.focus.height);const pixels=[];let sharp=0, count=0;
+    for(let y=0;y<height;y+=4){for(let x=0;x<width;x+=4){const i=(y*width+x)*4;const lum=(data[i]*.299+data[i+1]*.587+data[i+2]*.114)/255;pixels.push(lum);if(x+4<width){const j=(y*width+x+4)*4;const lum2=(data[j]*.299+data[j+1]*.587+data[j+2]*.114)/255;sharp+=Math.abs(lum-lum2);count++}}}
+    let motion=1;if(state.focus.prevPixels&&state.focus.prevPixels.length===pixels.length){let sum=0;for(let i=0;i<pixels.length;i++)sum+=Math.abs(pixels[i]-state.focus.prevPixels[i]);motion=sum/pixels.length}state.focus.prevPixels=pixels;return{motion,sharpness:count?sharp/count:0,hash:computeDHash(els.focus)}
+  }
+
+  async function requestAnalysis(manual){
+    if(!state.cameraStarted){if(manual)showToast('Abra a câmera primeiro.');return}if(!state.detector){if(manual)showToast('Detector ainda está carregando.');return}if(state.analyzing||state.verifying)return;
+    state.analyzing=true;state.focus.lastAnalysisAt=Date.now();setPhase('analyzing');setStatus('Analisando o foco…');const token=++state.analysisToken;const started=performance.now();recordHeavy();
+    try{
+      const roi=focusBox(profile().detectRatio);drawVideoBoxToCanvas(roi,els.detect);const local=await state.detector.detect(els.detect,10,state.minScore);if(token!==state.analysisToken)return;
+      state.lastPredictions=local.filter(p=>JAPANESE_DB[p.class]).map(p=>mapPredictionFromCanvas(p,roi,els.detect));
+      const target=chooseTarget(state.lastPredictions);
+      if(target){await acceptDetectorTarget(target,token)}else{await deepAnalyzeFocus(token,manual)}
+      renderBoxes();
+    }catch(e){console.error(e);setStatus('Falha temporária na análise');if(manual)showToast('A análise falhou; tente novamente.')}finally{const ms=Math.max(1,performance.now()-started);state.telemetry.lastHeavyMs=ms;state.telemetry.avgHeavyMs=state.telemetry.avgHeavyMs?state.telemetry.avgHeavyMs*.78+ms*.22:ms;state.analyzing=false;if(state.selectedKey)setPhase('tracking');else setPhase('observing');updateTelemetry()}
+  }
+
+  async function acceptDetectorTarget(prediction,token){
+    state.rawDetectorKey=prediction.class;state.selectedPrediction=prediction;const hash=computeCurrentFocusHash();state.currentCropHash=hash;const remembered=findCorrection(hash,prediction.class);if(remembered){selectObject(remembered.key,{...prediction,class:remembered.key,_memory:true},{kind:'memory',reason:'Lembrança visual local aplicada.',detectorScore:prediction.score});return}
+    const high=window.MiraRecognitionPolicy?.isHighConfusion?.(prediction.class);const needsVerify=state.deepVisionEnabled&&(high||prediction.score<.78);
+    if(!needsVerify){selectObject(prediction.class,prediction,{kind:'stable',reason:'Objeto focal reconhecido com boa consistência.',detectorScore:prediction.score});return}
+    state.verifying=true;setStatus('Conferindo o objeto…');
+    try{
+      const verifier=await ensureVerifier();if(token!==state.analysisToken)return;if(!verifier){selectObject(prediction.class,prediction,{kind:prediction.score>=.86&&!high?'stable':'tentative',reason:'Verificador indisponível; confirme se necessário.',detectorScore:prediction.score});return}
+      const snapshot=cropFromBbox(prediction.class==='person'?focusBox(.28):prediction.bbox,224);recordHeavy();const classes=await verifier.classify(snapshot,6);if(token!==state.analysisToken)return;const mapped=bestMapped(classes);const same=mapped?.key===prediction.class;const strongAlt=mapped&&mapped.key!==prediction.class&&mapped.probability>=.16;
+      if(same&&mapped.probability>=.08)selectObject(prediction.class,prediction,{kind:'stable',reason:'Detector e verificador são compatíveis.',detectorScore:prediction.score,verifierScore:mapped.probability,verifierLabel:mapped.className});
+      else if(strongAlt&&(high||prediction.score<.82))selectObject(mapped.key,{...prediction,class:mapped.key,_deep:true},{kind:'tentative',reason:`O verificador sugere “${JAPANESE_DB[mapped.key].pt}”. Confirme antes de memorizar.`,detectorScore:prediction.score,verifierScore:mapped.probability,verifierLabel:mapped.className});
+      else selectObject(prediction.class,prediction,{kind:(prediction.score>=.88&&!high)?'stable':'tentative',reason:high?'Esta categoria costuma confundir objetos pequenos. Confirme ou corrija.':'A leitura ainda é incerta.',detectorScore:prediction.score,verifierScore:mapped?.probability||classes[0]?.probability||null,verifierLabel:mapped?.className||classes[0]?.className||''});
+    }finally{state.verifying=false}
+  }
+
+  async function deepAnalyzeFocus(token,manual){
+    if(!state.deepVisionEnabled){showEmptyState('Ainda não reconheci','Toque em “Vocabulário manual” para escolher a palavra.');return}
+    const verifier=await ensureVerifier();if(token!==state.analysisToken||!verifier){showEmptyState('Ainda não reconheci','A visão detalhada não ficou disponível. Use o vocabulário manual.');return}
+    const box=focusBox(profile().deepRatio);const snapshot=cropFromBbox(box,224);state.currentCropHash=computeDHash(snapshot);const mem=findCorrection(state.currentCropHash,'__focus__');if(mem){selectObject(mem.key,{class:mem.key,score:1,bbox:box,_memory:true},{kind:'memory',reason:'Lembrança visual local aplicada.'});return}
+    recordHeavy();const classes=await verifier.classify(snapshot,10);if(token!==state.analysisToken)return;const mapped=bestMapped(classes);if(mapped&&((mapped.rank<=2&&mapped.probability>=.075)||mapped.probability>=.16)){const stable=mapped.probability>=.20||mapped.rank===0&&mapped.probability>=.11;selectObject(mapped.key,{class:mapped.key,score:mapped.probability,bbox:box,_deep:true},{kind:stable?'deep':'tentative',reason:stable?'A região focal foi identificada pela visão detalhada.':'Tenho uma hipótese para a região focal; confirme se estiver correta.',verifierScore:mapped.probability,verifierLabel:mapped.className});return}
+    showEmptyState('Não tenho certeza','Aproxime-se, toque no objeto ou use o vocabulário manual.');setStatus('Objeto fora das classes reconhecíveis');if(manual)showToast('Sem confiança suficiente. Use Vocabulário/Correção para ensinar este objeto.')
+  }
+
+  function bestMapped(classes){return classes.map((r,rank)=>({...r,rank,key:mapVerifierLabel(r.className)})).filter(r=>r.key&&JAPANESE_DB[r.key]).sort((a,b)=>b.probability-a.probability)[0]||null}
+  function mapVerifierLabel(label){for(const [rx,key] of VERIFIER_RULES)if(rx.test(label))return key;return null}
+
+  function selectObject(key,prediction,recognition){
+    if(!JAPANESE_DB[key])return;const changed=state.selectedKey!==key;state.selectedKey=key;state.selectedPrediction=prediction||state.selectedPrediction;state.recognition={detectorScore:null,verifierScore:null,verifierLabel:'',...recognition};state.focus.trackingHash=(state.cameraStarted&&els.video.videoWidth)?computeCurrentFocusHash():null;state.focus.moving=0;setPhase('tracking');hideEmpty();els.lessonCard.classList.remove('hidden');if(changed){registerEncounter(key);state.actionIndex=0;state.revealPhase=0;clearTimeout(state.revealTimer);state.revealTimer=setTimeout(()=>{state.revealPhase=1;renderLesson()},850)}renderLesson();setStatus(state.recognition.kind==='tentative'?'Talvez seja · confirme':'Foco reconhecido · rastreamento leve')
+  }
+
+  function clearSelection(){state.selectedKey=null;state.selectedPrediction=null;state.rawDetectorKey=null;state.recognition={kind:'idle',reason:'',detectorScore:null,verifierScore:null,verifierLabel:''};state.focus.trackingHash=null;clearTimeout(state.revealTimer);els.lessonCard.classList.add('hidden');renderBoxes()}
+  function resetObservation(status='Mire em algo'){clearSelection();state.focus.phase='observing';state.focus.stable=0;state.focus.moving=0;state.focus.prevPixels=null;state.focus.lastHash=null;state.analysisToken++;setPhase('observing');showEmptyState('Mire em algo','Quando a região estabilizar, eu analiso uma vez e paro.');setStatus(status)}
+  function setPhase(phase){state.focus.phase=phase;els.holdRing.className=`hold-ring ${phase}`}
+
+  function currentItem(){return state.selectedKey?JAPANESE_DB[state.selectedKey]:null}
+  function currentProgress(){return state.selectedKey?(state.progress[state.selectedKey]||{seen:0,mastery:0,lastSeen:0}):{seen:0,mastery:0}}
+  function currentSceneSentence(){
+    if(!state.selectedPrediction||!window.MiraRecognitionPolicy?.inferSceneRelation)return null;const rel=window.MiraRecognitionPolicy.inferSceneRelation(state.selectedPrediction,state.lastPredictions.filter(p=>p!==state.selectedPrediction));if(!rel)return null;const a=currentItem(),b=JAPANESE_DB[rel.other.class];if(!a||!b)return null;
+    const forms={on:['上','ue','em cima de'],above:['上','ue','acima de'],below:['下','shita','embaixo de'],inside:['中','naka','dentro de'],left:['左','hidari','à esquerda de'],right:['右','migi','à direita de']};const f=forms[rel.relation];if(!f)return null;const exist=a.animate?{jp:'います',romaji:'imasu'}:{jp:'あります',romaji:'arimasu'};return{jp:`${a.jp}は${b.jp}の${f[0]}に${exist.jp}。`,romaji:`${cap(a.romaji)} wa ${b.romaji} no ${f[1]} ni ${exist.romaji}.`,pt:`${cap(a.pt)} está ${f[2]} ${b.pt}.`,kind:'scene'}
+  }
+  function currentSentence(){const item=currentItem();if(!item)return null;const p=currentProgress();const scene=currentSceneSentence();return MiraLearning.chooseMoment({key:state.selectedKey,item,mode:state.mode==='immersion'?'daily':state.mode,level:p.mastery,actionIndex:state.actionIndex,demo:state.demonstrative,scene})}
+
+  function renderLesson(){
+    const item=currentItem();if(!item)return;const p=currentProgress();const help=MiraLearning.helpLevel(p,state.immersionSetting);const sentence=currentSentence();const quiz=state.mode==='quiz'&&!state.quizRevealed;
+    els.jpWord.textContent=quiz?'何？':item.jp;els.kana.textContent=quiz?'なに':item.kana;els.romaji.textContent=quiz?'nani':item.romaji;els.translationInline.textContent=help===1&&!quiz?item.pt:'';
+    els.kana.classList.toggle('hidden',state.mode==='immersion'&&p.mastery>=3);els.romaji.classList.toggle('hidden',help>=3||state.mode==='immersion');els.translationInline.classList.toggle('hidden',help>=2||state.mode==='immersion'||quiz);
+    const shownSentence=quiz?{jp:'これは何ですか？',romaji:'Kore wa nan desu ka?',pt:'O que é isto?'}:sentence;els.sentenceJp.textContent=shownSentence?.jp||'';els.sentenceRomaji.textContent=shownSentence?.romaji||'';els.sentencePt.textContent=quiz?`Resposta: ${item.jp} (${item.pt})`:shownSentence?.pt||'';els.sentenceRomaji.classList.toggle('hidden',help>=3||state.mode==='immersion');els.sentenceCompact.classList.toggle('concealed',state.revealPhase===0&&state.mode!=='quiz');
+    renderRecognitionState();renderBreakdown(shownSentence,item);renderProgress();renderScene();els.freeze.textContent=state.frozen?'▶ Destravar':'⌾ Travar';els.tentativePanel.classList.toggle('hidden',state.recognition.kind!=='tentative');els.tentativeReason.textContent=state.recognition.reason||'Confirme ou corrija.'
+  }
+  function renderRecognitionState(){const r=state.recognition;const labels={stable:'Reconhecido',deep:'Visão detalhada',memory:'Lembrança local',tentative:'Talvez seja'};let t=labels[r.kind]||'Reconhecido';if(state.diagnostics){const bits=[];if(Number.isFinite(r.detectorScore))bits.push(`D ${Math.round(r.detectorScore*100)}%`);if(Number.isFinite(r.verifierScore))bits.push(`V ${Math.round(r.verifierScore*100)}%`);if(bits.length)t+=` · ${bits.join(' / ')}`}els.recognitionState.textContent=t;els.recognitionState.classList.toggle('tentative',r.kind==='tentative')}
+  function renderBreakdown(sentence,item){els.breakdownTokens.replaceChildren();if(!sentence)return;const tokens=MiraLearning.tokenize(sentence,item);tokens.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='token-chip';b.innerHTML='<strong></strong><small></small>';b.querySelector('strong').textContent=t.text;b.querySelector('small').textContent=t.reading||t.meaning;b.addEventListener('click',()=>{els.breakdownTokens.querySelectorAll('.token-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');els.tokenExplain.textContent=`${t.meaning}${t.role?` — ${t.role}`:''}`});els.breakdownTokens.appendChild(b)});els.patternBox.textContent=`Padrão: ${MiraLearning.patternFor(tokens)}`}
+  function renderProgress(){const p=currentProgress();els.progressHint.textContent=`Esta palavra: ${p.seen} encontro(s) · domínio ${p.mastery}/5. ${p.mastery<2?'Ainda mantenho mais ajuda.':p.mastery<4?'Português começa a desaparecer.':'Japonês em primeiro plano.'}`}
+  function renderScene(){const s=currentSceneSentence();els.sceneLine.classList.toggle('hidden',!s);if(s)els.sceneLine.textContent=`🧭 Contexto: ${s.jp} · ${s.pt}`}
+
+  function registerEncounter(key){const now=Date.now();const p=state.progress[key]||{seen:0,mastery:0,lastSeen:0};if(now-p.lastSeen>45000)p.seen++;p.lastSeen=now;state.progress[key]=p;saveProgress()}
+  function adjustMastery(delta){if(!state.selectedKey)return;const p=currentProgress();p.mastery=clamp((p.mastery||0)+delta,0,5);p.lastSeen=Date.now();state.progress[state.selectedKey]=p;saveProgress();state.quizRevealed=true;renderLesson();showToast(delta>0?`Domínio de ${currentItem().jp}: ${p.mastery}/5`:'Ajuda aumentada para esta palavra.')}
+  function saveProgress(){localStorage.setItem('mn-v04-progress',JSON.stringify(state.progress))}
+
+  function showIntent(intent){const item=currentItem();if(!item)return;const s=MiraLearning.intentSentence(intent,item,state.demonstrative);els.intentAnswer.classList.remove('hidden');els.intentAnswer.innerHTML='<strong></strong><span class="r"></span><span class="p"></span>';els.intentAnswer.querySelector('strong').textContent=s.jp;els.intentAnswer.querySelector('.r').textContent=s.romaji;els.intentAnswer.querySelector('.p').textContent=s.pt;speak(s.jp)}
+  function togglePanel(panel){panel.classList.toggle('hidden')}
+  function toggleDetails(){state.detailsOpen=!state.detailsOpen;state.quizRevealed=state.quizRevealed||state.mode==='quiz';els.lessonCard.classList.toggle('expanded',state.detailsOpen);els.expandLesson.setAttribute('aria-expanded',String(state.detailsOpen));els.lessonDetails.setAttribute('aria-hidden',String(!state.detailsOpen));if(state.detailsOpen){state.revealPhase=1;renderLesson()}}
+  function setFrozen(v){state.frozen=v;renderLesson();showToast(v?'Objeto travado; análise automática pausada.':'Rastreamento retomado.')}
+
+  function confirmSelection(){if(!state.selectedKey)return;const saved=rememberCorrection(state.selectedKey);state.recognition.kind='stable';state.recognition.reason=saved?'Confirmado e lembrado localmente.':'Confirmado por você.';adjustMastery(1);renderLesson()}
+  function openCorrection(){if(!state.selectedKey&&!state.cameraStarted)return;state.frozen=true;els.correctionSearch.value='';renderVocabulary(els.correctionList,'',applyCorrection);safeShowModal(els.correctionDialog);setTimeout(()=>els.correctionSearch.focus(),80)}
+  function applyCorrection(key){const item=JAPANESE_DB[key];if(!item)return;const box=state.selectedPrediction?.bbox||focusBox(profile().deepRatio);state.rawDetectorKey=state.rawDetectorKey||'__focus__';selectObject(key,{class:key,score:1,bbox:box,_manual:true},{kind:'stable',reason:'Corrigido por você.'});rememberCorrection(key);safeClose(els.correctionDialog);state.frozen=false;adjustMastery(1);showToast(`Aprendido: ${item.jp}`)}
+  function rememberCorrection(key){const hash=state.currentCropHash||computeCurrentFocusHash();if(!hash)return false;const raw=state.rawDetectorKey||'__focus__';state.corrections=state.corrections.filter(c=>!(c.hash===hash&&c.raw===raw));state.corrections.unshift({hash,raw,key,at:Date.now()});state.corrections=state.corrections.slice(0,80);localStorage.setItem('mn-corrections',JSON.stringify(state.corrections));updateMemoryControls();return true}
+  function findCorrection(hash,raw){if(!hash)return null;return state.corrections.map(c=>({...c,d:hammingHex(hash,c.hash)})).filter(c=>(c.raw===raw||c.raw==='__focus__'||raw==='__focus__')&&c.d<=8).sort((a,b)=>a.d-b.d)[0]||null}
+
+  function selectManual(key){const item=JAPANESE_DB[key];if(!item)return;state.rawDetectorKey='__manual__';state.currentCropHash=null;selectObject(key,{class:key,score:1,bbox:focusBox(.32),_manual:true},{kind:'stable',reason:'Escolhido no vocabulário.'});safeClose(els.vocabDialog);state.frozen=true;showToast(`${item.jp} · modo manual travado`)}
+  function renderVocabulary(container,query,onChoose){const q=normalize(query);const entries=Object.entries(JAPANESE_DB).filter(([k,i])=>!q||[k,i.jp,i.kana,i.romaji,i.pt,...(i.aliases||[])].some(v=>normalize(v).includes(q))).sort((a,b)=>a[1].pt.localeCompare(b[1].pt,'pt-BR'));container.replaceChildren();entries.forEach(([k,i])=>{const b=document.createElement('button');b.type='button';b.className='vocab-item';b.innerHTML='<span><span class="jp"></span><span class="sub"></span></span><span class="pt"></span>';b.querySelector('.jp').textContent=i.jp;b.querySelector('.sub').textContent=`${i.kana} · ${i.romaji}`;b.querySelector('.pt').textContent=i.pt;b.addEventListener('click',()=>onChoose(k));container.appendChild(b)})}
+
+  function handleStageTap(e){if(!state.cameraStarted)return;if(e.target.closest('button,section.lesson-card,header,.study-pill,.load-chip'))return;const r=els.stage.getBoundingClientRect();state.focus.nx=clamp((e.clientX-r.left)/r.width,.08,.92);state.focus.ny=clamp((e.clientY-r.top)/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.')}
+  function positionCrosshair(){els.crosshairWrap.style.left=`${state.focus.nx*100}%`;els.crosshairWrap.style.top=`${state.focus.ny*100}%`}
+  function focusPointInVideo(){const m=videoCoverMetrics();let sx=state.focus.nx*m.cw,sy=state.focus.ny*m.ch;if(state.facingMode==='user')sx=m.cw-sx;return{x:(sx-m.ox)/m.scale,y:(sy-m.oy)/m.scale}}
+  function focusBox(ratio){const p=focusPointInVideo(),vw=els.video.videoWidth||1,vh=els.video.videoHeight||1;return window.MiraRecognitionPolicy?.makeCrosshairBox?.(vw,vh,p,ratio)||[Math.max(0,p.x-100),Math.max(0,p.y-100),200,200]}
+  function drawVideoBoxToCanvas(box,canvas){const [x,y,w,h]=box;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(els.video,x,y,w,h,0,0,canvas.width,canvas.height)}
+  function cropFromBbox(box,size=224){const c=document.createElement('canvas');c.width=size;c.height=size;const [x,y,w,h]=box;c.getContext('2d',{willReadFrequently:true}).drawImage(els.video,x,y,w,h,0,0,size,size);return c}
+  function computeCurrentFocusHash(){drawVideoBoxToCanvas(focusBox(profile().deepRatio),els.focus);return computeDHash(els.focus)}
+  function mapPredictionFromCanvas(p,roi,canvas){const [rx,ry,rw,rh]=roi;return{...p,bbox:[rx+p.bbox[0]*rw/canvas.width,ry+p.bbox[1]*rh/canvas.height,p.bbox[2]*rw/canvas.width,p.bbox[3]*rh/canvas.height]}}
+  function chooseTarget(preds){if(!preds.length)return null;const p=focusPointInVideo();const inside=preds.filter(x=>pointInBox(p.x,p.y,x.bbox));if(inside.length)return inside.sort((a,b)=>scoreTarget(b,p)-scoreTarget(a,p))[0];const max=Math.min(els.video.videoWidth,els.video.videoHeight)*.12;return preds.map(x=>({x,d:distanceToBox(p.x,p.y,x.bbox)})).filter(v=>v.d<max).sort((a,b)=>a.d-b.d||b.x.score-a.x.score)[0]?.x||null}
+  function scoreTarget(p,f){const [x,y,w,h]=p.bbox,cx=x+w/2,cy=y+h/2,diag=Math.hypot(els.video.videoWidth||1,els.video.videoHeight||1);return p.score-Math.hypot(cx-f.x,cy-f.y)/diag*.22+Math.min(.07,w*h/Math.max(1,els.video.videoWidth*els.video.videoHeight)*.16)}
+  function renderBoxes(){els.boxes.replaceChildren();if(!state.showBoxes&&!state.selectedPrediction)return;const m=videoCoverMetrics();const list=state.showBoxes?state.lastPredictions:(state.selectedPrediction?[state.selectedPrediction]:[]);list.forEach(p=>{if(!p?.bbox||!JAPANESE_DB[p.class])return;const [x,y,w,h]=p.bbox,b=document.createElement('div');b.className='detection-box'+(p===state.selectedPrediction||p.class===state.selectedKey?' selected':'');b.style.left=`${m.ox+x*m.scale}px`;b.style.top=`${m.oy+y*m.scale}px`;b.style.width=`${w*m.scale}px`;b.style.height=`${h*m.scale}px`;const s=document.createElement('span');s.textContent=state.diagnostics?`${JAPANESE_DB[p.class].jp} ${Math.round((p.score||0)*100)}%`:JAPANESE_DB[p.class].jp;b.appendChild(s);els.boxes.appendChild(b)})}
+  function videoCoverMetrics(){const cw=els.stage.clientWidth,ch=els.stage.clientHeight,vw=els.video.videoWidth||1,vh=els.video.videoHeight||1,scale=Math.max(cw/vw,ch/vh);return{cw,ch,vw,vh,scale,ox:(cw-vw*scale)/2,oy:(ch-vh*scale)/2}}
+  function pointInBox(x,y,b){return x>=b[0]&&x<=b[0]+b[2]&&y>=b[1]&&y<=b[1]+b[3]}
+  function distanceToBox(x,y,b){const dx=Math.max(b[0]-x,0,x-(b[0]+b[2])),dy=Math.max(b[1]-y,0,y-(b[1]+b[3]));return Math.hypot(dx,dy)}
+
+  function computeDHash(canvas){const tmp=document.createElement('canvas');tmp.width=9;tmp.height=8;const ctx=tmp.getContext('2d',{willReadFrequently:true});ctx.drawImage(canvas,0,0,9,8);const d=ctx.getImageData(0,0,9,8).data;let bits='',hex='';for(let y=0;y<8;y++)for(let x=0;x<8;x++){const i=(y*9+x)*4,j=(y*9+x+1)*4;const a=d[i]+d[i+1]+d[i+2],b=d[j]+d[j+1]+d[j+2];bits+=a>b?'1':'0'}for(let i=0;i<bits.length;i+=4)hex+=parseInt(bits.slice(i,i+4),2).toString(16);return hex}
+  function hammingHex(a,b){if(!a||!b||a.length!==b.length)return 99;let n=0;for(let i=0;i<a.length;i++){let x=parseInt(a[i],16)^parseInt(b[i],16);while(x){n+=x&1;x>>=1}}return n}
+
+  function setMode(mode){state.mode=MODE_META[mode]?mode:'daily';localStorage.setItem('mn-v04-mode',state.mode);state.quizRevealed=false;updateStudyButton();renderLesson()}
+  function updateStudyButton(){const m=MODE_META[state.mode]||MODE_META.daily;els.studyModeIcon.textContent=m.icon;els.studyModeLabel.textContent=m.label;document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode))}
+  function updateDemoButtons(){els.demoControl.querySelectorAll('[data-demo]').forEach(b=>b.classList.toggle('active',b.dataset.demo===state.demonstrative))}
+  function restoreControls(){if(!['eco','balanced','accuracy'].includes(state.performanceMode))state.performanceMode='balanced';if(!['auto','1','2','3'].includes(state.immersionSetting))state.immersionSetting='auto';els.performanceMode.value=state.performanceMode;els.immersion.value=state.immersionSetting;els.confidence.value=String(clamp(state.minScore,.35,.80));state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;els.deepVision.checked=state.deepVisionEnabled;els.showBoxes.checked=state.showBoxes;els.diagnostics.checked=state.diagnostics}
+  function updateMemoryControls(){els.correctionCount.textContent=String(state.corrections.length);els.clearCorrections.disabled=!state.corrections.length}
+
+  function recordHeavy(){const now=Date.now();state.telemetry.heavyTotal++;state.telemetry.heavyTimes.push(now);state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000)}
+  function updateTelemetry(){const now=Date.now();state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000);const perMin=state.telemetry.heavyTimes.length;const load=perMin<=5?'baixa':perMin<=12?'moderada':'alta';els.loadText.textContent=load;els.loadChip.classList.toggle('hidden',!state.diagnostics);els.telemetryBox.innerHTML=`<strong>Telemetria local</strong><br>Estado: ${state.focus.phase} · inferências pesadas/min: ${perMin} · média: ${Math.round(state.telemetry.avgHeavyMs||0)} ms · amostras leves: ${state.telemetry.focusSamples}.<br><small>“Carga” é uma estimativa pela frequência de inferência; não mede a temperatura física do aparelho.</small>`}
+
+  function showEmptyState(title,subtitle){els.emptyHint.querySelector('strong').textContent=title;els.emptyHint.querySelector('span').textContent=subtitle;els.emptyHint.classList.remove('hidden')}
+  function hideEmpty(){els.emptyHint.classList.add('hidden')}
+  function setStatus(t){els.status.textContent=t}
+  function speak(t){if(!('speechSynthesis'in window)){showToast('Síntese de voz indisponível.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.86;const v=speechSynthesis.getVoices().find(v=>/^ja(-|_)/i.test(v.lang));if(v)u.voice=v;speechSynthesis.speak(u)}
+  function showToast(msg,ms=2400){clearTimeout(state.toastTimer);els.toast.textContent=msg;els.toast.classList.add('show');state.toastTimer=setTimeout(()=>els.toast.classList.remove('show'),ms)}
+  function safeShowModal(d){if(d&&!d.open&&typeof d.showModal==='function')d.showModal()}
+  function safeClose(d){if(d?.open&&typeof d.close==='function')d.close()}
+  function normalize(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
+  function finiteOr(v,f){const n=Number(v);return Number.isFinite(n)?n:f}
+  function readJson(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch(_){return f}}
+  function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+  function cap(s){return s?String(s).charAt(0).toUpperCase()+String(s).slice(1):''}
+
+  window.MiraDebug = { state, profile, selectObject, currentSentence, renderLesson, resetObservation, requestAnalysis, sampleFocus, computeDHash, hammingHex };
 })();

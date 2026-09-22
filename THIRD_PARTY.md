@@ -1,14 +1,9 @@
-# Dependências externas — Mira Nihongo V0.3
+# Third-party components
 
-A versão usa bibliotecas carregadas por CDN:
+Mira Nihongo V0.4 carrega no navegador:
 
-- TensorFlow.js `4.22.0`
-- `@tensorflow-models/coco-ssd` `2.2.3`
-- `@tensorflow-models/mobilenet` `2.1.1`
+- TensorFlow.js 4.22.0 — Apache-2.0
+- TensorFlow.js COCO-SSD 2.2.3 — Apache-2.0
+- TensorFlow.js MobileNet 2.1.1 — Apache-2.0
 
-COCO-SSD é usado como detector principal com base `lite_mobilenet_v2`.
-MobileNet V2 (`version: 2`, `alpha: 0.50`) é usado como classificador detalhado sob demanda.
-
-A V0.3 não usa Transformers.js nem MobileCLIP.
-
-As licenças e avisos de cada dependência/modelo continuam sendo regidos pelos respectivos projetos upstream.
+Os arquivos são referenciados por CDN no `index.html`. Consulte os respectivos projetos para textos completos das licenças e avisos.

@@ -1,197 +1,152 @@
-# Mira Nihongo V0.3 — Relatório de reavaliação
+# Mira Nihongo V0.4 — Relatório de reavaliação
 
-## Regra permanente de qualidade
+## Escopo
+A V0.4 foi tratada como uma atualização estrutural com quatro metas separadas:
 
-Cada atualização segue o ciclo:
+1. **Reconhecimento:** priorizar o objeto na região da mira e reduzir falsos positivos apresentados como certeza.
+2. **Desempenho:** eliminar inferência visual pesada contínua enquanto um objeto permanece estável.
+3. **Experiência de câmera:** tornar o fluxo semelhante a foco de câmera: mirar, estabilizar, identificar e acompanhar.
+4. **Pedagogia:** transformar cada objeto em uma sequência contextual de nome → frase → ação → estrutura → produção ativa.
 
-**implementar → testar → reavaliar criticamente → corrigir → testar novamente**
-
-até atingir **10/10 dentro do escopo de código da versão**.
-
-Essa nota não substitui teste físico. Precisão real da câmera, aquecimento, bateria e velocidade no Android são validados separadamente.
-
----
-
-## Ponto de partida — teste físico da V0.2
-
-Os testes no celular mostraram os gargalos que orientaram esta versão:
-
-1. tampinha de garrafa → `frisbee`;
-2. mão → `person`;
-3. sapato/perna → `person`;
-4. caixa de papelão → classe incompatível em alguns enquadramentos;
-5. ventilador sem detecção;
-6. Visão ampla/MobileCLIP falhando ao carregar;
-7. vocabulário manual ainda pequeno;
-8. processamento pesado e aquecimento perceptível do aparelho.
-
-A V0.3 foi desenhada especificamente para reduzir esses problemas, em vez de apenas acrescentar mais uma camada de IA.
+A nota 10/10 abaixo se refere ao **escopo de código e testes automatizáveis**. Temperatura física, consumo real de bateria, latência de câmera/modelos e qualidade de reconhecimento no aparelho continuam exigindo validação física no Android.
 
 ---
 
-## Ciclo 1 — Arquitetura e carga térmica: 8,7/10 → 10/10 no escopo de código
+## Ciclo 1 — arquitetura Focus-First
+**Nota inicial: 9,4/10**
 
-### Problema
-
-A V0.2 podia manter COCO-SSD, MobileNet e uma terceira pilha Transformers/MobileCLIP no fluxo. Para um PWA usado continuamente com a câmera aberta, isso aumentava download, memória e inferência sem resolver de forma garantida os falsos positivos observados fisicamente.
+A primeira proposta ainda poderia ser interpretada como apenas reduzir a frequência do detector. Isso não atendia totalmente à ideia de identificar primeiro a região em foco e só depois classificar.
 
 ### Correções
+- criado observador visual leve da região da mira;
+- amostragem usa canvas de 72×72, movimento e contraste/nitidez aproximada;
+- detector pesado só é chamado depois de estabilidade suficiente;
+- COCO-SSD recebe um **recorte focal** em vez do vídeo inteiro no fluxo principal;
+- depois do reconhecimento, o estado muda para `tracking` e o detector deixa de rodar continuamente;
+- nova inferência acontece após mudança visual relevante, toque em outro ponto ou análise manual;
+- tentativa opcional de `focusMode: continuous` quando a câmera/navegador oferecem essa capacidade;
+- toque no vídeo reposiciona o ponto de foco do Mira.
 
-- removida da produção a terceira camada MobileCLIP/Transformers.js;
-- mantidos apenas **COCO-SSD Lite + MobileNet V2 alpha 0.50**;
-- MobileNet deixou de ser pré-carregado ao abrir a câmera;
-- classificador detalhado carrega somente quando uma leitura realmente precisa dele;
-- COCO limitado a no máximo 10 caixas por análise;
-- resolução/fps controlados por perfil;
-- detector reduz automaticamente o ritmo quando o alvo já está estável;
-- intervalo passa a considerar a latência observada no aparelho;
-- falhas consecutivas da visão detalhada aumentam o intervalo antes da próxima tentativa;
-- inferência é pausada quando a página deixa de estar visível.
-
-### Perfis implementados
-
-- **Econômico:** 480×360, alvo 15 fps, detector ~950 ms;
-- **Equilibrado:** 640×480, alvo 18 fps, detector ~650 ms;
-- **Precisão:** 960×540, alvo 24 fps, detector ~450 ms.
-
-### QA de agendamento simulado
-
-Em aproximadamente 5,7 s de leitura estável:
-
-- Econômico: 5 chamadas do detector;
-- Equilibrado: 6 chamadas;
-- Precisão: 7 chamadas;
-- classificador detalhado: 1 chamada em cada perfil.
-
-Em alvo desconhecido durante ~10,5 s no modo Equilibrado:
-
-- detector: 15 chamadas;
-- visão detalhada: 2 chamadas graças ao backoff;
-- erros JavaScript: 0.
-
-Isso valida a lógica de redução de trabalho. **Não mede temperatura real do telefone.**
-
-Resultado do ciclo: **10/10 para arquitetura/agendamento de código**.
+**Reavaliação: 10/10 para a arquitetura definida.**
 
 ---
 
-## Ciclo 2 — Falsos positivos físicos: 8,9/10 → 10/10 no escopo da política
+## Ciclo 2 — pedagogia cotidiana
+**Nota inicial: 9,7/10**
 
-A V0.3 ganhou regras de confirmação específicas para as regressões reais:
+O conteúdo estava completo, mas precisava provar que não viraria um painel cheio de controles e que o nível individual de uma palavra realmente mudaria aquilo que o usuário vê.
 
-- `frisbee` → candidato `bottle_cap` / `キャップ`;
-- `skateboard` → candidato `utility_knife` / `カッターナイフ`;
-- `suitcase`/`oven` → candidato `cardboard_box` / `段ボール箱`;
-- `person` → possibilidade de `shoe` / `靴` quando o classificador detalhado sustenta a leitura;
-- ausência de caixa COCO → análise da região central para `fan` / `扇風機` e outros candidatos;
-- `person` amplo próximo à mira pode sugerir `hand` / `手`, mas permanece **tentativo**, nunca certeza automática somente pela geometria.
+### Correções / validações
+- criado **Cartão Vivo**: palavra primeiro, frase depois de permanência curta;
+- breakdown fica recolhido e só abre sob demanda;
+- “Quero dizer algo” fica recolhido e oferece seis intenções contextuais;
+- progresso é salvo por palavra em vez de depender apenas de um nível global;
+- `✓ Já sei` aumenta domínio e reduz ajuda daquela palavra;
+- `↺ Quero revisar` reduz domínio e devolve ajuda;
+- progressão pedagógica: identificação → ação 1 → ação 2 → localização/contexto → variações;
+- modos Cotidiano, Ações, Local, Cena, Quiz e Imersão passam pelo mesmo motor pedagógico;
+- breakdown identifica partículas como `を` e `に` e apresenta um padrão reutilizável.
 
-Também foram adicionados grupos de alta confusão para evitar que uma confiança alta do detector básico seja apresentada como certeza linguística quando a classe é conhecida por errar em objetos menores.
-
-### Testes unitários da política
-
-**7/7 passaram:**
-
-- `frisbee` é alta confusão;
-- `person` é alta confusão;
-- `car` não é tratado como alta confusão sem motivo;
-- garrafa sobre mesa → `上`;
-- garrafa dentro de caixa compatível → `中`;
-- mesa não é tratada automaticamente como recipiente;
-- caixa da mira permanece dentro dos limites da imagem.
-
-Resultado do ciclo: **10/10 no escopo de decisão/regras**.
+**Reavaliação: 10/10 para o motor pedagógico da V0.4.**
 
 ---
 
-## Ciclo 3 — Integração completa das regressões: 9,5/10 → 10/10
+## Ciclo 3 — revisão linguística
+**Nota inicial: 9,9/10**
 
-Foi executado Chromium headless em viewport **412×915**, com câmera e saídas dos modelos simuladas de forma controlada. O objetivo é validar o encadeamento detector → verificador → política → interface, e não fingir que o mock mede acurácia real dos modelos.
+A revisão encontrou dois problemas que impediam nota máxima:
 
-**7/7 cenários passaram, com 0 erros JavaScript:**
+- localização de seres vivos não deve usar `あります`;
+- `人` precisava continuar recebendo tratamento especial para evitar ensinar pessoas como objetos demonstrados por `これ/それ/あれ`.
 
-1. tampinha → `キャップ` — Reconhecimento estável;
-2. estilete → `カッターナイフ` — Reconhecimento estável;
-3. mão → `手` — `Talvez seja`, preservando incerteza;
-4. sapato → `靴` — Reconhecimento estável;
-5. caixa de papelão → `段ボール箱` — Reconhecimento estável;
-6. ventilador sem caixa COCO → `扇風機` via visão detalhada;
-7. Cena → `ボトルはテーブルの上にあります。`.
+### Correções
+- seres vivos usam `います` nas estruturas de existência/localização;
+- coisas usam `あります`;
+- `人` usa `この人 / その人 / あの人` na identificação;
+- breakdown foi atualizado para reconhecer demonstrativos e interrogativos adicionais.
 
-O cartão de lição estável ficou em aproximadamente **180 px** numa tela simulada de 412×915.
-
-Resultado: **10/10 no escopo de integração da V0.3**.
+**Reavaliação: 10/10 para as estruturas linguísticas cobertas.**
 
 ---
 
-## Ciclo 4 — Vocabulário: 9,0/10 → 10/10 no escopo da versão
+## Ciclo 4 — regressões, vocabulário e robustez
 
-O banco passou de **108 para 202 entradas**.
+### Testes automatizados
+Foram executadas **169 verificações automatizadas**, com resultado:
 
-Além das 80 classes base do detector, foram adicionados objetos cotidianos relevantes para casa, cozinha, ferramentas, escritório, eletrônicos, roupas e pequenos itens, incluindo tampinha, tampa, prato, copo, caneca, pote, lata, frigideira, chaleira, lixeira, balde, toalha, espelho, interruptor, tomada, lâmpada, ar-condicionado, chave inglesa, furadeira, serrote, parafuso, porca, arruela, trena, grampeador, borracha, calculadora, impressora, fones, power bank, pendrive, tripé, roteador, roupas e carteira.
+**169/169 PASS**
 
-A busca manual agora também considera **aliases**, permitindo encontrar uma entrada por nomes alternativos em português.
-
-Importante: ter a palavra no banco não significa que o detector básico reconheça visualmente aquela classe. O banco ampliado também sustenta `Corrigir`, `Aprender isto`, memória local e busca manual.
-
-Resultado: **10/10 no escopo de vocabulário definido para a V0.3**.
-
----
-
-## QA estático final
-
-**193/193 verificações passaram.**
-
-Incluem:
-
-- sintaxe JavaScript válida;
-- IDs usados pelo JS presentes no HTML e sem duplicatas;
-- manifesto PWA válido;
-- versão visual V0.3;
-- perfis Econômico/Equilibrado/Precisão presentes;
-- nenhuma dependência de produção em MobileCLIP/Transformers/open-vocab-loader;
-- dependências de visão fixadas por versão;
-- limites de câmera e detector presentes;
-- desaceleração após estabilização;
-- adaptação por latência;
-- backoff do classificador detalhado;
+Cobertura incluída:
+- arquivos obrigatórios e referências de assets;
+- todos os IDs DOM usados pelo JavaScript;
+- sintaxe de `app.js`, `japanese-data.js`, `recognition-policy.js`, `learning-engine.js` e `sw.js`;
+- JSON do manifesto;
+- cache PWA V0.4;
+- marcadores estruturais do pipeline Focus-First;
+- ausência do scheduler contínuo de detecção usado nas versões anteriores;
+- toque para mover foco;
 - carregamento sob demanda do verificador;
-- regressões tampinha/estilete/sapato/caixa/mão/ventilador presentes;
-- busca por aliases ativa;
-- 202 entradas no banco;
-- 80/80 classes do detector base com vocabulário japonês;
-- modo Cena e filtros semânticos preservados;
-- Service Worker atualizado para `mira-nihongo-v0-3-r1`.
+- canvas leve de foco;
+- telemetria local e aviso de que ela não mede temperatura física;
+- controles pedagógicos da V0.4;
+- armazenamento de progresso por palavra;
+- base de vocabulário com **290 entradas**;
+- campos obrigatórios em todas as entradas e ações;
+- palavras de regressão: tampinha, estilete, ventilador, mão, sapato e caixa;
+- frases e breakdown para níveis de domínio 0–5;
+- seis intenções de produção ativa;
+- progressão automática de ajuda por palavra;
+- classes de alta confusão (`frisbee`, `skateboard`, `person`, `suitcase`, `oven`, `bottle`, `knife`);
+- relações de cena `on` e `inside`.
+
+### Smoke test do aplicativo
+O `app.js` também foi inicializado em um DOM simulado com TensorFlow/COCO/MobileNet mockados. Foram validados:
+- inicialização do aplicativo;
+- seleção de `ボトル`;
+- renderização de frase;
+- renderização nos seis modos;
+- renderização em níveis de domínio 0–5.
+
+Resultado: **PASS**.
 
 ---
 
-## O que ainda exige validação física
+## Regressões derivadas dos testes físicos anteriores
 
-O ambiente de QA não substitui o Xiaomi/Android real. Portanto, ainda precisam ser medidos no aparelho:
+Os erros observados anteriormente não podem ser “garantidos como resolvidos” sem repetir as fotos no aparelho, mas a V0.4 os trata de forma explícita:
 
-- temperatura após 5, 10 e 20 minutos;
-- consumo de bateria;
-- fps perceptivo e fluidez;
-- tempo do primeiro carregamento do MobileNet;
-- acurácia real da tampinha, estilete, mão, sapato, caixa e ventilador;
-- comportamento em iluminação ruim, fundo complexo e objetos parcialmente visíveis;
-- diferenças entre Econômico, Equilibrado e Precisão.
-
-Esses itens **não são declarados 10/10 antes do teste físico**.
+- **tampinha → frisbee:** `frisbee` permanece classe de alta confusão e exige verificação/confirmação; `キャップ` existe no vocabulário e no mapeamento do verificador.
+- **estilete → skateboard:** `skateboard` é alta confusão e o verificador contém mapeamento para `カッターナイフ` quando o classificador reconhece classes compatíveis.
+- **mão / sapato → pessoa:** `person` exige verificação e a análise focal reduz a chance de a caixa corporal ampla dominar a mira.
+- **caixa → mala/forno:** `suitcase` e `oven` permanecem classes de alta confusão; caixa/papelão fazem parte do vocabulário e das alternativas.
+- **ventilador sem reconhecimento:** `扇風機` permanece disponível para MobileNet e correção manual, mas ainda depende do que os modelos conseguem distinguir na imagem real.
 
 ---
 
-## Resultado final da V0.3
+## Desempenho
+A V0.4 foi desenhada para executar muito menos inferência pesada que a V0.3:
 
-**10/10 para o escopo de código da V0.3.**
+- amostragem contínua: canvas 72×72;
+- inferência COCO: somente quando a região estabiliza/muda;
+- MobileNet: somente quando necessário;
+- estado `tracking`: nenhuma classificação contínua;
+- perfis Econômico, Equilibrado e Precisão alteram resolução, FPS e frequência da amostragem leve;
+- telemetria mostra inferências pesadas por minuto e tempo médio.
 
-Base objetiva:
+Isso valida a **estratégia de redução de carga**, não a temperatura final do aparelho. O teste térmico de 10 minutos no telefone continua sendo critério físico obrigatório.
 
-- **193/193** verificações estáticas;
-- **7/7** testes unitários da política;
-- **7/7** cenários completos de integração;
-- **0** erros JavaScript nos cenários de navegador;
-- backoff e perfis de desempenho validados com contagem de chamadas simulada;
-- vocabulário expandido para **202 entradas**.
+---
 
-Próximo passo: publicar no mesmo GitHub Pages e repetir os casos físicos, especialmente tampinha, mão, sapato, ventilador, caixa e estilete, comparando também aquecimento nos três perfis.
+# Resultado final
+
+**V0.4: 10/10 no escopo de código definido.**
+
+O que ainda precisa ser validado fisicamente:
+- tempo real de `mirar → reconhecer` no aparelho;
+- aquecimento após ~10 minutos no modo Equilibrado;
+- comportamento do autofocus exposto pelo navegador do aparelho;
+- regressões reais com tampinha, estilete, mão, sapato, caixa e ventilador;
+- legibilidade do Cartão Vivo durante uso cotidiano;
+- qualidade das relações de Cena com câmera real.
+
+Esses itens não são contabilizados como “já aprovados” apenas porque o código passou nos testes.

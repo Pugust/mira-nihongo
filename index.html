@@ -4,96 +4,99 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090b0f" />
-  <meta name="description" content="Aprenda japonês apontando a câmera para objetos do mundo real." />
+  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com reconhecimento Focus-First e aprendizagem contextual." />
   <title>Mira Nihongo</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="css/app.css" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
-  </head>
+</head>
 <body>
-  <main id="app" class="app" aria-live="polite">
-    <section class="camera-stage" id="cameraStage">
+  <main id="app" class="app">
+    <section class="camera-stage" id="cameraStage" aria-live="polite">
       <video id="camera" playsinline muted></video>
+      <canvas id="focusCanvas" class="hidden" width="72" height="72"></canvas>
+      <canvas id="detectCanvas" class="hidden" width="416" height="416"></canvas>
       <canvas id="cropCanvas" class="hidden" width="224" height="224"></canvas>
       <div id="boxesLayer" class="boxes-layer" aria-hidden="true"></div>
 
       <header class="topbar glass">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">◎</span>
-          <div class="brand-copy">
-            <strong>Mira Nihongo <em>0.3</em></strong>
-            <small id="statusText">Preparando reconhecimento…</small>
-          </div>
+          <div class="brand-copy"><strong>Mira Nihongo <em>0.4</em></strong><small id="statusText">Preparando visão…</small></div>
         </div>
         <div class="top-actions">
-          <button id="flipCameraBtn" class="icon-btn" type="button" title="Trocar câmera" aria-label="Trocar câmera">↻</button>
-          <button id="settingsBtn" class="icon-btn" type="button" title="Configurações" aria-label="Configurações">⚙</button>
+          <button id="flipCameraBtn" class="icon-btn" type="button" aria-label="Trocar câmera">↻</button>
+          <button id="settingsBtn" class="icon-btn" type="button" aria-label="Configurações">⚙</button>
         </div>
       </header>
 
-      <button id="studyBtn" class="study-pill glass" type="button" aria-label="Abrir modos de estudo">
-        <span id="studyModeIcon">👁</span><span id="studyModeLabel">Explorar</span><span aria-hidden="true">⌄</span>
-      </button>
+      <button id="studyBtn" class="study-pill glass" type="button"><span id="studyModeIcon">👁</span><span id="studyModeLabel">Cotidiano</span><span>⌄</span></button>
+      <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
 
-      <div class="crosshair-wrap" aria-hidden="true">
-        <div id="crosshair" class="crosshair"><span></span></div>
-        <div id="holdRing" class="hold-ring"></div>
+      <div id="crosshairWrap" class="crosshair-wrap" aria-hidden="true">
+        <div class="crosshair"><span></span></div><div id="holdRing" class="hold-ring"></div>
       </div>
 
       <div id="emptyHint" class="empty-hint glass">
-        <strong>Aponte para algo</strong>
-        <span>A mira escolhe o objeto. A visão detalhada entra apenas quando a leitura precisa de ajuda.</span>
-        <button id="scanBtn" class="scan-btn" type="button">◎ Analisar mira</button>
+        <strong>Mire em algo</strong>
+        <span>Quando a região entrar em foco, eu analiso uma vez e paro.</span>
+        <button id="scanBtn" class="scan-btn" type="button">◎ Analisar agora</button>
       </div>
 
       <section id="lessonCard" class="lesson-card glass hidden" aria-label="Lição atual">
-        <button id="expandLessonBtn" class="drawer-handle" type="button" aria-expanded="false" aria-label="Expandir detalhes">
-          <span></span><span class="drawer-chevron">⌃</span>
-        </button>
-
+        <button id="expandLessonBtn" class="drawer-handle" type="button" aria-expanded="false"><span></span><span class="drawer-chevron">⌃</span></button>
         <div class="compact-lesson">
           <div class="object-row">
             <div class="word-stack">
-              <div class="recognition-state" id="recognitionState">Reconhecimento estável</div>
+              <div class="recognition-state" id="recognitionState">Reconhecido</div>
               <div class="jp-word" id="jpWord">—</div>
-              <div class="compact-reading"><span id="kanaText">—</span><span id="romajiText">—</span></div>
+              <div class="compact-reading" id="readingRow"><span id="kanaText">—</span><span id="romajiText">—</span><span id="translationInline">—</span></div>
             </div>
             <button id="speakWordBtn" class="speak-btn" type="button" aria-label="Ouvir palavra">🔊</button>
           </div>
-
-          <div class="sentence-compact">
+          <div id="sentenceCompact" class="sentence-compact reveal-later">
             <div id="sentenceJp" class="sentence-jp">—</div>
             <div id="sentenceRomaji" class="sentence-romaji">—</div>
           </div>
-
-          <div id="tentativePanel" class="tentative-panel hidden">
-            <p id="tentativeReason">A leitura ainda não está segura.</p>
-            <div class="tentative-actions">
-              <button id="confirmBtn" class="primary compact" type="button">✓ É isso</button>
-              <button id="correctBtn" class="soft-btn compact" type="button">✎ Corrigir</button>
-            </div>
-          </div>
+          <div id="tentativePanel" class="tentative-panel hidden"><p id="tentativeReason">Ainda não tenho certeza.</p><div class="tentative-actions"><button id="confirmBtn" class="primary compact" type="button">✓ É isso</button><button id="correctBtn" class="soft-btn compact" type="button">✎ Corrigir</button></div></div>
         </div>
 
         <div id="lessonDetails" class="lesson-details" aria-hidden="true">
-          <div id="translationText" class="translation">—</div>
-          <div class="sentence-box">
-            <div id="sentencePt" class="sentence-pt">—</div>
+          <div class="detail-head">
+            <div><small>Frase do momento</small><div id="sentencePt" class="sentence-pt">—</div></div>
+            <button id="speakSentenceBtn" class="soft-btn mini" type="button">🔊</button>
           </div>
 
-          <div id="quizPanel" class="quiz-panel hidden">
-            <div class="quiz-question" id="quizQuestion">これは何ですか？</div>
-            <div class="quiz-hint">Responda em voz alta antes de revelar.</div>
-            <button id="revealBtn" class="primary compact" type="button">Revelar resposta</button>
-          </div>
+          <section class="learning-section">
+            <button id="breakdownToggle" class="section-toggle" type="button"><span>🧩 Breakdown</span><small>Entender cada parte</small><b>⌄</b></button>
+            <div id="breakdownPanel" class="breakdown-panel hidden">
+              <div id="breakdownTokens" class="breakdown-tokens"></div>
+              <div id="tokenExplain" class="token-explain">Toque em uma parte para ver a função.</div>
+              <div id="patternBox" class="pattern-box"></div>
+            </div>
+          </section>
 
+          <section class="learning-section">
+            <button id="saySomethingToggle" class="section-toggle" type="button"><span>💭 Quero dizer algo</span><small>Produzir japonês com este objeto</small><b>⌄</b></button>
+            <div id="saySomethingPanel" class="say-panel hidden">
+              <div class="intent-grid" id="intentGrid">
+                <button data-intent="identify" type="button">O que é isto?</button><button data-intent="use" type="button">Estou usando</button>
+                <button data-intent="take" type="button">Vou pegar</button><button data-intent="place" type="button">Vou colocar</button>
+                <button data-intent="where" type="button">Onde está?</button><button data-intent="describe" type="button">Descrever</button>
+              </div>
+              <div id="intentAnswer" class="intent-answer hidden"></div>
+            </div>
+          </section>
+
+          <div id="sceneLine" class="scene-line hidden"></div>
           <div class="card-actions">
-            <button id="speakSentenceBtn" type="button" class="soft-btn">🔊 Frase</button>
-            <button id="nextActionBtn" type="button" class="soft-btn">↪ Outra ação</button>
+            <button id="knowBtn" type="button" class="soft-btn">✓ Já sei</button>
+            <button id="reviewBtn" type="button" class="soft-btn">↺ Quero revisar</button>
+            <button id="nextActionBtn" type="button" class="soft-btn">↪ Outra frase</button>
             <button id="freezeBtn" type="button" class="soft-btn">⌾ Travar</button>
-            <button id="learnThisBtn" type="button" class="soft-btn">✎ Aprender isto</button>
+            <button id="learnThisBtn" type="button" class="soft-btn">✎ Corrigir objeto</button>
           </div>
           <small id="progressHint" class="progress-hint"></small>
         </div>
@@ -103,141 +106,46 @@
     </section>
   </main>
 
-  <dialog id="studyDialog" class="sheet">
-    <form method="dialog" class="sheet-card compact-sheet">
-      <header>
-        <div><h2>Treino</h2><p>Troque o que o objeto ensina sem ocupar a câmera.</p></div>
-        <button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
-      </header>
-      <div class="mode-grid" role="tablist" aria-label="Modos de estudo">
-        <button class="mode-btn active" data-mode="explore" type="button"><span>👁</span><strong>Explorar</strong><small>Nome + frase</small></button>
-        <button class="mode-btn" data-mode="actions" type="button"><span>⚡</span><strong>Ações</strong><small>Verbos úteis</small></button>
-        <button class="mode-btn" data-mode="location" type="button"><span>📍</span><strong>Local</strong><small>ここ・そこ・あそこ</small></button>
-        <button class="mode-btn" data-mode="quiz" type="button"><span>🎯</span><strong>Quiz</strong><small>Lembre antes de ver</small></button>
-        <button class="mode-btn" data-mode="scene" type="button"><span>🧭</span><strong>Cena</strong><small>Relações reais</small></button>
-      </div>
-      <button id="vocabBtn" class="wide-soft" type="button">⌕ Abrir vocabulário manual</button>
-    </form>
-  </dialog>
+  <dialog id="studyDialog" class="sheet"><form method="dialog" class="sheet-card compact-sheet">
+    <header><div><h2>Como aprender agora?</h2><p>O modo Cotidiano exige o mínimo de atenção.</p></div><button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button></header>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="daily" type="button"><span>👁</span><strong>Cotidiano</strong><small>Nome → frase útil</small></button>
+      <button class="mode-btn" data-mode="actions" type="button"><span>⚡</span><strong>Ações</strong><small>Verbos do objeto</small></button>
+      <button class="mode-btn" data-mode="location" type="button"><span>📍</span><strong>Local</strong><small>ここ・そこ・あそこ</small></button>
+      <button class="mode-btn" data-mode="scene" type="button"><span>🧭</span><strong>Cena</strong><small>Relações reais</small></button>
+      <button class="mode-btn" data-mode="quiz" type="button"><span>🎯</span><strong>Quiz</strong><small>Tente antes de revelar</small></button>
+      <button class="mode-btn" data-mode="immersion" type="button"><span>◉</span><strong>Imersão</strong><small>Só o essencial</small></button>
+    </div>
+    <button id="vocabBtn" class="wide-soft" type="button">⌕ Vocabulário manual</button>
+  </form></dialog>
 
-  <dialog id="settingsDialog" class="sheet">
-    <form method="dialog" class="sheet-card">
-      <header>
-        <div><h2>Configurações</h2><p>Controle ajuda, reconhecimento e diagnóstico.</p></div>
-        <button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
-      </header>
+  <dialog id="settingsDialog" class="sheet"><form method="dialog" class="sheet-card">
+    <header><div><h2>Configurações</h2><p>Focus-First prioriza velocidade e menor aquecimento.</p></div><button class="icon-btn dark" value="cancel">×</button></header>
+    <label class="field"><span>Desempenho</span><select id="performanceMode"><option value="eco">Econômico</option><option value="balanced">Equilibrado — recomendado</option><option value="accuracy">Precisão</option></select><small>O detector pesado só roda quando a mira fica estável ou a imagem muda.</small></label>
+    <label class="field"><span>Ajuda visual</span><select id="immersionLevel"><option value="auto">Por palavra — recomendado</option><option value="1">Sempre completa</option><option value="2">Sem português</option><option value="3">Somente japonês + kana</option></select><small>No modo automático, cada palavra perde ajudas conforme você demonstra familiaridade.</small></label>
+    <fieldset><legend>Demonstrativo</legend><div class="segmented" id="demonstrativeControl"><button type="button" data-demo="kore" class="active">これ · comigo</button><button type="button" data-demo="sore">それ · com você</button><button type="button" data-demo="are">あれ · longe</button></div></fieldset>
+    <label class="field"><span>Confiança mínima</span><div class="range-row"><input id="confidenceRange" type="range" min="0.35" max="0.80" value="0.50" step="0.05" /><output id="confidenceValue">50%</output></div></label>
+    <label class="switch-row"><span><strong>Verificador detalhado</strong><small>MobileNet entra apenas em classes confusas ou quando o detector principal não consegue decidir.</small></span><input id="deepVisionToggle" type="checkbox" checked /></label>
+    <label class="switch-row"><span><strong>Mostrar caixas</strong><small>Útil para diagnóstico; desligado é mais limpo.</small></span><input id="showBoxesToggle" type="checkbox" /></label>
+    <label class="switch-row"><span><strong>Diagnóstico</strong><small>Mostra confiança e carga estimada.</small></span><input id="diagnosticsToggle" type="checkbox" /></label>
+    <div id="telemetryBox" class="telemetry-box"></div>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir progresso por palavra</button></div>
+    <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
+  </form></dialog>
 
-      <label class="field">
-        <span>Nível de imersão</span>
-        <select id="immersionLevel">
-          <option value="auto">Progressivo — recomendado</option>
-          <option value="1">1 — japonês + kana + rōmaji + português</option>
-          <option value="2">2 — japonês + kana + rōmaji</option>
-          <option value="3">3 — japonês + kana</option>
-        </select>
-        <small>No progressivo, português e rōmaji desaparecem conforme a palavra se torna familiar.</small>
-      </label>
+  <dialog id="vocabDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>Vocabulário</h2><p>Busca por português, japonês, rōmaji e aliases.</p></div><button class="icon-btn dark" value="cancel">×</button></header><input id="vocabSearch" class="search" type="search" placeholder="Buscar: tampinha, estilete, ventilador, chave..." autocomplete="off" /><div id="vocabList" class="vocab-list"></div></form></dialog>
 
-      <fieldset>
-        <legend>Distância / demonstrativo</legend>
-        <div class="segmented" id="demonstrativeControl">
-          <button type="button" data-demo="kore" class="active">これ · comigo</button>
-          <button type="button" data-demo="sore">それ · com você</button>
-          <button type="button" data-demo="are">あれ · longe</button>
-        </div>
-      </fieldset>
+  <dialog id="correctionDialog" class="sheet"><form method="dialog" class="sheet-card tall"><header><div><h2>O que é isto?</h2><p>Escolha a palavra certa; a correção pode ser lembrada localmente.</p></div><button id="cancelCorrectionBtn" class="icon-btn dark" value="cancel">×</button></header><input id="correctionSearch" class="search" type="search" placeholder="Ex.: tampinha, estilete, caixa..." autocomplete="off" /><div id="correctionList" class="vocab-list"></div></form></dialog>
 
-      <label class="field">
-        <span>Desempenho</span>
-        <select id="performanceMode">
-          <option value="eco">Econômico — menos aquecimento</option>
-          <option value="balanced">Equilibrado — recomendado</option>
-          <option value="accuracy">Precisão — analisa com mais frequência</option>
-        </select>
-        <small>Controla resolução da câmera e frequência da IA. O modo equilibrado reduz o ritmo quando a leitura já está estável.</small>
-      </label>
-
-      <label class="field">
-        <span>Sensibilidade mínima do detector</span>
-        <div class="range-row">
-          <input id="confidenceRange" type="range" min="0.35" max="0.80" value="0.50" step="0.05" />
-          <output id="confidenceValue">50%</output>
-        </div>
-      </label>
-
-      <label class="switch-row">
-        <span><strong>Visão detalhada</strong><small>Usa um classificador ImageNet leve somente quando o detector comum falha ou entra em uma classe propensa a confusão. Não fica rodando continuamente.</small></span>
-        <input id="deepVisionToggle" type="checkbox" checked />
-      </label>
-      <div id="deepVisionStatus" class="model-status">Visão detalhada: aguardando câmera</div>
-
-      <label class="switch-row">
-        <span><strong>Mostrar todas as caixas</strong><small>Desligado deixa apenas o alvo da mira destacado.</small></span>
-        <input id="showBoxesToggle" type="checkbox" />
-      </label>
-
-      <label class="switch-row">
-        <span><strong>Diagnóstico de confiança</strong><small>Mostra percentuais e detalhes dos dois modelos.</small></span>
-        <input id="diagnosticsToggle" type="checkbox" />
-      </label>
-
-      <div class="settings-actions">
-        <button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button>
-        <button id="resetProgressBtn" class="settings-btn" type="button">Redefinir progresso de imersão</button>
-      </div>
-
-      <section class="privacy-note">
-        <strong>Privacidade</strong>
-        <p>Os quadros são analisados no navegador. O app não contém código para enviar fotos da câmera a um servidor; apenas os arquivos dos modelos são baixados de CDNs.</p>
-      </section>
-    </form>
-  </dialog>
-
-  <dialog id="vocabDialog" class="sheet">
-    <form method="dialog" class="sheet-card tall">
-      <header>
-        <div><h2>Vocabulário</h2><p>Também inclui palavras que a câmera não detecta diretamente.</p></div>
-        <button class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
-      </header>
-      <input id="vocabSearch" class="search" type="search" placeholder="Buscar: estilete, caixa, cadeira, sumaho..." autocomplete="off" />
-      <div id="vocabList" class="vocab-list"></div>
-    </form>
-  </dialog>
-
-  <dialog id="correctionDialog" class="sheet">
-    <form method="dialog" class="sheet-card tall">
-      <header>
-        <div><h2>O que é isto?</h2><p>Escolha a palavra correta. O quadro fica travado enquanto você corrige.</p></div>
-        <button id="cancelCorrectionBtn" class="icon-btn dark" value="cancel" aria-label="Fechar">×</button>
-      </header>
-      <div id="correctionSuggestion" class="correction-suggestion hidden"></div>
-      <input id="correctionSearch" class="search" type="search" placeholder="Ex.: estilete, caixa, chave..." autocomplete="off" />
-      <div id="correctionList" class="vocab-list"></div>
-    </form>
-  </dialog>
-
-  <dialog id="onboardingDialog" class="onboarding">
-    <form method="dialog" class="onboarding-card">
-      <div class="onboarding-mark">◎</div>
-      <h1>Transforme o mundo em japonês</h1>
-      <p>A V0.3 usa detector rápido + uma visão detalhada sob demanda. A meta é reconhecer melhor sem manter vários modelos pesados ativos ao mesmo tempo.</p>
-      <ol>
-        <li><strong>Mire</strong> no objeto e espere a leitura estabilizar.</li>
-        <li>Se o detector comum falhar, a <strong>visão detalhada</strong> classifica apenas a região da mira.</li>
-        <li>Use <strong>Cena</strong> para praticar relações como 上・下・中・左・右 quando houver mais de um objeto.</li>
-      </ol>
-      <p class="small-note">O reconhecimento detalhado é carregado sob demanda e o app reduz automaticamente a frequência de inferência quando já encontrou um alvo estável.</p>
-      <button id="onboardingContinue" class="primary" value="default">Entendi</button>
-    </form>
-  </dialog>
+  <dialog id="onboardingDialog" class="onboarding"><form method="dialog" class="onboarding-card"><div class="onboarding-mark">◎</div><h1>Mire. Aprenda. Continue o seu dia.</h1><p>A V0.4 usa Focus-First: observa a região da mira com um processo barato, analisa quando ela estabiliza e depois para a inferência pesada enquanto o objeto continuar ali.</p><ol><li><strong>Mire</strong> no objeto — ou toque em outra região da câmera.</li><li>Veja primeiro só o essencial; permaneça olhando para receber uma frase útil.</li><li>Abra o cartão para breakdown, produção ativa e progresso individual da palavra.</li></ol><p class="small-note">A meta é ensinar o máximo exigindo o mínimo possível da sua atenção.</p><button id="onboardingContinue" class="primary" value="default">Entendi</button></form></dialog>
 
   <div id="toast" class="toast" role="status"></div>
-
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
   <script src="js/recognition-policy.js"></script>
   <script src="js/japanese-data.js"></script>
+  <script src="js/learning-engine.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

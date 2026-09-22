@@ -1,21 +1,30 @@
-# Changelog — Mira Nihongo V0.3
+# Mira Nihongo V0.4 — Focus & Immersion
 
-## V0.3
+## Reconhecimento / desempenho
+- Nova arquitetura **Focus-First**: amostragem leve de movimento/nitidez na região da mira antes de inferência pesada.
+- COCO-SSD recebe um **recorte focal**, não a cena inteira como fluxo principal.
+- Após reconhecer, entra em **rastreamento leve**; nova inferência ocorre apenas quando a região muda, quando o usuário move o foco ou pede análise.
+- Tentativa de ativar autofocus contínuo quando navegador/câmera expõem `focusMode`.
+- Toque na câmera move o ponto de foco visual.
+- MobileNet V2 é carregado sob demanda e usado em classes confusas ou quando COCO não resolve.
+- Telemetria local: inferências pesadas/minuto, tempo médio e estado do pipeline. Não é um termômetro físico.
 
-- Removida a terceira camada MobileCLIP/Transformers.js da V0.2.
-- Mantidos apenas COCO-SSD Lite + MobileNet V2 sob demanda.
-- Adicionados perfis Econômico, Equilibrado e Precisão.
-- Câmera padrão reduzida para 640×480 / 18 fps.
-- Detector passa a reduzir seu ritmo quando a leitura já está estável.
-- Intervalo adapta-se à latência observada no aparelho.
-- Número máximo de caixas COCO reduzido para 10.
-- Classificador detalhado deixou de ser pré-carregado na abertura da câmera.
-- Backoff progressivo quando a visão detalhada não consegue reconhecer um alvo.
-- `frisbee` entrou na lista de classes de alta confusão.
-- Adicionado reconhecimento/correção específica para `bottlecap` → `キャップ`.
-- Regressões físicas preservadas para estilete, caixa de papelão, sapato e ventilador.
-- `person` amplo passa a poder sugerir `手` como hipótese, mas nunca como certeza automática.
-- Banco ampliado de 108 para **202 entradas**.
-- Busca do vocabulário passou a considerar aliases.
-- Relações de cena preservadas e estendidas para novos recipientes/superfícies.
-- Service Worker atualizado para cache `mira-nihongo-v0-3-r1`.
+## Pedagogia
+- **Cartão Vivo**: nome aparece primeiro; a frase surge depois de uma curta permanência no objeto.
+- **Progresso individual por palavra** (0–5), substituindo a lógica de imersão puramente global.
+- `✓ Já sei` reduz ajuda daquela palavra; `↺ Quero revisar` aumenta ajuda.
+- Progressão: identificação → ação → segunda ação → localização/contexto → variações.
+- **Breakdown** tocável por blocos, com leitura, significado, função e padrão reutilizável.
+- **Quero dizer algo**: identificar, usar, pegar, colocar, perguntar onde está e descrever.
+- Cena mantém relações conservadoras `上・下・中・左・右` quando há evidência visual suficiente.
+- Pessoas/seres vivos usam `います`; objetos usam `あります`.
+- Tratamento especial para `人`, evitando usar `これ/それ/あれ` como se uma pessoa fosse um objeto.
+
+## Vocabulário
+- Base ampliada para **290 entradas** cotidianas.
+- Busca aceita português, japonês, kana, rōmaji e aliases.
+
+## Interface
+- Câmera permanece como área principal.
+- Modo **Cotidiano** e **Imersão** priorizam baixa interrupção.
+- Breakdown e produção ativa ficam recolhidos até o usuário pedir.

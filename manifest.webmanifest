@@ -1,7 +1,7 @@
 {
   "name": "Mira Nihongo",
   "short_name": "Mira Nihongo",
-  "description": "Aprenda japonês apontando a câmera para objetos reais, com visão detalhada sob demanda, relações de cena e correção visual.",
+  "description": "Imersão cotidiana em japonês pela câmera: Focus-First, Cartão Vivo, breakdown e progresso por palavra.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,17 +9,7 @@
   "theme_color": "#0b0d10",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }
