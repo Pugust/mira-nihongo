@@ -1,7 +1,7 @@
 {
   "name": "Mira Nihongo",
   "short_name": "Mira Nihongo",
-  "description": "Aprenda japonês apontando a câmera para objetos reais, com visão ampla local, relações de cena e correção visual.",
+  "description": "Aprenda japonês apontando a câmera para objetos reais, com visão detalhada sob demanda, relações de cena e correção visual.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

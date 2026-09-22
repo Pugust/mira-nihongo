@@ -1,119 +1,76 @@
-# Mira Nihongo — V0.2
+# Mira Nihongo V0.3
 
-Aplicação web mobile para estudar japonês apontando a câmera para objetos reais. A V0.2 é focada em **reduzir falsos reconhecimentos e reconhecer objetos que não existem entre as 80 classes do detector inicial**, sem abandonar o funcionamento direto no navegador.
+Mira Nihongo é uma PWA mobile para aprender japonês apontando a câmera para objetos reais.
 
-## O que mudou na V0.2
+## O que mudou na V0.3
 
-Os testes físicos da V0.1 mostraram cinco casos importantes:
+A V0.2 mostrou dois gargalos em teste físico: falsos positivos em objetos pequenos/específicos e custo térmico alto. A V0.3 simplifica a arquitetura para **dois níveis de visão**, reduz a resolução/frequência de análise e amplia o vocabulário.
 
-- estilete interpretado como `skateboard`;
-- mão interpretada como `person`;
-- sapato/perna interpretados como `person`;
-- caixa de papelão interpretada como `suitcase`;
-- ventilador sem detecção.
+### Reconhecimento
 
-A V0.2 transforma esses casos em regressões explícitas da arquitetura.
+1. **COCO-SSD Lite** localiza rapidamente objetos comuns.
+2. **MobileNet V2 leve** só entra quando a leitura está ambígua, pertence a uma classe conhecida por confundir ou quando a mira não encontrou uma classe COCO.
 
-### Reconhecimento em três camadas
+A antiga terceira camada MobileCLIP foi removida. Isso elimina o download de aproximadamente 57 MB usado pela V0.2 e evita manter um terceiro modelo de visão no fluxo.
 
-1. **COCO-SSD** continua sendo o detector rápido. Ele encontra objetos e caixas entre 80 classes comuns.
-2. **MobileNet** faz uma checagem rápida do recorte. Agora inclui mapeamentos adicionais para itens como ventilador, caixa de papelão, estilete e calçados quando a classe do ImageNet é suficientemente específica.
-3. **Visão ampla — MobileCLIP** é usada nas classes que já demonstraram confusão ou quando o detector comum não encontra nada na mira. Ela compara o recorte com um vocabulário visual aberto e controlado pelo Mira Nihongo.
+Casos físicos tratados explicitamente:
 
-O fluxo continua conservador: uma leitura não vira automaticamente “verdade” quando os modelos discordam.
+- tampinha confundida com `frisbee` → checagem para `キャップ`;
+- estilete confundido com `skateboard` → checagem para `カッターナイフ`;
+- caixa de papelão confundida com `suitcase`/`oven` → checagem para `段ボール箱`;
+- sapato/perna confundido com `person` → checagem para `靴`;
+- ventilador fora das classes COCO → análise direta da região da mira;
+- mão confundida com `person` → nunca é promovida silenciosamente a certeza; em caixa corporal larga a V0.3 sugere `手` como leitura **tentativa**.
 
-## Visão ampla
+## Controle de desempenho
 
-A Visão ampla usa `Xenova/mobileclip_s0` por Transformers.js e roda a inferência no próprio navegador.
+Em **Configurações → Desempenho** existem três perfis:
 
-- é ativada por padrão, mas **carregada sob demanda**;
-- o download não começa só porque a câmera foi aberta;
-- o primeiro uso baixa aproximadamente **57 MB de pesos quantizados + pequenos arquivos de configuração/tokenização**;
-- quando o cache do navegador está disponível, o download não precisa ser repetido em cada uso;
-- falhas de rede entram em espera de 60 segundos para evitar tentativas repetidas em loop;
-- o botão **Analisar mira** permite forçar uma nova tentativa;
-- se a Visão ampla falhar, detector rápido, correção manual e vocabulário continuam utilizáveis.
+- **Econômico:** câmera alvo 480×360, 15 fps, detector em ritmo menor;
+- **Equilibrado (padrão):** 640×480, 18 fps;
+- **Precisão:** 960×540, 24 fps e análises mais frequentes.
 
-## Política contra falsos positivos
+Além disso, a V0.3:
 
-Classes que se confundiram nos testes reais, como `person`, `skateboard`, `suitcase` e `oven`, recebem tratamento especial.
+- reduz automaticamente a frequência quando uma palavra já está estável;
+- adapta o intervalo ao tempo real gasto pelo detector;
+- limita COCO-SSD a 10 caixas por quadro;
+- não pré-carrega o classificador detalhado ao abrir a câmera;
+- aumenta progressivamente o intervalo da visão detalhada quando ela tenta objetos desconhecidos sem sucesso;
+- pausa inferência quando a página está oculta.
 
-Quando a checagem ampla não está disponível, uma dessas classes **não é declarada estável apenas porque o detector principal apresentou confiança alta**. O app prefere mostrar `Talvez seja` e pedir confirmação/correção.
+Essas mudanças reduzem a carga esperada, mas **temperatura e bateria só podem ser validadas no aparelho real**.
 
-Para `person`, a segunda checagem e a Visão ampla recebem um recorte central da mira. Assim, apontar especificamente para uma mão ou um sapato não obriga o sistema a aceitar a caixa grande de “pessoa” como intenção do usuário.
+## Vocabulário
 
-## Quando o detector não encontra nada
+O banco passou para **202 entradas**. Ele inclui as 80 classes COCO e dezenas de objetos cotidianos adicionais, como:
 
-A V0.2 pode analisar diretamente uma região ao redor da mira. Isso permite tentar reconhecer itens como:
+`tampinha`, `tampa`, `prato`, `caneca`, `panela`, `frigideira`, `chaleira`, `lixeira`, `balde`, `toalha`, `espelho`, `travesseiro`, `interruptor`, `tomada`, `lâmpada`, `ar-condicionado`, `mesa/escrivaninha`, `chave inglesa`, `furadeira`, `serrote`, `parafuso`, `porca`, `arruela`, `trena`, `grampeador`, `borracha`, `calculadora`, `impressora`, `headphone`, `power bank`, `pendrive`, `tripé`, `roteador`, `camisa`, `calça`, `meia`, `chapéu`, `relógio de pulso`, `carteira` e outros.
 
-- 扇風機 — ventilador;
-- 手 — mão;
-- 靴 — sapato;
-- カッターナイフ — estilete;
-- 段ボール箱 — caixa de papelão;
-- ferramentas, objetos de mesa, portas, janelas, cabos e outros itens do vocabulário aberto.
+Nem toda palavra do banco é automaticamente reconhecível pela câmera. O vocabulário amplo também serve para **Corrigir**, **Aprender isto** e busca manual. A busca aceita aliases em português para alguns itens.
 
-A análise automática é espaçada para não manter o processador ocupado continuamente. O usuário também pode tocar em **Analisar mira**.
+## Modos de estudo
 
-Se uma leitura da Visão ampla deixa de se confirmar, a V0.2 remove a palavra antiga em vez de continuar ensinando um objeto que pode já ter saído da mira.
+- **Explorar:** nome e frase básica;
+- **Ações:** verbos úteis;
+- **Local:** ここ・そこ・あそこ;
+- **Quiz:** tenta lembrar antes de revelar;
+- **Cena:** relações conservadoras como 上・下・中・左・右.
 
-## Modo Cena
+A imersão progressiva continua removendo português/rōmaji conforme a palavra se torna familiar.
 
-A V0.2 adiciona **🧭 Cena**. Quando há mais de um objeto detectável, o app tenta ensinar relações visuais como:
+## Publicação no GitHub Pages
 
-- 上 — em cima/acima;
-- 下 — embaixo/abaixo;
-- 中 — dentro;
-- 左 — à esquerda;
-- 右 — à direita.
+Os arquivos de produção ficam diretamente na raiz do pacote. Publique a branch `main` usando `/ (root)`.
 
-Exemplo:
-
-`ボトルはテーブルの上にあります。`
-
-`Botoru wa tēburu no ue ni arimasu.`
-
-“Uma garrafa está sobre/acima da mesa.”
-
-As relações são deliberadamente conservadoras. `中` só é inferido quando o outro objeto é semanticamente compatível com um recipiente; apoio/contato usa classes compatíveis com superfícies; relações laterais exigem proximidade suficiente. Quando a geometria não é segura, o app volta à frase de localização simples em vez de inventar uma relação.
-
-## Aprendizagem e japonês
-
-Mantidos da V0.1:
-
-- これ・それ・あれ escolhidos conscientemente pelo aluno;
-- pessoas usam この人・その人・あの人;
-- seres animados usam います e objetos usam あります;
-- Explorar, Ações, Localização, Quiz e agora Cena;
-- áudio japonês pelo sistema do aparelho;
-- imersão progressiva;
-- correção manual pesquisável;
-- memória visual local por hash perceptual;
-- controles para apagar correções e progresso.
-
-## Publicar/atualizar no GitHub Pages
-
-Copie os arquivos desta pasta para a raiz do mesmo repositório e faça commit/push na branch `main`. O GitHub Pages pode continuar configurado como:
-
-- branch: `main`
-- pasta: `/ (root)`
-
-Todos os caminhos são relativos, compatíveis com:
-
-`https://SEU_USUARIO.github.io/mira-nihongo/`
-
-A câmera exige HTTPS ou localhost.
+O site precisa de HTTPS para acesso normal à câmera; GitHub Pages já fornece HTTPS.
 
 ## Privacidade
 
-O código do Mira Nihongo não envia quadros da câmera para um backend próprio. COCO-SSD, MobileNet e MobileCLIP executam inferência no navegador. Bibliotecas e pesos dos modelos são obtidos de serviços externos quando necessários.
+Quadros da câmera são analisados no navegador. O código não contém backend próprio para upload das fotos. Bibliotecas e pesos dos modelos TensorFlow.js são obtidos de CDNs externas e executados localmente no navegador.
 
-Correções e progresso são armazenados localmente no navegador (`localStorage`).
+## Limites atuais
 
-## Limitações honestas
+Reconhecimento visual continua probabilístico. Objetos muito pequenos, parciais, transparentes, refletivos, muito próximos ou visualmente parecidos podem exigir `Corrigir`/`Aprender isto`. A memória visual local continua disponível para reaproveitar correções no mesmo aparelho.
 
-“Vocabulário aberto” não significa reconhecimento perfeito de qualquer coisa do mundo. MobileCLIP compara a imagem com os candidatos que o app oferece; iluminação, enquadramento, escala e objetos visualmente parecidos ainda podem causar erros.
-
-Por isso a V0.2 mantém estados de incerteza, correção manual e memória local. A nota 10/10 do pacote refere-se ao **escopo de código e aos testes reproduzíveis disponíveis no ambiente de desenvolvimento**. A validação física da V0.2 só acontece depois de testá-la novamente no seu Android com a câmera e os modelos reais.
-
-Veja `QA_REPORT.md` para os ciclos de reavaliação.
+Consulte `QA_REPORT.md` para a separação entre **10/10 do escopo de código** e validação física no Android.

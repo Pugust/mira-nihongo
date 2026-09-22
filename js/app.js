@@ -53,6 +53,7 @@
     immersion: document.getElementById('immersionLevel'),
     confidence: document.getElementById('confidenceRange'),
     confidenceValue: document.getElementById('confidenceValue'),
+    performanceMode: document.getElementById('performanceMode'),
     deepVision: document.getElementById('deepVisionToggle'),
     deepVisionStatus: document.getElementById('deepVisionStatus'),
     showBoxes: document.getElementById('showBoxesToggle'),
@@ -78,9 +79,51 @@
   // MobileNet uses ImageNet labels. This map only accepts labels whose meaning is
   // sufficiently close to a vocabulary entry. Unknown labels are deliberately ignored.
   const VERIFIER_RULES = [
+    [/bottlecap|bottle cap/i, 'bottle_cap'],
+    [/electric fan/i, 'fan'],
+    [/running shoe|sneaker|loafer|clog|cowboy boot|rubber boot|shoe shop/i, 'shoe'],
     [/letter opener|paper knife/i, 'utility_knife'],
-    [/electric fan|blower/i, 'fan'],
-    [/running shoe|sneaker|loafer|clog|cowboy boot|rubber boot/i, 'shoe'],
+    [/plate|dish/i, 'plate'],
+    [/beer glass|goblet/i, 'glass'],
+    [/coffee mug/i, 'mug'],
+    [/jar|jarred/i, 'jar'],
+    [/tin can/i, 'can'],
+    [/frying pan/i, 'frying_pan'],
+    [/teapot|kettle/i, 'kettle'],
+    [/spatula/i, 'spatula'],
+    [/strainer/i, 'strainer'],
+    [/trash can|garbage can|ashcan|wastebin/i, 'trash_bin'],
+    [/bucket|pail/i, 'bucket'],
+    [/bath towel|paper towel|towel/i, 'towel'],
+    [/mirror/i, 'mirror'],
+    [/pillow/i, 'pillow'],
+    [/shower curtain|curtain/i, 'curtain'],
+    [/wardrobe|chiffonier/i, 'wardrobe'],
+    [/switch/i, 'switch'],
+    [/table lamp|lampshade/i, 'lamp'],
+    [/air conditioner/i, 'air_conditioner'],
+    [/desk/i, 'desk'],
+    [/wrench|spanner/i, 'wrench'],
+    [/power drill|drill/i, 'drill'],
+    [/chain saw|handsaw|saw/i, 'saw'],
+    [/stapler/i, 'stapler'],
+    [/rubber eraser|eraser/i, 'eraser'],
+    [/pencil sharpener/i, 'sharpener'],
+    [/calculator/i, 'calculator'],
+    [/printer/i, 'printer'],
+    [/envelope/i, 'envelope'],
+    [/headphone/i, 'headphones'],
+    [/loudspeaker|speaker/i, 'speaker'],
+    [/reflex camera|camera/i, 'camera_device'],
+    [/tripod/i, 'tripod'],
+    [/modem|router/i, 'router'],
+    [/jersey|shirt/i, 'shirt'],
+    [/jean|trouser|pants/i, 'pants'],
+    [/sock/i, 'sock'],
+    [/cowboy hat|sombrero|baseball cap|hat/i, 'hat'],
+    [/digital watch|stopwatch|watch/i, 'watch'],
+    [/wallet/i, 'wallet'],
+    [/blower/i, 'fan'],
     [/carton/i, 'cardboard_box'],
     [/crate|packing case/i, 'box'],
     [/bookcase/i, 'shelf'],
@@ -166,20 +209,17 @@
     demonstrative: localStorage.getItem('mn-demo') || 'kore',
     immersionSetting: localStorage.getItem('mn-immersion') || 'auto',
     minScore: finiteOr(localStorage.getItem('mn-score'), 0.50),
+    performanceMode: localStorage.getItem('mn-performance') || 'balanced',
+    avgDetectMs: 0,
     showBoxes: localStorage.getItem('mn-boxes') === '1',
     diagnostics: localStorage.getItem('mn-diagnostics') === '1',
     deepVisionEnabled: localStorage.getItem('mn-deep-vision') !== '0',
     deepVisionLoading: false,
-    deepVisionReady: false,
-    deepVisionError: null,
-    deepVisionRetryAt: 0,
-    deepVisionProgress: null,
     deepProbeRunning: false,
     lastDeepProbeAt: 0,
     deepProbeInterval: 2600,
     deepMissCount: 0,
     lastCrosshairHash: null,
-    deepAlternative: null,
     selectedPrediction: null,
     selectedKey: null,
     rawDetectorKey: null,
@@ -216,7 +256,7 @@
     updateMemoryControls();
     updateDeepVisionStatus();
 
-    if (!localStorage.getItem('mn-onboarded-v02')) {
+    if (!localStorage.getItem('mn-onboarded-v03')) {
       requestAnimationFrame(() => safeShowModal(els.onboarding));
     }
 
@@ -240,7 +280,7 @@
       safeClose(els.studyDialog);
       setTimeout(() => safeShowModal(els.vocabDialog), 0);
     });
-    els.onboardingContinue.addEventListener('click', () => localStorage.setItem('mn-onboarded-v02', '1'));
+    els.onboardingContinue.addEventListener('click', () => localStorage.setItem('mn-onboarded-v03', '1'));
 
     document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -272,13 +312,29 @@
       state.history.length = 0;
     });
 
+
+    els.performanceMode.addEventListener('change', async () => {
+      state.performanceMode = els.performanceMode.value;
+      localStorage.setItem('mn-performance', state.performanceMode);
+      state.avgDetectMs = 0;
+      if (state.cameraStarted) {
+        clearTimeout(state.detectionTimer);
+        clearSelection('Ajustando desempenho…');
+        try {
+          await openCamera(state.facingMode);
+          scheduleDetection(120);
+        } catch (error) {
+          console.warn('Não foi possível aplicar o novo perfil da câmera:', error);
+        }
+      }
+      showToast(`Desempenho: ${performanceProfile().label}.`);
+    });
+
     els.deepVision.addEventListener('change', () => {
       state.deepVisionEnabled = els.deepVision.checked;
       localStorage.setItem('mn-deep-vision', state.deepVisionEnabled ? '1' : '0');
-      state.deepVisionError = null;
-      state.deepVisionRetryAt = 0;
       updateDeepVisionStatus();
-      if (state.deepVisionEnabled && state.cameraStarted) showToast('Visão ampla será carregada quando uma leitura precisar dela.');
+      if (state.deepVisionEnabled && state.cameraStarted) showToast('Visão detalhada será carregada apenas quando uma leitura precisar dela.');
     });
 
     els.showBoxes.addEventListener('change', () => {
@@ -396,105 +452,43 @@
       return null;
     }
     state.verifierLoading = true;
+    updateDeepVisionStatus();
     try {
       state.verifier = await mobilenet.load({ version: 2, alpha: 0.50 });
+      updateDeepVisionStatus();
       return state.verifier;
     } catch (error) {
       state.verifierError = error;
-      console.warn('Segunda checagem indisponível:', error);
+      updateDeepVisionStatus();
+      console.warn('Visão detalhada indisponível:', error);
       return null;
     } finally {
       state.verifierLoading = false;
-    }
-  }
-
-  async function ensureDeepVision(forceRetry = false) {
-    if (!state.deepVisionEnabled) return null;
-    if (!forceRetry && state.deepVisionError && Date.now() < state.deepVisionRetryAt) {
       updateDeepVisionStatus();
-      return null;
-    }
-    if (window.MiraOpenVocab?.ready) {
-      state.deepVisionReady = true;
-      state.deepVisionLoading = false;
-      state.deepVisionError = null;
-      state.deepVisionRetryAt = 0;
-      updateDeepVisionStatus();
-      return window.MiraOpenVocab;
-    }
-    if (state.deepVisionLoading) {
-      try {
-        await window.MiraOpenVocab?.load?.(handleDeepVisionProgress);
-        state.deepVisionReady = Boolean(window.MiraOpenVocab?.ready);
-        return window.MiraOpenVocab;
-      } catch (_) {
-        return null;
-      }
-    }
-    if (!window.MiraOpenVocab?.load) {
-      state.deepVisionError = new Error('Carregador da Visão ampla indisponível.');
-      updateDeepVisionStatus();
-      return null;
-    }
-
-    state.deepVisionLoading = true;
-    state.deepVisionError = null;
-    updateDeepVisionStatus();
-    try {
-      await window.MiraOpenVocab.load(handleDeepVisionProgress);
-      state.deepVisionReady = true;
-      state.deepVisionRetryAt = 0;
-      state.deepVisionProgress = 100;
-      updateDeepVisionStatus();
-      return window.MiraOpenVocab;
-    } catch (error) {
-      state.deepVisionError = error;
-      state.deepVisionRetryAt = Date.now() + 60000;
-      state.deepVisionReady = false;
-      console.warn('Visão ampla indisponível:', error);
-      updateDeepVisionStatus();
-      return null;
-    } finally {
-      state.deepVisionLoading = false;
-      updateDeepVisionStatus();
-    }
-  }
-
-  function handleDeepVisionProgress(data) {
-    if (!data) return;
-    const progress = Number(data.progress);
-    if (Number.isFinite(progress)) state.deepVisionProgress = Math.max(0, Math.min(100, progress));
-    updateDeepVisionStatus();
-    if (state.cameraStarted && state.deepVisionLoading && Number.isFinite(progress)) {
-      setStatus(`Preparando Visão ampla · ${Math.round(progress)}%`);
     }
   }
 
   function updateDeepVisionStatus() {
     if (!els.deepVisionStatus) return;
     if (!state.deepVisionEnabled) {
-      els.deepVisionStatus.textContent = 'Visão ampla: desligada';
+      els.deepVisionStatus.textContent = 'Visão detalhada: desligada';
       return;
     }
-    if (state.deepVisionReady || window.MiraOpenVocab?.ready) {
-      els.deepVisionStatus.textContent = 'Visão ampla: pronta · modelo em cache quando suportado pelo navegador';
+    if (state.verifier) {
+      els.deepVisionStatus.textContent = 'Visão detalhada: pronta · executa apenas quando necessária';
       return;
     }
-    if (state.deepVisionLoading) {
-      const suffix = Number.isFinite(state.deepVisionProgress) ? ` · ${Math.round(state.deepVisionProgress)}%` : '';
-      els.deepVisionStatus.textContent = `Visão ampla: preparando${suffix}`;
+    if (state.verifierLoading) {
+      els.deepVisionStatus.textContent = 'Visão detalhada: preparando modelo leve…';
       return;
     }
-    if (state.deepVisionError) {
-      const wait = Math.max(0, Math.ceil((state.deepVisionRetryAt - Date.now()) / 1000));
-      els.deepVisionStatus.textContent = wait > 0
-        ? `Visão ampla: falhou ao carregar · nova tentativa automática em até ${wait}s; “Analisar mira” força uma tentativa`
-        : 'Visão ampla: falhou ao carregar · “Analisar mira” tenta novamente; detector e correção manual continuam ativos';
+    if (state.verifierError) {
+      els.deepVisionStatus.textContent = 'Visão detalhada: indisponível · detector e correção manual continuam ativos';
       return;
     }
     els.deepVisionStatus.textContent = state.cameraStarted
-      ? 'Visão ampla: pronta para carregar quando necessária'
-      : 'Visão ampla: aguardando câmera';
+      ? 'Visão detalhada: em espera · será carregada somente quando necessária'
+      : 'Visão detalhada: aguardando câmera';
   }
 
   async function startCamera() {
@@ -512,11 +506,6 @@
       els.start.classList.add('hidden');
       setStatus(state.detector ? 'Mire em um objeto' : 'Câmera pronta · carregando IA…');
       if (state.detector) scheduleDetection(80);
-      // Load only the lightweight verifier while idle. The open-vocabulary
-      // model is intentionally lazy: it is downloaded only when a difficult or
-      // previously unseen object actually requires it.
-      const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1200));
-      idle(() => ensureVerifier());
     } catch (error) {
       console.error(error);
       let message = 'Não foi possível abrir a câmera.';
@@ -530,13 +519,14 @@
 
   async function openCamera(mode) {
     stopStreamOnly();
+    const perf = performanceProfile();
     const constraints = {
       audio: false,
       video: {
         facingMode: { ideal: mode },
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        frameRate: { ideal: 24, max: 30 }
+        width: { ideal: perf.width },
+        height: { ideal: perf.height },
+        frameRate: { ideal: perf.fps, max: perf.maxFps }
       }
     };
     state.stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -587,6 +577,24 @@
     stopStreamOnly();
   }
 
+  function performanceProfile() {
+    const profiles = {
+      eco: { label: 'Econômico', width: 480, height: 360, fps: 15, maxFps: 18, detectInterval: 950, detailInterval: 3600 },
+      balanced: { label: 'Equilibrado', width: 640, height: 480, fps: 18, maxFps: 22, detectInterval: 650, detailInterval: 2600 },
+      accuracy: { label: 'Precisão', width: 960, height: 540, fps: 24, maxFps: 26, detectInterval: 450, detailInterval: 1700 }
+    };
+    return profiles[state.performanceMode] || profiles.balanced;
+  }
+
+  function nextDetectionDelay() {
+    const profile = performanceProfile();
+    let delay = profile.detectInterval;
+    if (state.selectedKey && ['stable', 'memory', 'deep'].includes(state.recognition.kind)) delay *= 1.65;
+    if (state.verifying || state.deepProbeRunning) delay = Math.max(delay, 1100);
+    if (state.avgDetectMs > 0) delay = Math.max(delay, Math.min(1700, state.avgDetectMs * 1.35));
+    return Math.round(Math.min(1800, Math.max(320, delay)));
+  }
+
   function scheduleDetection(delay = 430) {
     clearTimeout(state.detectionTimer);
     state.detectionTimer = setTimeout(detectFrame, delay);
@@ -603,8 +611,9 @@
     }
 
     state.detecting = true;
+    const startedAt = performance.now();
     try {
-      const predictions = await state.detector.detect(els.video, 20, state.minScore);
+      const predictions = await state.detector.detect(els.video, 10, state.minScore);
       state.lastPredictions = predictions.filter(p => JAPANESE_DB[p.class]);
       const target = chooseTarget(state.lastPredictions);
 
@@ -617,8 +626,10 @@
       console.error(error);
       setStatus('Falha temporária na detecção');
     } finally {
+      const elapsed = Math.max(1, performance.now() - startedAt);
+      state.avgDetectMs = state.avgDetectMs ? state.avgDetectMs * 0.78 + elapsed * 0.22 : elapsed;
       state.detecting = false;
-      scheduleDetection(430);
+      scheduleDetection(nextDetectionDelay());
     }
   }
 
@@ -644,12 +655,12 @@
     if (state.history.length > state.historySize) state.history.shift();
 
     if (!target) {
-      // A seleção da Visão ampla não depende das 80 caixas do COCO. Mantemos a
+      // A seleção da Visão detalhada não depende das 80 caixas do COCO. Mantemos a
       // palavra visível e a reavaliamos por recortes periódicos em vez de apagá-la.
       if (state.rawDetectorKey === '__crosshair__' && state.selectedKey) {
         state.missCount = 0;
         els.holdRing.className = state.recognition.kind === 'tentative' ? 'hold-ring verifying' : 'hold-ring locked';
-        setStatus(state.deepProbeRunning ? 'Visão ampla analisando…' : 'Visão ampla acompanhando a mira…');
+        setStatus(state.deepProbeRunning ? 'Visão detalhada analisando…' : 'Visão detalhada acompanhando a mira…');
         return;
       }
 
@@ -660,7 +671,7 @@
         clearSelection('Procurando objeto na mira…');
       } else if (!state.selectedKey) {
         showEmptyState('Aponte para algo', state.deepVisionEnabled
-          ? 'O detector não encontrou uma classe comum. A Visão ampla tentará a região central.'
+          ? 'O detector não encontrou uma classe comum. A visão detalhada tentará a região central.'
           : 'Mantenha a mira no objeto por um instante.');
       }
       return;
@@ -723,7 +734,6 @@
     const token = ++state.verificationToken;
     state.verifying = true;
     state.verifierAlternative = null;
-    state.deepAlternative = null;
     setStatus('Checando o objeto…');
 
     try {
@@ -759,7 +769,7 @@
         return;
       }
 
-      const verifier = await ensureVerifier();
+      const verifier = state.deepVisionEnabled ? await ensureVerifier() : null;
       if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return;
 
       let classes = [];
@@ -784,19 +794,6 @@
           .sort((a, b) => b.probability - a.probability)[0] || null;
         top = classes[0] || null;
       }
-
-      const verifierConflict = Boolean(mapped && mapped.key !== prediction.class && mapped.probability >= 0.14);
-      const deepHandled = await tryDeepVerifyPrediction({
-        prediction,
-        detectorScore,
-        signature,
-        token,
-        snapshot,
-        mapped,
-        verifierConflict
-      });
-      if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return;
-      if (deepHandled) return;
 
       const highConfusion = Boolean(policy?.isHighConfusion?.(prediction.class));
 
@@ -824,8 +821,71 @@
       const same = mapped?.key === prediction.class;
       const strongAlternative = mapped && mapped.key !== prediction.class && mapped.probability >= 0.30;
       const moderateAlternative = mapped && mapped.key !== prediction.class && mapped.probability >= 0.16;
+      const regressionPairs = new Set([
+        'frisbee>bottle_cap',
+        'skateboard>utility_knife',
+        'suitcase>cardboard_box',
+        'oven>cardboard_box',
+        'person>shoe'
+      ]);
+      const regressionOverride = Boolean(mapped && regressionPairs.has(`${prediction.class}>${mapped.key}`) && mapped.probability >= 0.075);
 
-      if (same) {
+      if (regressionOverride) {
+        const confident = mapped.probability >= 0.18;
+        state.verifierAlternative = null;
+        selectObject(mapped.key, { ...prediction, class: mapped.key, _deep: true }, {
+          source: 'verifier',
+          rawDetectorKey: prediction.class,
+          recognition: {
+            kind: confident ? 'stable' : 'tentative',
+            reason: confident
+              ? `A visão detalhada corrigiu uma confusão conhecida para “${JAPANESE_DB[mapped.key].pt}”.`
+              : `A visão detalhada sugere “${JAPANESE_DB[mapped.key].pt}” para uma classe que costuma confundir. Confirme antes de memorizar.`,
+            detectorScore,
+            verifierScore: mapped.probability,
+            verifierLabel: mapped.className,
+            deepScore: null,
+            deepLabel: ''
+          }
+        });
+        els.holdRing.className = confident ? 'hold-ring locked' : 'hold-ring verifying';
+        setStatus(confident ? 'Reconhecimento corrigido e estável' : 'Talvez seja · confirme ou corrija');
+      } else if (prediction.class === 'person' && (!mapped || mapped.probability < 0.12)) {
+        const [,, bw, bh] = prediction.bbox;
+        const aspect = bw / Math.max(1, bh);
+        if (aspect >= 0.80 && JAPANESE_DB.hand) {
+          state.verifierAlternative = null;
+          selectObject('hand', { ...prediction, class: 'hand', _deep: true }, {
+            source: 'heuristic',
+            rawDetectorKey: 'person',
+            recognition: {
+              kind: 'tentative',
+              reason: 'O detector viu “pessoa”, mas a caixa é larga e a mira parece focar uma parte do corpo. A V0.3 sugere “mão”, sem tratar isso como certeza.',
+              detectorScore,
+              verifierScore: top?.probability ?? null,
+              verifierLabel: top?.className || '',
+              deepScore: null,
+              deepLabel: ''
+            }
+          });
+        } else {
+          if (aspect >= 0.72) state.verifierAlternative = { key: 'hand', probability: 0, className: 'heurística de parte do corpo' };
+          state.recognition = {
+            kind: 'tentative',
+            reason: aspect >= 0.72
+              ? 'O detector viu “pessoa”, mas a forma e a mira podem estar focando apenas uma parte do corpo. “Mão” aparece como sugestão de correção.'
+              : '“Pessoa” é uma classe muito ampla. Confirme antes de memorizar quando a mira estiver em mão, pé ou calçado.',
+            detectorScore,
+            verifierScore: top?.probability ?? null,
+            verifierLabel: top?.className || '',
+            deepScore: null,
+            deepLabel: ''
+          };
+          renderLesson();
+        }
+        els.holdRing.className = 'hold-ring verifying';
+        setStatus('Parte do corpo · confirme');
+      } else if (same) {
         state.recognition = {
           kind: 'stable',
           reason: 'Detector e verificador rápido são compatíveis.',
@@ -911,74 +971,14 @@
     }
   }
 
-  async function tryDeepVerifyPrediction({ prediction, detectorScore, signature, token, snapshot, mapped, verifierConflict }) {
-    const policy = window.MiraRecognitionPolicy;
-    if (!state.deepVisionEnabled || !policy?.shouldRunDeep?.(prediction.class, detectorScore, verifierConflict)) return false;
-
-    setStatus(state.deepVisionReady ? 'Visão ampla analisando…' : 'Preparando Visão ampla…');
-    const api = await ensureDeepVision();
-    if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return true;
-    if (!api?.ready) return false;
-
-    try {
-      const descriptors = policy.candidateDescriptors(prediction.class, 38);
-      // COCO's person box can cover most of the body while the user is explicitly
-      // aiming at a hand or shoe. For that broad class, classify the crosshair crop
-      // instead of the whole person box so the user's intent wins.
-      let deepSnapshot = snapshot;
-      if (prediction.class === 'person') {
-        const point = crosshairPointInVideo();
-        const focusBox = policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, 0.34);
-        deepSnapshot = cropFromBbox(focusBox, 256);
-      }
-      const output = await api.classify(deepSnapshot, descriptors.map(d => d.label), handleDeepVisionProgress);
-      if (token !== state.verificationToken || signature !== state.lastVerifiedSignature) return true;
-
-      const ranked = policy.normalizeDeepResults(output, descriptors);
-      const decision = policy.decideDeepRecognition(ranked, prediction.class, detectorScore);
-      state.deepAlternative = decision.top || null;
-      if (!decision.accept || !decision.top || !JAPANESE_DB[decision.top.key]) return false;
-
-      const key = decision.top.key;
-      const focusPart = prediction.class === 'person' && (key === 'hand' || key === 'shoe');
-      const deepPrediction = focusPart
-        ? makeSyntheticPrediction(key, decision.top.score)
-        : { ...prediction, class: key, score: Math.max(prediction.score || 0, decision.top.score), _deep: true };
-
-      const rawPt = JAPANESE_DB[prediction.class]?.pt || prediction.class;
-      const targetPt = JAPANESE_DB[key].pt;
-      const reason = decision.same
-        ? `A Visão ampla confirmou “${targetPt}”.`
-        : `A Visão ampla focou a região da mira e prefere “${targetPt}” a “${rawPt}”.`;
-
-      state.verifierAlternative = mapped && mapped.key !== key ? mapped : null;
-      selectObject(key, deepPrediction, {
-        source: 'deep',
-        rawDetectorKey: prediction.class,
-        recognition: {
-          kind: decision.stable ? 'deep' : 'tentative',
-          reason,
-          detectorScore,
-          verifierScore: mapped?.probability ?? null,
-          verifierLabel: mapped?.className || '',
-          deepScore: decision.top.score,
-          deepLabel: decision.top.label
-        }
-      });
-      els.holdRing.className = decision.stable ? 'hold-ring locked' : 'hold-ring verifying';
-      renderBoxes(state.lastPredictions, deepPrediction);
-      setStatus(decision.stable ? 'Visão ampla · reconhecimento estável' : 'Visão ampla · confirme ou corrija');
-      return true;
-    } catch (error) {
-      console.warn('Falha na Visão ampla para o alvo:', error);
-      return false;
-    }
-  }
 
   function maybeAutoDeepProbe() {
     if (!state.deepVisionEnabled || state.deepProbeRunning || state.verifying || state.frozen || !state.cameraStarted) return;
+    if (state.missCount < 2) return;
     const now = Date.now();
-    if (now - state.lastDeepProbeAt < state.deepProbeInterval) return;
+    const backoff = 1 + Math.min(3, state.deepMissCount) * 0.65;
+    const interval = performanceProfile().detailInterval * backoff;
+    if (now - state.lastDeepProbeAt < interval) return;
     state.lastDeepProbeAt = now;
     runCrosshairDeepScan(false);
   }
@@ -989,55 +989,33 @@
       return;
     }
     if (!state.deepVisionEnabled) {
-      if (manual) showToast('Ative “Visão ampla” nas configurações.');
+      if (manual) showToast('Ative “Visão detalhada” nas configurações.');
       return;
     }
-    if (state.deepProbeRunning) return;
+    if (state.deepProbeRunning || state.verifying) return;
 
     state.deepProbeRunning = true;
     els.scan.disabled = true;
     const token = ++state.verificationToken;
     try {
       const policy = window.MiraRecognitionPolicy;
-      if (!policy) throw new Error('Política de reconhecimento indisponível.');
       const point = crosshairPointInVideo();
-      const bbox = policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, 0.38);
-      const snapshot = cropFromBbox(bbox, 256);
+      const ratio = state.performanceMode === 'accuracy' ? 0.34 : 0.40;
+      const bbox = policy?.makeCrosshairBox
+        ? policy.makeCrosshairBox(els.video.videoWidth, els.video.videoHeight, point, ratio)
+        : [Math.max(0, point.x - 120), Math.max(0, point.y - 120), 240, 240];
+      const snapshot = cropFromBbox(bbox, 224);
       const hash = computeDHash(snapshot);
-      const movedFar = Boolean(
-        state.rawDetectorKey === '__crosshair__' &&
-        state.lastCrosshairHash &&
-        hammingHex(hash, state.lastCrosshairHash) > 18
-      );
+      const movedFar = Boolean(state.rawDetectorKey === '__crosshair__' && state.lastCrosshairHash && hammingHex(hash, state.lastCrosshairHash) > 18);
       state.lastCrosshairHash = hash;
       state.currentCropHash = hash;
-      if (movedFar && state.selectedKey) {
-        // Do not keep teaching the previous object while the user has clearly
-        // moved the camera to a visually different region.
-        state.deepMissCount = 1;
-        state.recognition = {
-          ...state.recognition,
-          kind: 'checking',
-          reason: 'A mira mudou bastante; reavaliando antes de manter a palavra anterior.'
-        };
-        renderLesson();
-      }
-      setStatus(state.deepVisionReady ? 'Visão ampla analisando a mira…' : 'Preparando Visão ampla…');
 
       const remembered = findRememberedCorrection(hash, '__crosshair__');
       if (remembered && token === state.verificationToken) {
         const prediction = { class: remembered.key, score: 1, bbox, _deep: true };
         selectObject(remembered.key, prediction, {
           rawDetectorKey: '__crosshair__',
-          recognition: {
-            kind: 'memory',
-            reason: 'A região lembra uma correção visual salva neste aparelho.',
-            detectorScore: null,
-            verifierScore: null,
-            verifierLabel: '',
-            deepScore: null,
-            deepLabel: ''
-          }
+          recognition: { kind: 'memory', reason: 'A região lembra uma correção visual salva neste aparelho.', detectorScore: null, verifierScore: null, verifierLabel: '', deepScore: null, deepLabel: '' }
         });
         state.deepMissCount = 0;
         renderBoxes(state.lastPredictions, prediction);
@@ -1046,55 +1024,56 @@
         return;
       }
 
-      const api = await ensureDeepVision(manual);
-      if (token !== state.verificationToken || !api?.ready) return;
-      const descriptors = policy.candidateDescriptors(null, 40);
-      const output = await api.classify(snapshot, descriptors.map(d => d.label), handleDeepVisionProgress);
+      setStatus(state.verifier ? 'Visão detalhada analisando a mira…' : 'Preparando visão detalhada…');
+      const verifier = await ensureVerifier();
+      if (token !== state.verificationToken || !verifier) return;
+      const classes = await verifier.classify(snapshot, 10);
       if (token !== state.verificationToken) return;
-      const ranked = policy.normalizeDeepResults(output, descriptors);
-      const decision = policy.decideDeepRecognition(ranked, null, null);
-      state.deepAlternative = decision.top || null;
 
-      if (!decision.accept || !decision.top || !JAPANESE_DB[decision.top.key]) {
+      const mapped = classes
+        .map((result, index) => ({ ...result, rank: index, key: mapVerifierLabel(result.className) }))
+        .filter(result => result.key && JAPANESE_DB[result.key])
+        .sort((a, b) => b.probability - a.probability)[0] || null;
+
+      const topRaw = classes[0] || null;
+      const strongKeys = new Set(['fan', 'bottle_cap', 'shoe', 'utility_knife', 'cardboard_box', 'box', 'plate', 'mug', 'kettle', 'trash_bin']);
+      const accept = Boolean(mapped && ((mapped.rank <= 2 && mapped.probability >= 0.075) || mapped.probability >= 0.16));
+      const stable = Boolean(accept && (mapped.probability >= 0.22 || (strongKeys.has(mapped.key) && mapped.rank <= 1 && mapped.probability >= 0.10)));
+
+      if (!accept) {
         state.deepMissCount += 1;
         if (manual) showToast('Ainda não tenho confiança suficiente. Aproxime a mira ou use Corrigir.');
-        if (state.rawDetectorKey === '__crosshair__' && state.selectedKey && (movedFar || state.deepMissCount >= 2)) {
-          clearSelection('Visão ampla · leitura inconclusiva');
-          showEmptyState('Ainda não tenho certeza', 'A palavra anterior foi removida porque a mira mudou ou a nova leitura não se confirmou.');
-        } else if (!state.selectedKey) {
-          showEmptyState('Ainda não tenho certeza', 'Aproxime-se do objeto, mantenha a mira ou use o vocabulário manual.');
-        }
-        setStatus('Visão ampla · leitura inconclusiva');
+        if (state.rawDetectorKey === '__crosshair__' && state.selectedKey && (movedFar || state.deepMissCount >= 2)) clearSelection('Visão detalhada · leitura inconclusiva');
+        if (!state.selectedKey) showEmptyState('Ainda não tenho certeza', 'Aproxime-se do objeto, mantenha a mira ou use o vocabulário manual.');
+        setStatus('Visão detalhada · leitura inconclusiva');
         return;
       }
 
       state.deepMissCount = 0;
-      const key = decision.top.key;
-      const prediction = { class: key, score: decision.top.score, bbox, _deep: true };
-      selectObject(key, prediction, {
+      const prediction = { class: mapped.key, score: mapped.probability, bbox, _deep: true };
+      selectObject(mapped.key, prediction, {
         rawDetectorKey: '__crosshair__',
         recognition: {
-          kind: decision.stable ? 'deep' : 'tentative',
-          reason: decision.stable
-            ? 'Objeto identificado pela Visão ampla diretamente na região da mira.'
-            : 'A Visão ampla encontrou uma possibilidade, mas ainda vale confirmar.',
+          kind: stable ? 'deep' : 'tentative',
+          reason: stable ? 'A visão detalhada identificou a região da mira.' : 'A visão detalhada encontrou uma possibilidade; confirme antes de memorizar.',
           detectorScore: null,
-          verifierScore: null,
-          verifierLabel: '',
-          deepScore: decision.top.score,
-          deepLabel: decision.top.label
+          verifierScore: mapped.probability,
+          verifierLabel: mapped.className,
+          deepScore: null,
+          deepLabel: topRaw?.className || ''
         }
       });
       renderBoxes(state.lastPredictions, prediction);
-      els.holdRing.className = decision.stable ? 'hold-ring locked' : 'hold-ring verifying';
-      setStatus(decision.stable ? 'Visão ampla · reconhecimento estável' : 'Visão ampla · confirme ou corrija');
+      els.holdRing.className = stable ? 'hold-ring locked' : 'hold-ring verifying';
+      setStatus(stable ? 'Visão detalhada · reconhecimento estável' : 'Visão detalhada · confirme ou corrija');
     } catch (error) {
-      console.warn('Falha ao analisar a mira com Visão ampla:', error);
-      if (manual) showToast('A Visão ampla não ficou disponível. Você ainda pode usar Corrigir/Vocabulário.', 4000);
-      setStatus('Visão ampla indisponível · detector comum ativo');
+      console.warn('Falha ao analisar a mira:', error);
+      if (manual) showToast('A visão detalhada não ficou disponível. Corrigir/Vocabulário continuam ativos.', 4000);
+      setStatus('Visão detalhada indisponível · detector comum ativo');
     } finally {
       state.deepProbeRunning = false;
       els.scan.disabled = false;
+      updateDeepVisionStatus();
     }
   }
 
@@ -1233,7 +1212,6 @@
     state.rawDetectorKey = null;
     state.currentCropHash = null;
     state.verifierAlternative = null;
-    state.deepAlternative = null;
     state.deepMissCount = 0;
     state.lastCrosshairHash = null;
     state.lastVerifiedSignature = '';
@@ -1241,7 +1219,7 @@
     els.lessonCard.classList.add('hidden');
     els.holdRing.className = 'hold-ring';
     showEmptyState('Aponte para algo', state.deepVisionEnabled
-      ? 'Mantenha a mira no objeto. A Visão ampla entra quando as 80 classes comuns não bastam.'
+      ? 'Mantenha a mira no objeto. A Visão detalhada entra quando as 80 classes comuns não bastam.'
       : 'Mantenha a mira no objeto por um instante.');
     if (status) setStatus(status);
   }
@@ -1412,7 +1390,7 @@
     if (r.kind === 'memory') label = 'Lembrança local';
     if (r.kind === 'confirmed') label = 'Confirmado por você';
     if (r.kind === 'verifier') label = 'Segunda checagem';
-    if (r.kind === 'deep') label = 'Visão ampla';
+    if (r.kind === 'deep') label = 'Visão detalhada';
 
     if (state.diagnostics) {
       const detector = Number.isFinite(r.detectorScore) ? ` · det. ${Math.round(r.detectorScore * 100)}%` : '';
@@ -1515,7 +1493,7 @@
 
   function renderCorrectionSuggestion() {
     els.correctionSuggestion.replaceChildren();
-    const alt = state.deepAlternative || state.verifierAlternative;
+    const alt = state.verifierAlternative;
     if (!alt || !JAPANESE_DB[alt.key] || alt.key === state.selectedKey) {
       els.correctionSuggestion.classList.add('hidden');
       return;
@@ -1524,7 +1502,7 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'suggestion-btn';
-    btn.textContent = `${state.deepAlternative === alt ? 'Visão ampla' : 'Segunda checagem'}: ${item.jp} · ${item.romaji} · ${item.pt}`;
+    btn.textContent = `Sugestão visual: ${item.jp} · ${item.romaji} · ${item.pt}`;
     btn.addEventListener('click', () => applyCorrection(alt.key));
     els.correctionSuggestion.appendChild(btn);
     els.correctionSuggestion.classList.remove('hidden');
@@ -1648,7 +1626,7 @@
     const entries = Object.entries(JAPANESE_DB)
       .filter(([key, item]) => {
         if (!query) return true;
-        return [key, item.jp, item.kana, item.romaji, item.pt].some(v => normalize(v).includes(query));
+        return [key, item.jp, item.kana, item.romaji, item.pt, ...(item.aliases || [])].some(v => normalize(v).includes(query));
       })
       .sort((a, b) => a[1].pt.localeCompare(b[1].pt, 'pt-BR'));
 
@@ -1718,10 +1696,10 @@
     const vh = els.video.videoHeight || 1;
     const cx = bbox[0] + bbox[2] / 2;
     const cy = bbox[1] + bbox[3] / 2;
-    const qx = Math.round((cx / vw) * 8);
-    const qy = Math.round((cy / vh) * 8);
-    const qw = Math.round((bbox[2] / vw) * 8);
-    const qh = Math.round((bbox[3] / vh) * 8);
+    const qx = Math.round((cx / vw) * 5);
+    const qy = Math.round((cy / vh) * 5);
+    const qw = Math.round((bbox[2] / vw) * 5);
+    const qh = Math.round((bbox[3] / vh) * 5);
     return `${qx},${qy},${qw},${qh}`;
   }
 
@@ -1756,6 +1734,8 @@
     const immersionValues = ['auto', '1', '2', '3'];
     if (!immersionValues.includes(state.immersionSetting)) state.immersionSetting = 'auto';
     els.immersion.value = state.immersionSetting;
+    if (!['eco', 'balanced', 'accuracy'].includes(state.performanceMode)) state.performanceMode = 'balanced';
+    els.performanceMode.value = state.performanceMode;
     els.confidence.value = String(clamp(state.minScore, 0.35, 0.80));
     state.minScore = Number(els.confidence.value);
     els.confidenceValue.value = `${Math.round(state.minScore * 100)}%`;

@@ -1,20 +1,14 @@
-# Bibliotecas e modelos externos
+# Dependências externas — Mira Nihongo V0.3
 
-A aplicação carrega bibliotecas com versões fixadas:
+A versão usa bibliotecas carregadas por CDN:
 
-- TensorFlow.js `4.22.0` — via jsDelivr;
-- COCO-SSD `2.2.3` — via jsDelivr;
-- MobileNet `2.1.1` — via jsDelivr;
-- `@huggingface/transformers` `3.8.1` — via jsDelivr, carregado apenas quando a Visão ampla é necessária.
+- TensorFlow.js `4.22.0`
+- `@tensorflow-models/coco-ssd` `2.2.3`
+- `@tensorflow-models/mobilenet` `2.1.1`
 
-A Visão ampla utiliza o modelo externo:
+COCO-SSD é usado como detector principal com base `lite_mobilenet_v2`.
+MobileNet V2 (`version: 2`, `alpha: 0.50`) é usado como classificador detalhado sob demanda.
 
-- `Xenova/mobileclip_s0` — MobileCLIP convertido para ONNX/Transformers.js e hospedado no Hugging Face Hub.
+A V0.3 não usa Transformers.js nem MobileCLIP.
 
-A configuração do Mira Nihongo solicita `dtype: q8`. Os dois pesos quantizados principais do modelo têm aproximadamente 42,8 MB (texto) e 11,8 MB (visão); o tokenizer acrescenta aproximadamente 2,2 MB, além de pequenos arquivos de configuração.
-
-O modelo não é redistribuído dentro deste ZIP. Sua licença e arquivos permanecem no repositório do provedor:
-
-https://huggingface.co/Xenova/mobileclip_s0
-
-A inferência de câmera é executada no navegador. O código do Mira Nihongo não contém upload de quadros da câmera para um backend próprio. Bibliotecas, pesos e configurações necessários são baixados de serviços externos.
+As licenças e avisos de cada dependência/modelo continuam sendo regidos pelos respectivos projetos upstream.

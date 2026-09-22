@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="css/app.css" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://huggingface.co" crossorigin />
-</head>
+  </head>
 <body>
   <main id="app" class="app" aria-live="polite">
     <section class="camera-stage" id="cameraStage">
@@ -24,7 +23,7 @@
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">◎</span>
           <div class="brand-copy">
-            <strong>Mira Nihongo <em>0.2</em></strong>
+            <strong>Mira Nihongo <em>0.3</em></strong>
             <small id="statusText">Preparando reconhecimento…</small>
           </div>
         </div>
@@ -45,7 +44,7 @@
 
       <div id="emptyHint" class="empty-hint glass">
         <strong>Aponte para algo</strong>
-        <span>A mira escolhe o objeto. Se o detector comum não enxergar, a Visão ampla analisa a região central.</span>
+        <span>A mira escolhe o objeto. A visão detalhada entra apenas quando a leitura precisa de ajuda.</span>
         <button id="scanBtn" class="scan-btn" type="button">◎ Analisar mira</button>
       </div>
 
@@ -149,6 +148,16 @@
       </fieldset>
 
       <label class="field">
+        <span>Desempenho</span>
+        <select id="performanceMode">
+          <option value="eco">Econômico — menos aquecimento</option>
+          <option value="balanced">Equilibrado — recomendado</option>
+          <option value="accuracy">Precisão — analisa com mais frequência</option>
+        </select>
+        <small>Controla resolução da câmera e frequência da IA. O modo equilibrado reduz o ritmo quando a leitura já está estável.</small>
+      </label>
+
+      <label class="field">
         <span>Sensibilidade mínima do detector</span>
         <div class="range-row">
           <input id="confidenceRange" type="range" min="0.35" max="0.80" value="0.50" step="0.05" />
@@ -157,10 +166,10 @@
       </label>
 
       <label class="switch-row">
-        <span><strong>Visão ampla</strong><small>Usa MobileCLIP no próprio navegador para reconhecer objetos fora das 80 classes do detector. No primeiro uso, baixa cerca de 57 MB de pesos quantizados + arquivos pequenos e depois usa o cache do navegador.</small></span>
+        <span><strong>Visão detalhada</strong><small>Usa um classificador ImageNet leve somente quando o detector comum falha ou entra em uma classe propensa a confusão. Não fica rodando continuamente.</small></span>
         <input id="deepVisionToggle" type="checkbox" checked />
       </label>
-      <div id="deepVisionStatus" class="model-status">Visão ampla: aguardando câmera</div>
+      <div id="deepVisionStatus" class="model-status">Visão detalhada: aguardando câmera</div>
 
       <label class="switch-row">
         <span><strong>Mostrar todas as caixas</strong><small>Desligado deixa apenas o alvo da mira destacado.</small></span>
@@ -211,13 +220,13 @@
     <form method="dialog" class="onboarding-card">
       <div class="onboarding-mark">◎</div>
       <h1>Transforme o mundo em japonês</h1>
-      <p>A V0.2 usa três níveis locais de visão: detector rápido, verificador e uma Visão ampla de vocabulário aberto para objetos específicos.</p>
+      <p>A V0.3 usa detector rápido + uma visão detalhada sob demanda. A meta é reconhecer melhor sem manter vários modelos pesados ativos ao mesmo tempo.</p>
       <ol>
         <li><strong>Mire</strong> no objeto e espere a leitura estabilizar.</li>
-        <li>Se o detector comum falhar, a <strong>Visão ampla</strong> analisa a região central.</li>
+        <li>Se o detector comum falhar, a <strong>visão detalhada</strong> classifica apenas a região da mira.</li>
         <li>Use <strong>Cena</strong> para praticar relações como 上・下・中・左・右 quando houver mais de um objeto.</li>
       </ol>
-      <p class="small-note">No primeiro uso da Visão ampla, o navegador baixa aproximadamente 57 MB de pesos quantizados, além de arquivos pequenos de configuração/tokenização. A inferência continua no navegador e o cache evita repetir o download quando disponível.</p>
+      <p class="small-note">O reconhecimento detalhado é carregado sob demanda e o app reduz automaticamente a frequência de inferência quando já encontrou um alvo estável.</p>
       <button id="onboardingContinue" class="primary" value="default">Entendi</button>
     </form>
   </dialog>
@@ -228,7 +237,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
   <script src="js/recognition-policy.js"></script>
-  <script src="js/open-vocab-loader.js"></script>
   <script src="js/japanese-data.js"></script>
   <script src="js/app.js"></script>
 </body>

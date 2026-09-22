@@ -1,29 +1,21 @@
-# Changelog
+# Changelog — Mira Nihongo V0.3
 
-## V0.2
+## V0.3
 
-- Adicionada **Visão ampla** com Transformers.js + MobileCLIP quantizado.
-- Reconhecimento passa a ter três camadas: COCO-SSD → MobileNet → MobileCLIP quando necessário.
-- Visão ampla pode analisar diretamente a mira quando COCO-SSD não detecta nenhum objeto.
-- Botão **Analisar mira** para forçar análise da região central.
-- Download do modelo amplo passou a ser **lazy/on-demand**, evitando ~57 MB no simples ato de abrir a câmera.
-- Backoff de 60 s após falha de carregamento, com repetição manual disponível.
-- Casos físicos V0.1 viraram famílias explícitas de confusão: `skateboard`, `person`, `suitcase`, `oven` e outras.
-- Detector de alta confiança deixa de ser aceito sozinho como certeza em famílias de confusão quando verificadores não confirmam.
-- `person` usa recorte da mira nas checagens para distinguir melhor mão e calçado do corpo inteiro.
-- MobileNet ganhou regras para ventilador e calçados.
-- Adicionados ao vocabulário visual: 扇風機, 手, 靴 e integração ampliada de カッターナイフ/段ボール箱.
-- Resultado da Visão ampla deixa de permanecer indefinidamente quando novas leituras ficam inconclusivas.
-- Novo modo **🧭 Cena** com 上・下・中・左・右.
-- Inferência de relações recebeu filtros semânticos para recipiente/superfície e limiares conservadores.
-- Service Worker atualizado para cache V0.2 e continua network-first para facilitar atualizações pelo GitHub Pages.
-
-## V0.1
-
-- HUD de câmera compacta.
-- Consenso temporal em várias detecções.
-- Segunda checagem MobileNet.
-- Incerteza explícita.
-- Correção manual e memória visual local.
-- Imersão progressiva.
-- Controles de memória/progresso.
+- Removida a terceira camada MobileCLIP/Transformers.js da V0.2.
+- Mantidos apenas COCO-SSD Lite + MobileNet V2 sob demanda.
+- Adicionados perfis Econômico, Equilibrado e Precisão.
+- Câmera padrão reduzida para 640×480 / 18 fps.
+- Detector passa a reduzir seu ritmo quando a leitura já está estável.
+- Intervalo adapta-se à latência observada no aparelho.
+- Número máximo de caixas COCO reduzido para 10.
+- Classificador detalhado deixou de ser pré-carregado na abertura da câmera.
+- Backoff progressivo quando a visão detalhada não consegue reconhecer um alvo.
+- `frisbee` entrou na lista de classes de alta confusão.
+- Adicionado reconhecimento/correção específica para `bottlecap` → `キャップ`.
+- Regressões físicas preservadas para estilete, caixa de papelão, sapato e ventilador.
+- `person` amplo passa a poder sugerir `手` como hipótese, mas nunca como certeza automática.
+- Banco ampliado de 108 para **202 entradas**.
+- Busca do vocabulário passou a considerar aliases.
+- Relações de cena preservadas e estendidas para novos recipientes/superfícies.
+- Service Worker atualizado para cache `mira-nihongo-v0-3-r1`.
