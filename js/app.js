@@ -15,6 +15,7 @@
     immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'), fontSize: document.getElementById('fontSize'), haptics: document.getElementById('hapticsToggle'), adaptiveReview: document.getElementById('adaptiveReviewToggle'), worldContextToggle: document.getElementById('worldContextToggle'),
     clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'), replayTutorial: document.getElementById('replayTutorialBtn'),
     vocabBtn: document.getElementById('vocabBtn'), vocabDialog: document.getElementById('vocabDialog'), vocabSearch: document.getElementById('vocabSearch'), vocabList: document.getElementById('vocabList'), correctionDialog: document.getElementById('correctionDialog'), correctionSearch: document.getElementById('correctionSearch'), correctionList: document.getElementById('correctionList'), correctionCandidates: document.getElementById('correctionCandidates'), correctionCandidateList: document.getElementById('correctionCandidateList'), cancelCorrection: document.getElementById('cancelCorrectionBtn'), historyBtn: document.getElementById('historyBtn'), historyDialog: document.getElementById('historyDialog'), historyList: document.getElementById('historyList'), learningBtn: document.getElementById('learningBtn'), learningDialog: document.getElementById('learningDialog'), learningStats: document.getElementById('learningStats'), dueReviewList: document.getElementById('dueReviewList'), grammarProgressList: document.getElementById('grammarProgressList'),
+    exploreScene: document.getElementById('exploreSceneBtn'), sceneBreadcrumb: document.getElementById('sceneBreadcrumb'),
     tutorialCoach: document.getElementById('tutorialCoach'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialText: document.getElementById('tutorialText'), tutorialNext: document.getElementById('tutorialNextBtn'), tutorialSkip: document.getElementById('tutorialSkipBtn'), toast: document.getElementById('toast')
   };
 
@@ -165,7 +166,7 @@
     frozen:false, freezeReason:'', detailsOpen:false, sheetSnap:'compact', sheetDrag:null, sentenceSwipe:null, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), learningStore:initialLearningStore, progress:initialLearningStore.words, grammar:initialLearningStore.grammar, adaptiveReviewEnabled:localStorage.getItem('mn-v07-review')!=='0', worldContextEnabled:localStorage.getItem('mn-v08-world')!=='0', contextState:null, photoStudyActive:false, sceneMemory:[], reviewActive:false, reviewRevealed:false, reviewTimer:null, lastExposureSig:'', lessonPlan:null, history:readJson('mn-v05-history',[]),
     focus:{nx:.5,ny:.45,phase:'observing',stable:0,moving:0,prevPixels:null,lastHash:null,trackingHash:null,loopTimer:null,lastAnalysisAt:0,lastMotion:1,lastSharpness:0},
     revealPhase:0, revealTimer:null, analysisToken:0,
-    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null
+    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null, scene:null, sceneExplore:false, sceneAnalyzing:false, temporalLabels:[]
   };
 
   init();
@@ -181,7 +182,7 @@
 
   function bindEvents(){
     els.start.addEventListener('click',startCamera); els.flip.addEventListener('click',flipCamera); els.settings.addEventListener('click',()=>safeShowModal(els.settingsDialog)); els.study.addEventListener('click',()=>safeShowModal(els.studyDialog)); els.scan.addEventListener('click',()=>requestAnalysis(true)); els.unknownCorrect.addEventListener('click',openCorrection);
-    els.stage.addEventListener('pointerup',handleStageTap);
+    els.stage.addEventListener('pointerup',handleStageTap); els.exploreScene?.addEventListener('click',e=>{e.stopPropagation();toggleSceneExplore()});
     bindSheetGestures(); bindSentenceSwipe();
     els.expandLesson.addEventListener('click',()=>{if(state.sheetDrag?.moved)return;setSheetSnap(window.MiraInteraction.nextSnap(state.sheetSnap,state.sheetSnap==='full'?-1:1),true)}); els.breakdownToggle.addEventListener('click',()=>{togglePanel(els.breakdownPanel);firstTip('breakdown','Toque em um bloco da frase para entender sua função.')}); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
     els.intentGrid.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(b)showIntent(b.dataset.intent)});
@@ -281,6 +282,7 @@
       const roi=focusBox(profile().detectRatio);drawVideoBoxToCanvas(roi,els.detect);const local=await state.detector.detect(els.detect,12,state.minScore);if(token!==state.analysisToken)return;
       state.lastPredictions=local.filter(p=>JAPANESE_DB[p.class]).map(p=>mapPredictionFromCanvas(p,roi,els.detect));
       const target=chooseTarget(state.lastPredictions);
+      state.temporalLabels.push(target?.class||null);state.temporalLabels=state.temporalLabels.slice(-3);
       if(target){
         const part=window.MiraVisionEngine?.inferPartCandidate?.({target,focusPoint:focusPointInVideo(),focusBox:focusBox(profile().deepRatio)})||null;
         await acceptDetectorTarget(target,token,part);
@@ -295,7 +297,7 @@
     state.rawDetectorKey=prediction.class;state.selectedPrediction=prediction;const hash=computeCurrentFocusHash();state.currentCropHash=hash;
     const remembered=findCorrection(hash,prediction.class);if(remembered){state.candidates=[{key:remembered.key,score:1,sources:['memory']}];selectObject(remembered.key,{...prediction,class:remembered.key,_memory:true},{kind:'memory',reason:'Lembrança visual local aplicada.',detectorScore:prediction.score});return}
 
-    const high=window.MiraRecognitionPolicy?.isHighConfusion?.(prediction.class)||window.MiraVisionEngine?.HIGH_RISK?.has?.(prediction.class);
+    const animalFamily=window.MiraVisionEngine?.familyOf?.(prediction.class)==='animal';const high=window.MiraRecognitionPolicy?.isHighConfusion?.(prediction.class)||window.MiraVisionEngine?.HIGH_RISK?.has?.(prediction.class)||animalFamily;
     let mapped=[];let skinRatio=0;let verifierLabel='';
     const preliminary=rankVision(prediction,[],prediction.bbox,part,0);
     const preliminaryDecision=window.MiraVisionEngine?.decide?.(preliminary)||{kind:'tentative',top:preliminary[0]};
@@ -312,7 +314,12 @@
     }
 
     const ranked=rankVision(prediction,mapped,prediction.bbox,part,skinRatio);state.candidates=ranked;
-    const decision=window.MiraVisionEngine?.decide?.(ranked)||{kind:ranked.length?'tentative':'unknown',top:ranked[0]};
+    if(animalFamily&&mapped.length&&!mapped.some(x=>window.MiraVisionEngine?.familyOf?.(x.key)==='animal')){showUnknownDecision(ranked,'O detector sugeriu um animal, mas a verificação visual não confirmou a categoria.');return}
+    const temporal=window.MiraRecognitionFusionV1?.temporalAgreement?.(state.temporalLabels)||.5;
+    const negative=window.MiraRecognitionFusionV1?.negativeEvidence?.({bbox:prediction.bbox,frameWidth:els.video.videoWidth,frameHeight:els.video.videoHeight,sharpness:state.focus.lastSharpness,detector:prediction.score})||0;
+    const fusion=window.MiraRecognitionFusionV1?.fuse?.({detector:prediction.score,verifier:mapped[0]?.probability||0,objectness:Math.min(1,(prediction.score||0)*1.12),temporal,negative})||null;
+    let decision=window.MiraVisionEngine?.decide?.(ranked)||{kind:ranked.length?'tentative':'unknown',top:ranked[0]};
+    if(temporal<.75&&state.temporalLabels.length>=2)decision={kind:'unknown',top:null};else if(fusion?.kind==='unknown'&&prediction.score<.72)decision={kind:'unknown',top:null};else if(fusion?.kind==='tentative'&&decision.kind==='stable')decision={...decision,kind:'tentative'};
     if(decision.kind==='unknown'||!decision.top){showUnknownDecision(ranked,'Os sinais não concordaram o suficiente para ensinar uma palavra como certa.');return}
     const top=decision.top;const outPrediction={...prediction,class:top.key,bbox:(part&&top.key===part.key)?focusBox(.18):prediction.bbox,_broad:true};
     const reason=part&&top.key===part.key?part.reason
@@ -487,11 +494,11 @@
     if(v===state.frozen){renderLesson();return}
     if(v){
       if(!captureFreezeFrame()&&state.cameraStarted)return;
-      state.frozen=true;state.freezeReason=reason;state.telemetry.frozenSince=Date.now();state.analysisToken++;clearTimeout(state.focus.loopTimer);state.focus.loopTimer=null;els.stage.classList.add('frozen');els.stage.classList.remove('annotations-hidden');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus('Congelado');haptic([10,35,10]);clearTimeout(state.annotationTimer);state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),700);
-      try{els.video.pause()}catch(_){/* opcional */}
+      state.frozen=true;state.freezeReason=reason;state.scene=null;state.sceneExplore=false;ensureScene();for(const p of state.lastPredictions)addScenePrediction(p);if(state.selectedPrediction){const e=addScenePrediction(state.selectedPrediction);if(e)window.MiraWorldModelV1?.select?.(state.scene,e.id)};state.telemetry.frozenSince=Date.now();state.analysisToken++;clearTimeout(state.focus.loopTimer);state.focus.loopTimer=null;els.stage.classList.add('frozen');els.stage.classList.remove('annotations-hidden');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus('Congelado');haptic([10,35,10]);clearTimeout(state.annotationTimer);state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),700);
+      try{els.video.pause()}catch(_){/* opcional */} renderSceneBreadcrumb();renderBoxes();setTimeout(()=>analyzeFrozenScene(),0);
       if(reason==='manual')showToast('Imagem congelada.');
     }else{
-      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';clearTimeout(state.annotationTimer);els.stage.classList.remove('frozen','annotations-hidden');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
+      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';state.scene=null;state.sceneExplore=false;els.stage.classList.remove('scene-explore');els.exploreScene?.classList.remove('active');els.sceneBreadcrumb?.classList.add('hidden');clearTimeout(state.annotationTimer);els.stage.classList.remove('frozen','annotations-hidden');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
       setPhase(state.selectedKey?'tracking':'observing');if(state.cameraStarted)startFocusLoop();
     }
     renderLesson();updateTelemetry();
@@ -533,7 +540,49 @@
   function selectManual(key){const item=JAPANESE_DB[key];if(!item)return;state.rawDetectorKey='__manual__';state.currentCropHash=null;state.candidates=[{key,score:1}];selectObject(key,{class:key,score:1,bbox:focusBox(.32),_manual:true},{kind:'stable',reason:'Escolhido no vocabulário.'});safeClose(els.vocabDialog);if(state.cameraStarted&&!state.frozen)setFrozen(true,'manual');showToast(`${item.jp} · imagem preservada`)}
   function renderVocabulary(container,query,onChoose){const q=normalize(query);const entries=Object.entries(JAPANESE_DB).filter(([k,i])=>!q||[k,i.jp,i.kana,i.romaji,i.pt,...(i.aliases||[])].some(v=>normalize(v).includes(q))).sort((a,b)=>a[1].pt.localeCompare(b[1].pt,'pt-BR'));container.replaceChildren();entries.forEach(([k,i])=>{const b=document.createElement('button');b.type='button';b.className='vocab-item';b.innerHTML='<span><span class="jp"></span><span class="sub"></span></span><span class="pt"></span>';b.querySelector('.jp').textContent=i.jp;b.querySelector('.sub').textContent=`${i.kana} · ${i.romaji}`;b.querySelector('.pt').textContent=i.pt;b.addEventListener('click',()=>onChoose(k));container.appendChild(b)})}
 
-  function handleStageTap(e){if(!state.cameraStarted)return;if(e.target.closest('button,section.lesson-card,header,.study-pill,.load-chip,.freeze-banner'))return;if(state.frozen){toggleFrozenAnnotations();return}const r=els.stage.getBoundingClientRect();state.focus.nx=clamp((e.clientX-r.left)/r.width,.08,.92);state.focus.ny=clamp((e.clientY-r.top)/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.')}
+  function handleStageTap(e){
+    if(!state.cameraStarted)return;if(e.target.closest('button,section.lesson-card,header,.study-pill,.load-chip,.freeze-banner,.scene-breadcrumb'))return;
+    const r=els.stage.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
+    if(state.frozen){
+      const entity=window.MiraWorldModelV1?.hitTest?.(state.scene,sx,sy);
+      if(entity){selectSceneEntity(entity);return}
+      analyzeFrozenPoint(sx,sy);return;
+    }
+    state.focus.nx=clamp(sx/r.width,.08,.92);state.focus.ny=clamp(sy/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.');
+  }
+  function toggleSceneExplore(force){
+    if(!state.frozen)return;state.sceneExplore=typeof force==='boolean'?force:!state.sceneExplore;els.stage.classList.toggle('scene-explore',state.sceneExplore);els.exploreScene?.classList.toggle('active',state.sceneExplore);if(state.sceneExplore)els.stage.classList.remove('annotations-hidden');renderBoxes();showToast(state.sceneExplore?'Cena explorável · toque em uma região.':'Exploração visual recolhida.');
+  }
+  function ensureScene(){if(!state.scene)state.scene=window.MiraWorldModelV1?.createScene?.({width:els.stage.clientWidth,height:els.stage.clientHeight})||null;return state.scene}
+  function semanticType(key){return window.MiraVisualOntologyV1?.typeOf?.(key)||'object'}
+  function videoBoxToStage(box){const m=videoCoverMetrics();return[m.ox+box[0]*m.scale,m.oy+box[1]*m.scale,box[2]*m.scale,box[3]*m.scale]}
+  function addScenePrediction(p,parentId=null,source='detector'){
+    const scene=ensureScene();if(!scene||!p?.bbox||!JAPANESE_DB[p.class])return null;const box=p._stageBox?p.bbox:videoBoxToStage(p.bbox);const dup=scene.entities.find(e=>e.conceptId===p.class&&e.bbox&&iouBox(e.bbox,box)>.55);if(dup)return dup;
+    return window.MiraWorldModelV1.addEntity(scene,{conceptId:p.class,semanticType:semanticType(p.class),bbox:box,confidence:p.score||.5,status:(p.score||0)>=.68?'stable':'tentative',source,parentId,evidence:[{source,score:p.score||0}]});
+  }
+  function iouBox(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),r=Math.min(a[0]+a[2],b[0]+b[2]),d=Math.min(a[1]+a[3],b[1]+b[3]),inter=Math.max(0,r-x)*Math.max(0,d-y),u=a[2]*a[3]+b[2]*b[3]-inter;return u?inter/u:0}
+  function selectSceneEntity(entity){
+    if(!entity||!JAPANESE_DB[entity.conceptId])return;window.MiraWorldModelV1?.select?.(state.scene,entity.id);state.sceneExplore=true;els.stage.classList.add('scene-explore');els.stage.classList.remove('annotations-hidden');const stageBox=entity.bbox||[0,0,els.stage.clientWidth,els.stage.clientHeight];const m=videoCoverMetrics();const vb=[(stageBox[0]-m.ox)/m.scale,(stageBox[1]-m.oy)/m.scale,stageBox[2]/m.scale,stageBox[3]/m.scale];state.candidates=[{key:entity.conceptId,score:entity.confidence,sources:['scene']}];selectObject(entity.conceptId,{class:entity.conceptId,score:entity.confidence,bbox:vb,_scene:true},{kind:entity.status==='stable'?'stable':'tentative',reason:'Selecionado na cena congelada.',detectorScore:entity.confidence});renderSceneBreadcrumb();renderBoxes();
+  }
+  function renderSceneBreadcrumb(){
+    if(!els.sceneBreadcrumb)return;const ids=state.scene?.breadcrumb||[];const labels=ids.map(id=>state.scene.entities.find(e=>e.id===id)).filter(Boolean).map(e=>JAPANESE_DB[e.conceptId]?.pt||e.conceptId);els.sceneBreadcrumb.textContent=labels.join(' › ');els.sceneBreadcrumb.classList.toggle('hidden',!state.frozen||!labels.length);
+  }
+  async function analyzeFrozenScene(){
+    if(!state.frozen||!state.detector||state.sceneAnalyzing)return;state.sceneAnalyzing=true;const scene=ensureScene();
+    try{
+      for(const p of state.lastPredictions)addScenePrediction(p,null,'live-detector');
+      recordHeavy();const preds=await state.detector.detect(els.freezeCanvas,20,Math.max(.38,state.minScore-.08));if(!state.frozen)return;const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;
+      for(const p of preds){if(!JAPANESE_DB[p.class])continue;addScenePrediction({...p,bbox:[p.bbox[0]*sx,p.bbox[1]*sy,p.bbox[2]*sx,p.bbox[3]*sy],_stageBox:true},null,'frozen-detector')}
+      await analyzeSceneEnvironment(scene);renderBoxes();
+    }catch(e){console.warn('Scene analysis failed',e)}finally{state.sceneAnalyzing=false}
+  }
+  async function analyzeSceneEnvironment(scene){
+    if(!state.deepVisionEnabled)return;const verifier=await ensureVerifier();if(!verifier||!state.frozen)return;try{recordHeavy();const cs=await verifier.classify(els.freezeCanvas,8);const joined=cs.map(x=>String(x.className||'').toLowerCase()).join(' | ');const rules=[[/forest|woodland|rainforest/,'forest'],[/street|road|highway/,'street'],[/cliff|valley|seashore|lakeside/,'ground'],[/palace|skyscraper|apartment|building/,'city']];for(const[re,key]of rules){if(re.test(joined)&&JAPANESE_DB[key]&&!scene.entities.some(e=>e.conceptId===key)){window.MiraWorldModelV1.addEntity(scene,{conceptId:key,semanticType:semanticType(key),confidence:.52,status:'tentative',source:'scene-classifier',evidence:[{source:'scene-classifier'}]});break}}}catch(_){/* optional */}
+  }
+  async function analyzeFrozenPoint(x,y){
+    if(state.sceneAnalyzing||!state.frozen)return;const verifier=await ensureVerifier();if(!verifier){showToast('Visão detalhada indisponível.');return}state.sceneAnalyzing=true;setStatus('Analisando esta região…');
+    try{const size=Math.max(96,Math.min(180,Math.min(els.stage.clientWidth,els.stage.clientHeight)*.34)),c=document.createElement('canvas');c.width=224;c.height=224;const sx=els.freezeCanvas.width/els.stage.clientWidth,sy=els.freezeCanvas.height/els.stage.clientHeight;const rx=Math.max(0,(x-size/2)*sx),ry=Math.max(0,(y-size/2)*sy),rw=Math.min(size*sx,els.freezeCanvas.width-rx),rh=Math.min(size*sy,els.freezeCanvas.height-ry);c.getContext('2d').drawImage(els.freezeCanvas,rx,ry,rw,rh,0,0,224,224);recordHeavy();const classes=await verifier.classify(c,12),mapped=mappedCandidates(classes);if(!mapped.length){showToast('Ainda não reconheci esta região.');return}const top=mapped[0],key=top.key;if(!JAPANESE_DB[key]){showToast('Ainda não reconheci esta região.');return}const confidence=top.probability||top.score||.5;const e=window.MiraWorldModelV1.addEntity(ensureScene(),{conceptId:key,semanticType:semanticType(key),bbox:[Math.max(0,x-size/2),Math.max(0,y-size/2),Math.min(size,els.stage.clientWidth),Math.min(size,els.stage.clientHeight)],confidence,status:confidence>.62?'stable':'tentative',source:'drill-down',evidence:[{source:'mobilenet',score:confidence}]});selectSceneEntity(e)}catch(e){console.warn(e);showToast('Não consegui analisar esta região.')}finally{state.sceneAnalyzing=false;setStatus('Congelado')}
+  }
   function positionCrosshair(){els.crosshairWrap.style.left=`${state.focus.nx*100}%`;els.crosshairWrap.style.top=`${state.focus.ny*100}%`}
   function focusPointInVideo(){const m=videoCoverMetrics();let sx=state.focus.nx*m.cw,sy=state.focus.ny*m.ch;if(state.facingMode==='user')sx=m.cw-sx;return{x:(sx-m.ox)/m.scale,y:(sy-m.oy)/m.scale}}
   function focusBox(ratio){const p=focusPointInVideo(),vw=els.video.videoWidth||1,vh=els.video.videoHeight||1;return window.MiraRecognitionPolicy?.makeCrosshairBox?.(vw,vh,p,ratio)||[Math.max(0,p.x-100),Math.max(0,p.y-100),200,200]}
@@ -543,7 +592,14 @@
   function mapPredictionFromCanvas(p,roi,canvas){const [rx,ry,rw,rh]=roi;return{...p,bbox:[rx+p.bbox[0]*rw/canvas.width,ry+p.bbox[1]*rh/canvas.height,p.bbox[2]*rw/canvas.width,p.bbox[3]*rh/canvas.height]}}
   function chooseTarget(preds){if(!preds.length)return null;const p=focusPointInVideo();const inside=preds.filter(x=>pointInBox(p.x,p.y,x.bbox));if(inside.length)return inside.sort((a,b)=>scoreTarget(b,p)-scoreTarget(a,p))[0];const max=Math.min(els.video.videoWidth,els.video.videoHeight)*.12;return preds.map(x=>({x,d:distanceToBox(p.x,p.y,x.bbox)})).filter(v=>v.d<max).sort((a,b)=>a.d-b.d||b.x.score-a.x.score)[0]?.x||null}
   function scoreTarget(p,f){const [x,y,w,h]=p.bbox,cx=x+w/2,cy=y+h/2,diag=Math.hypot(els.video.videoWidth||1,els.video.videoHeight||1);return p.score-Math.hypot(cx-f.x,cy-f.y)/diag*.22+Math.min(.07,w*h/Math.max(1,els.video.videoWidth*els.video.videoHeight)*.16)}
-  function renderBoxes(){els.boxes.replaceChildren();if(!state.showBoxes&&!state.selectedPrediction)return;const m=videoCoverMetrics();const list=state.showBoxes?state.lastPredictions:(state.selectedPrediction?[state.selectedPrediction]:[]);list.forEach(p=>{if(!p?.bbox||!JAPANESE_DB[p.class])return;const [x,y,w,h]=p.bbox,b=document.createElement('div');b.className='detection-box'+(p===state.selectedPrediction||p.class===state.selectedKey?' selected':'');b.style.left=`${m.ox+x*m.scale}px`;b.style.top=`${m.oy+y*m.scale}px`;b.style.width=`${w*m.scale}px`;b.style.height=`${h*m.scale}px`;const s=document.createElement('span');s.textContent=state.diagnostics?`${JAPANESE_DB[p.class].jp} ${Math.round((p.score||0)*100)}%`:JAPANESE_DB[p.class].jp;b.appendChild(s);els.boxes.appendChild(b)})}
+  function renderBoxes(){
+    els.boxes.replaceChildren();
+    if(state.frozen&&state.scene){
+      const list=state.sceneExplore?state.scene.entities.filter(e=>e.bbox):state.scene.entities.filter(e=>e.id===state.scene.selectedId&&e.bbox);
+      for(const e of list){const i=JAPANESE_DB[e.conceptId];if(!i)continue;const b=document.createElement('button');b.type='button';b.className=`detection-box scene-${e.status} scene-${e.semanticType}`+(e.id===state.scene.selectedId?' scene-selected selected':'');b.style.left=`${e.bbox[0]}px`;b.style.top=`${e.bbox[1]}px`;b.style.width=`${e.bbox[2]}px`;b.style.height=`${e.bbox[3]}px`;b.dataset.entityId=e.id;b.setAttribute('aria-label',`Selecionar ${i.pt}`);const sp=document.createElement('span');sp.textContent=state.diagnostics?`${i.jp} ${Math.round(e.confidence*100)}%`:i.jp;b.appendChild(sp);b.addEventListener('pointerup',ev=>{ev.stopPropagation();selectSceneEntity(e)});els.boxes.appendChild(b)}return;
+    }
+    if(!state.showBoxes&&!state.selectedPrediction)return;const m=videoCoverMetrics();const list=state.showBoxes?state.lastPredictions:(state.selectedPrediction?[state.selectedPrediction]:[]);list.forEach(p=>{if(!p?.bbox||!JAPANESE_DB[p.class])return;const [x,y,w,h]=p.bbox,b=document.createElement('div');b.className='detection-box'+(p===state.selectedPrediction||p.class===state.selectedKey?' selected':'');b.style.left=`${m.ox+x*m.scale}px`;b.style.top=`${m.oy+y*m.scale}px`;b.style.width=`${w*m.scale}px`;b.style.height=`${h*m.scale}px`;const sp=document.createElement('span');sp.textContent=state.diagnostics?`${JAPANESE_DB[p.class].jp} ${Math.round((p.score||0)*100)}%`:JAPANESE_DB[p.class].jp;b.appendChild(sp);els.boxes.appendChild(b)})
+  }
   function videoCoverMetrics(){const cw=els.stage.clientWidth,ch=els.stage.clientHeight,vw=els.video.videoWidth||1,vh=els.video.videoHeight||1,scale=Math.max(cw/vw,ch/vh);return{cw,ch,vw,vh,scale,ox:(cw-vw*scale)/2,oy:(ch-vh*scale)/2}}
   function pointInBox(x,y,b){return x>=b[0]&&x<=b[0]+b[2]&&y>=b[1]&&y<=b[1]+b[3]}
   function distanceToBox(x,y,b){const dx=Math.max(b[0]-x,0,x-(b[0]+b[2])),dy=Math.max(b[1]-y,0,y-(b[1]+b[3]));return Math.hypot(dx,dy)}

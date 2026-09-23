@@ -35,7 +35,8 @@
 
       <button id="studyBtn" class="study-pill glass" type="button"><span id="studyModeIcon">👁</span><span id="studyModeLabel">Cotidiano</span><span>⌄</span></button>
       <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
-      <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span></div>
+      <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span><button id="exploreSceneBtn" class="explore-scene-btn" type="button">Explorar cena</button></div>
+      <div id="sceneBreadcrumb" class="scene-breadcrumb glass hidden" aria-live="polite"></div>
 
       <div id="crosshairWrap" class="crosshair-wrap" aria-hidden="true">
         <div class="crosshair"><span></span></div><div id="holdRing" class="hold-ring"></div>
@@ -150,7 +151,7 @@
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.9.2 · Freeze Hotfix</strong><p>Hotfix do congelamento visual em telas móveis, preservando o comportamento da V0.8.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 1 · Visual World Model</strong><p>Recognition Fusion, Scene Graph interativo, múltiplas entidades e exploração visual por toque.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -184,6 +185,10 @@
   <script src="js/adaptive-learning.js"></script>
   <script src="js/interaction-engine.js"></script>
   <script src="js/freeze-engine.js"></script>
+  <script src="js/recognition-fusion-v1.js"></script>
+  <script src="js/world-model-v1.js"></script>
+  <script src="js/visual-ontology-v1.js"></script>
+  <script>window.MiraVisualOntologyV1?.install?.(JAPANESE_DB);</script>
   <script src="js/app.js"></script>
 </body>
 </html>

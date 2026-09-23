@@ -75,3 +75,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 /* V0.8 — World & Context */
 .world-context{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.045)}
 .world-context-head{display:flex;flex-direction:column;gap:3px}.world-context-head small,.photo-study-status{opacity:.72;line-height:1.35}.state-options,.world-actions{display:flex;gap:8px;overflow-x:auto;padding-top:8px}.state-options .soft-btn,.world-actions .soft-btn{flex:0 0 auto}.photo-study-status{display:block;padding-top:7px}.lesson-card.snap-compact .world-context{display:none}
+
+/* V1.0 Pre-Alpha 1 · Interactive Scene Graph */
+.freeze-banner{gap:10px}.explore-scene-btn{border:0;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.12);color:inherit;font-weight:750;font-size:12px}.explore-scene-btn.active{background:rgba(141,240,187,.2)}
+.scene-breadcrumb{position:absolute;z-index:17;left:50%;top:calc(var(--safe-top) + 126px);transform:translateX(-50%);max-width:88vw;padding:7px 10px;border-radius:999px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.camera-stage.frozen .boxes-layer{pointer-events:auto}.camera-stage.frozen .detection-box{pointer-events:auto;cursor:pointer}.detection-box.scene-tentative{border-style:dashed}.detection-box.scene-unknown{opacity:.5}.detection-box.scene-part{border-radius:999px}.detection-box.scene-selected{border:2px solid rgba(141,240,187,.98);box-shadow:0 0 0 4px rgba(141,240,187,.12)}
+.camera-stage.frozen.scene-explore.annotations-hidden .boxes-layer{opacity:1}.camera-stage.scene-explore .detection-box{background:rgba(255,255,255,.025)}

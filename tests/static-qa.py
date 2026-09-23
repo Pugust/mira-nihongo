@@ -41,7 +41,7 @@ for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','
     ok(v in sw,f'sw missing {v}')
 
 # version markers and V0.8 world-context hooks
-for needle in ['Mira Nihongo V0.9.2','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
+for needle in ['Mira Nihongo V1.0 Pre-Alpha 1','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
     ok(needle in html,f'html missing {needle}')
 for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning','renderWorldContext','exploreFrozenPhoto','mn-v08-world']:
     ok(needle in app,f'app missing {needle}')
