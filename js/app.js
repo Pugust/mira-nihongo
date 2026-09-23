@@ -1,6 +1,11 @@
 'use strict';
 
 (() => {
+  const EXTERNAL={tf:'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',coco:'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js',mobilenet:'https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js'};
+  const externalLoads=new Map();
+  function loadExternalScript(url){if(externalLoads.has(url))return externalLoads.get(url);const p=new Promise((resolve,reject)=>{const e=document.createElement('script');e.src=url;e.async=true;e.onload=resolve;e.onerror=()=>reject(new Error('Falha ao carregar dependência visual'));document.head.appendChild(e)});externalLoads.set(url,p);return p}
+  async function ensureTf(){if(!window.tf)await loadExternalScript(EXTERNAL.tf);if(!window.tf)throw new Error('TensorFlow.js indisponível');return window.tf}
+
   const els = {
     stage: document.getElementById('cameraStage'), video: document.getElementById('camera'), freezeCanvas: document.getElementById('freezeCanvas'), focus: document.getElementById('focusCanvas'), detect: document.getElementById('detectCanvas'), crop: document.getElementById('cropCanvas'), boxes: document.getElementById('boxesLayer'),
     status: document.getElementById('statusText'), start: document.getElementById('startBtn'), flip: document.getElementById('flipCameraBtn'), settings: document.getElementById('settingsBtn'), settingsDialog: document.getElementById('settingsDialog'),
@@ -15,7 +20,7 @@
     immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'), fontSize: document.getElementById('fontSize'), haptics: document.getElementById('hapticsToggle'), adaptiveReview: document.getElementById('adaptiveReviewToggle'), worldContextToggle: document.getElementById('worldContextToggle'),
     clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'), replayTutorial: document.getElementById('replayTutorialBtn'),
     vocabBtn: document.getElementById('vocabBtn'), vocabDialog: document.getElementById('vocabDialog'), vocabSearch: document.getElementById('vocabSearch'), vocabList: document.getElementById('vocabList'), correctionDialog: document.getElementById('correctionDialog'), correctionSearch: document.getElementById('correctionSearch'), correctionList: document.getElementById('correctionList'), correctionCandidates: document.getElementById('correctionCandidates'), correctionCandidateList: document.getElementById('correctionCandidateList'), cancelCorrection: document.getElementById('cancelCorrectionBtn'), historyBtn: document.getElementById('historyBtn'), historyDialog: document.getElementById('historyDialog'), historyList: document.getElementById('historyList'), learningBtn: document.getElementById('learningBtn'), learningDialog: document.getElementById('learningDialog'), learningStats: document.getElementById('learningStats'), dueReviewList: document.getElementById('dueReviewList'), grammarProgressList: document.getElementById('grammarProgressList'),
-    exploreScene: document.getElementById('exploreSceneBtn'), sceneBreadcrumb: document.getElementById('sceneBreadcrumb'),
+    exploreScene: document.getElementById('exploreSceneBtn'), sceneBreadcrumb: document.getElementById('sceneBreadcrumb'), cameraToolsBtn:document.getElementById('cameraToolsBtn'), cameraTools:document.getElementById('cameraTools'), zoomRange:document.getElementById('zoomRange'), zoomIn:document.getElementById('zoomInBtn'), zoomOut:document.getElementById('zoomOutBtn'), torch:document.getElementById('torchBtn'),
     tutorialCoach: document.getElementById('tutorialCoach'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialText: document.getElementById('tutorialText'), tutorialNext: document.getElementById('tutorialNextBtn'), tutorialSkip: document.getElementById('tutorialSkipBtn'), toast: document.getElementById('toast')
   };
 
@@ -40,6 +45,7 @@
     [/mirror/i, 'mirror'],
     [/pillow/i, 'pillow'],
     [/shower curtain|curtain/i, 'curtain'],
+    [/china cabinet|medicine chest|file cabinet|filing cabinet|cabinet/i, 'cabinet'],
     [/wardrobe|chiffonier/i, 'wardrobe'],
     [/light switch|switch/i, 'switch'],
     [/can opener/i, 'can_opener'],
@@ -166,7 +172,7 @@
     frozen:false, freezeReason:'', detailsOpen:false, sheetSnap:'compact', sheetDrag:null, sentenceSwipe:null, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), learningStore:initialLearningStore, progress:initialLearningStore.words, grammar:initialLearningStore.grammar, adaptiveReviewEnabled:localStorage.getItem('mn-v07-review')!=='0', worldContextEnabled:localStorage.getItem('mn-v08-world')!=='0', contextState:null, photoStudyActive:false, sceneMemory:[], reviewActive:false, reviewRevealed:false, reviewTimer:null, lastExposureSig:'', lessonPlan:null, history:readJson('mn-v05-history',[]),
     focus:{nx:.5,ny:.45,phase:'observing',stable:0,moving:0,prevPixels:null,lastHash:null,trackingHash:null,loopTimer:null,lastAnalysisAt:0,lastMotion:1,lastSharpness:0},
     revealPhase:0, revealTimer:null, analysisToken:0,
-    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null, scene:null, sceneExplore:false, sceneAnalyzing:false, sceneSegmentation:null, temporalLabels:[], uiMode:'recognition', uiEpoch:0
+    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null, scene:null, sceneExplore:false, sceneAnalyzing:false, sceneSegmentation:null, temporalLabels:[], cameraZoom:1, torchOn:false, uiMode:'recognition', uiEpoch:0
   };
 
   init();
@@ -183,6 +189,7 @@
   function bindEvents(){
     els.start.addEventListener('click',startCamera); els.flip.addEventListener('click',flipCamera); els.settings.addEventListener('click',()=>safeShowModal(els.settingsDialog)); els.study.addEventListener('click',()=>safeShowModal(els.studyDialog)); els.scan.addEventListener('click',()=>requestAnalysis(true)); els.unknownCorrect.addEventListener('click',openCorrection);
     els.stage.addEventListener('pointerup',handleStageTap); els.exploreScene?.addEventListener('click',e=>{e.stopPropagation();toggleSceneExplore()});
+    els.cameraToolsBtn?.addEventListener('click',e=>{e.stopPropagation();els.cameraTools?.classList.toggle('hidden')}); els.zoomRange?.addEventListener('input',()=>setCameraZoom(Number(els.zoomRange.value))); els.zoomIn?.addEventListener('click',()=>stepZoom(.25)); els.zoomOut?.addEventListener('click',()=>stepZoom(-.25)); els.torch?.addEventListener('click',toggleTorch);
     bindSheetGestures(); bindSentenceSwipe();
     els.expandLesson.addEventListener('click',()=>{if(state.sheetDrag?.moved)return;setSheetSnap(window.MiraInteraction.nextSnap(state.sheetSnap,state.sheetSnap==='full'?-1:1),true)}); els.breakdownToggle.addEventListener('click',()=>{togglePanel(els.breakdownPanel);firstTip('breakdown','Toque em um bloco da frase para entender sua função.')}); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
     els.intentGrid.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(b)showIntent(b.dataset.intent)});
@@ -214,15 +221,14 @@
 
   async function loadDetector(){
     setStatus('Carregando detector…');
-    try{if(!window.tf||!window.cocoSsd)throw new Error('Bibliotecas indisponíveis');try{await tf.setBackend('webgl')}catch(_){await tf.setBackend('cpu')}await tf.ready();state.detector=await cocoSsd.load({base:'lite_mobilenet_v2'});setStatus(state.cameraStarted?'Mire e estabilize':'IA pronta · abra a câmera');if(state.cameraStarted)startFocusLoop()}
+    try{await ensureTf();if(!window.cocoSsd)await loadExternalScript(EXTERNAL.coco);if(!window.cocoSsd)throw new Error('COCO-SSD indisponível');try{await tf.setBackend('webgl')}catch(_){await tf.setBackend('cpu')}await tf.ready();state.detector=await cocoSsd.load({base:'lite_mobilenet_v2'});setStatus(state.cameraStarted?'Mire e estabilize':'IA pronta · abra a câmera');if(state.cameraStarted)startFocusLoop()}
     catch(e){state.detectorError=e;setStatus('IA indisponível · use Vocabulário');showToast('Detector visual não carregou. O vocabulário manual continua ativo.',4200);console.error(e)}
   }
 
   async function ensureVerifier(){
     if(state.verifier||state.verifierLoading||state.verifierError)return state.verifier;
-    if(!window.mobilenet){state.verifierError=new Error('MobileNet indisponível');return null}
     state.verifierLoading=true;
-    try{state.verifier=await mobilenet.load({version:2,alpha:.50});return state.verifier}catch(e){state.verifierError=e;console.warn(e);return null}finally{state.verifierLoading=false}
+    try{await ensureTf();if(!window.mobilenet)await loadExternalScript(EXTERNAL.mobilenet);if(!window.mobilenet)throw new Error('MobileNet indisponível');state.verifier=await mobilenet.load({version:2,alpha:.50});return state.verifier}catch(e){state.verifierError=e;console.warn(e);return null}finally{state.verifierLoading=false}
   }
 
   async function startCamera(){
@@ -233,15 +239,20 @@
 
   async function openCamera(mode){
     if(state.frozen)setFrozen(false,'camera');els.stage.classList.remove('frozen');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');
-    stopStreamOnly();const p=profile();state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:mode},width:{ideal:p.width},height:{ideal:p.height},frameRate:{ideal:p.fps,max:p.maxFps}}});els.video.srcObject=state.stream;await els.video.play();await waitForVideo();const track=state.stream.getVideoTracks()[0];state.facingMode=track?.getSettings?.().facingMode||mode;els.stage.classList.toggle('camera-user',state.facingMode==='user');await tryEnableContinuousAutofocus(track);positionCrosshair()
+    stopStreamOnly();const p=profile();state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:mode},width:{ideal:p.width},height:{ideal:p.height},frameRate:{ideal:p.fps,max:p.maxFps}}});els.video.srcObject=state.stream;await els.video.play();await waitForVideo();const track=state.stream.getVideoTracks()[0];state.facingMode=track?.getSettings?.().facingMode||mode;els.stage.classList.toggle('camera-user',state.facingMode==='user');await tryEnableContinuousAutofocus(track);setupCameraCapabilities(track);positionCrosshair()
   }
   async function flipCamera(){if(!state.cameraStarted)return;if(state.frozen)resumeLive();state.facingMode=state.facingMode==='environment'?'user':'environment';try{await openCamera(state.facingMode);resetObservation('Câmera trocada')}catch(e){showToast('Não consegui trocar de câmera.')}}
   async function tryEnableContinuousAutofocus(track){try{const caps=track?.getCapabilities?.();if(caps?.focusMode?.includes?.('continuous'))await track.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(_){/* recurso opcional do navegador/câmera */}}
+  function activeTrack(){return state.stream?.getVideoTracks?.()[0]||null}
+  function setupCameraCapabilities(track){try{const c=track?.getCapabilities?.()||{};const z=c.zoom;if(els.zoomRange){els.zoomRange.min=z?.min??1;els.zoomRange.max=z?.max??1;els.zoomRange.step=z?.step??.1;els.zoomRange.disabled=!z;const current=track.getSettings?.().zoom??1;els.zoomRange.value=current;state.cameraZoom=current}els.torch?.classList.toggle('hidden',!c.torch)}catch(_){}}
+  async function setCameraZoom(v){const t=activeTrack();if(!t)return;const c=t.getCapabilities?.()||{};if(c.zoom){const n=clamp(v,c.zoom.min,c.zoom.max);try{await t.applyConstraints({advanced:[{zoom:n}]});state.cameraZoom=n;return}catch(_){}}if(els.zoomRange)els.zoomRange.value=1;state.cameraZoom=1;showToast('Zoom não exposto por esta câmera/navegador.')}
+  function stepZoom(d){if(!els.zoomRange)return;const n=clamp(Number(els.zoomRange.value||1)+d,Number(els.zoomRange.min||1),Number(els.zoomRange.max||4));els.zoomRange.value=n;setCameraZoom(n)}
+  async function toggleTorch(){const t=activeTrack();if(!t)return;state.torchOn=!state.torchOn;try{await t.applyConstraints({advanced:[{torch:state.torchOn}]});els.torch?.classList.toggle('active',state.torchOn)}catch(_){state.torchOn=false;showToast('Lanterna não disponível nesta câmera.')}}
   function waitForVideo(){if(els.video.videoWidth)return Promise.resolve();return new Promise(r=>{const done=()=>r();els.video.addEventListener('loadedmetadata',done,{once:true});setTimeout(done,1500)})}
   function stopStreamOnly(){if(state.stream){state.stream.getTracks().forEach(t=>t.stop());state.stream=null}}
   function stopCamera(){clearTimeout(state.focus.loopTimer);clearTimeout(state.revealTimer);if(state.telemetry.frozenSince){state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0}stopStreamOnly()}
 
-  function profile(){const ps={eco:{label:'Econômico',width:480,height:360,fps:15,maxFps:18,sampleMs:320,required:2,motion:.040,change:.115,detectRatio:.54,deepRatio:.30},balanced:{label:'Equilibrado',width:640,height:480,fps:18,maxFps:22,sampleMs:230,required:2,motion:.035,change:.105,detectRatio:.62,deepRatio:.28},accuracy:{label:'Precisão',width:960,height:540,fps:22,maxFps:25,sampleMs:170,required:3,motion:.030,change:.095,detectRatio:.68,deepRatio:.25}};return ps[state.performanceMode]||ps.balanced}
+  function profile(){const ps={eco:{label:'Econômico',width:480,height:360,fps:24,maxFps:30,sampleMs:320,required:2,motion:.040,change:.115,detectRatio:.54,deepRatio:.30},balanced:{label:'Equilibrado',width:640,height:480,fps:30,maxFps:30,sampleMs:230,required:2,motion:.035,change:.105,detectRatio:.62,deepRatio:.28},accuracy:{label:'Precisão',width:960,height:540,fps:30,maxFps:60,sampleMs:170,required:3,motion:.030,change:.095,detectRatio:.68,deepRatio:.25}};return ps[state.performanceMode]||ps.balanced}
 
   function startFocusLoop(){
     clearTimeout(state.focus.loopTimer);
@@ -589,9 +600,16 @@
       for(const p of state.lastPredictions)addScenePrediction(p,null,'live-detector');
       recordHeavy();const preds=await state.detector.detect(els.freezeCanvas,20,Math.max(.38,state.minScore-.08));if(!state.frozen)return;const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;
       for(const p of preds){if(!JAPANESE_DB[p.class])continue;addScenePrediction({...p,bbox:[p.bbox[0]*sx,p.bbox[1]*sy,p.bbox[2]*sx,p.bbox[3]*sy],_stageBox:true},null,'frozen-detector')}
+      await analyzeMultiScaleScene(scene);
       await analyzeSpecialists(scene);
       await analyzeSceneEnvironment(scene);renderBoxes();
     }catch(e){console.warn('Scene analysis failed',e)}finally{state.sceneAnalyzing=false}
+  }
+  async function analyzeMultiScaleScene(scene){
+    if(!state.deepVisionEnabled||!window.MiraMultiScaleSceneV1)return;const verifier=await ensureVerifier();if(!verifier)return;const W=els.freezeCanvas.width,H=els.freezeCanvas.height,samples=[];
+    for(const r of window.MiraMultiScaleSceneV1.regions(W,H)){const c=document.createElement('canvas');c.width=224;c.height=224;c.getContext('2d').drawImage(els.freezeCanvas,r.x,r.y,r.w,r.h,0,0,224,224);recordHeavy();const raw=await verifier.classify(c,8);samples.push({...r,candidates:mappedCandidates(raw)})}
+    const ranked=window.MiraMultiScaleSceneV1.aggregate(samples),top=ranked.find(window.MiraMultiScaleSceneV1.accept);if(!top||!JAPANESE_DB[top.key])return;
+    const existing=scene.entities.find(e=>e.conceptId===top.key);if(existing)return;const box=[els.stage.clientWidth*.04,els.stage.clientHeight*.12,els.stage.clientWidth*.92,els.stage.clientHeight*.70];window.MiraWorldModelV1.addEntity(scene,{conceptId:top.key,semanticType:semanticType(top.key),bbox:box,confidence:Math.min(.86,.45+top.mean+top.support*.05),status:top.support>=3?'stable':'tentative',source:'multiscale-scene',evidence:[{source:'multi-scale',score:top.mean,support:top.support,regions:top.regions}]})
   }
   async function analyzeSpecialists(scene){
     const specialist=window.MiraSpecialistVisionV1;if(!specialist||!state.frozen)return;

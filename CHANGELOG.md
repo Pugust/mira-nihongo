@@ -44,3 +44,10 @@
 - Visual Hierarchy genérica para objetos e seres: carro, bicicleta, árvore/planta, edifício/casa, computador e objetos compostos.
 - Drill-down passa a usar o conceito-pai para rejeitar partes semanticamente incompatíveis.
 - Cache RC5.
+
+## V1.0 Pre-Alpha 1 RC6 — Adaptive Multi-Scale + Fast Startup + Camera Pipeline 2.0
+- Specialist vision libraries (hands, pose, face, semantic segmentation) now lazy-load only when deep frozen-scene analysis needs them, removing four blocking CDN downloads from first interaction.
+- Camera preview requests 24–30 FPS by default; Accuracy may negotiate up to 60 FPS while inference remains independently throttled.
+- Camera tools: zoom with hardware capability when available, safe digital fallback, and torch when exposed by the browser/device.
+- Frozen-scene deep analysis now samples six spatial scales and requires repeated evidence before accepting large structural hypotheses.
+- Added cabinet ImageNet aliases and multi-scale structural support to improve large/distant furniture recognition without weakening animal false-positive rejection.

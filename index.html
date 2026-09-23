@@ -28,6 +28,7 @@
           <div class="brand-copy"><strong>Mira Nihongo</strong><small id="statusText">Preparando visão…</small></div>
         </div>
         <div class="top-actions">
+          <button id="cameraToolsBtn" class="icon-btn" type="button" aria-label="Ferramentas da câmera">⌖</button>
           <button id="flipCameraBtn" class="icon-btn" type="button" aria-label="Trocar câmera">↻</button>
           <button id="settingsBtn" class="icon-btn" type="button" aria-label="Configurações">⚙</button>
         </div>
@@ -37,6 +38,7 @@
       <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
       <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span><button id="exploreSceneBtn" class="explore-scene-btn" type="button">Explorar cena</button></div>
       <div id="sceneBreadcrumb" class="scene-breadcrumb glass hidden" aria-live="polite"></div>
+      <div id="cameraTools" class="camera-tools glass hidden" aria-label="Ferramentas da câmera"><button id="zoomOutBtn" type="button" aria-label="Diminuir zoom">−</button><input id="zoomRange" type="range" min="1" max="4" step="0.1" value="1" aria-label="Zoom"/><button id="zoomInBtn" type="button" aria-label="Aumentar zoom">＋</button><button id="torchBtn" type="button" class="hidden" aria-label="Lanterna">◉</button></div>
 
       <div id="crosshairWrap" class="crosshair-wrap" aria-hidden="true">
         <div class="crosshair"><span></span></div><div id="holdRing" class="hold-ring"></div>
@@ -151,7 +153,7 @@
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 1 · Visual World Model</strong><p>Recognition Fusion, Scene Graph interativo, múltiplas entidades e exploração visual por toque.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 1 RC6 · Visual World Model</strong><p>Recognition Fusion, Scene Graph interativo, múltiplas entidades e exploração visual por toque.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -174,13 +176,6 @@
   </aside>
 
   <div id="toast" class="toast" role="status"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/deeplab@0.2.2/dist/deeplab.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2.0.1/dist/hand-pose-detection.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.6/dist/face-landmarks-detection.min.js"></script>
   <script src="js/recognition-policy.js"></script>
   <script src="js/world-context.js"></script>
   <script src="js/vision-engine.js"></script>
@@ -193,6 +188,7 @@
   <script src="js/world-model-v1.js"></script>
   <script src="js/visual-ontology-v1.js"></script>
   <script src="js/specialist-vision-v1.js"></script>
+  <script src="js/multiscale-scene-v1.js"></script>
   <script src="js/visual-hierarchy-v1.js"></script>
   <script>window.MiraVisualOntologyV1?.install?.(JAPANESE_DB);</script>
   <script src="js/app.js"></script>

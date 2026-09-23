@@ -95,3 +95,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .camera-stage.scene-explore .review-prompt,.camera-stage.scene-explore .learning-objective{display:none!important}
 .camera-stage.scene-explore .lesson-card.snap-compact .sentence-compact{display:none}
 .camera-stage.scene-explore .lesson-card.snap-compact .jp-word{font-size:clamp(28px,7vw,40px)}
+
+/* ===== Pre-Alpha 1 RC6 · Camera Pipeline 2.0 ===== */
+.camera-tools{position:absolute;z-index:57;top:calc(var(--safe-top) + 116px);right:12px;display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:16px}.camera-tools.hidden{display:none}.camera-tools button{width:34px;height:34px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.09);font-size:18px}.camera-tools button.active{background:rgba(141,240,187,.22);border-color:rgba(141,240,187,.55)}.camera-tools input{width:110px}.camera-stage:not(.frozen) #camera{transition:transform .12s ease}.top-actions #cameraToolsBtn{opacity:.82}

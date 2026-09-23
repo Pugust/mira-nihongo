@@ -1,0 +1,2 @@
+'use strict';const assert=require('assert');const m=require('../js/multiscale-scene-v1.js');
+assert.equal(m.regions(1000,800).length,6);let a=m.aggregate([{name:'whole',weight:1,candidates:[{key:'cabinet',probability:.22}]},{name:'center',weight:.96,candidates:[{key:'cabinet',probability:.21}]},{name:'upper',weight:.9,candidates:[{key:'cat',probability:.3}]}]);assert.equal(a[0].key,'cabinet');assert.equal(m.accept(a[0]),true);const cat=a.find(x=>x.key==='cat');assert.equal(m.accept(cat),false);console.log('multiscale-scene-v1 tests: OK');

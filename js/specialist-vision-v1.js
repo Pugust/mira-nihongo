@@ -1,6 +1,14 @@
 'use strict';
 (function(root){
   let handDetector=null, handLoading=null, segmenter=null, segmenterLoading=null, poseDetector=null, poseLoading=null, faceDetector=null, faceLoading=null;
+  const LIBS={
+    hands:'https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2.0.1/dist/hand-pose-detection.min.js',
+    segment:'https://cdn.jsdelivr.net/npm/@tensorflow-models/deeplab@0.2.2/dist/deeplab.min.js',
+    pose:'https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js',
+    face:'https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.6/dist/face-landmarks-detection.min.js'
+  };
+  const scriptLoads=new Map();
+  function loadScript(url){if(typeof document==='undefined')return Promise.reject(new Error('DOM indisponível'));if(scriptLoads.has(url))return scriptLoads.get(url);const p=new Promise((resolve,reject)=>{const e=document.createElement('script');e.src=url;e.async=true;e.onload=resolve;e.onerror=()=>reject(new Error('Falha ao carregar '+url));document.head.appendChild(e)});scriptLoads.set(url,p);return p}
   const SEGMENT_MAP={
     floor:'floor',flooring:'floor',wall:'wall',door:'door',sky:'sky',road:'street',street:'street',
     earth:'ground',ground:'ground',grass:'ground',sidewalk:'sidewalk',building:'building',house:'building',
@@ -17,11 +25,11 @@
   function boxOf(points,w,h,pad=10){if(!points.length)return null;let xs=points.map(p=>p.x),ys=points.map(p=>p.y),x=Math.min(...xs)-pad,y=Math.min(...ys)-pad,r=Math.max(...xs)+pad,b=Math.max(...ys)+pad;x=clamp(x,0,w);y=clamp(y,0,h);r=clamp(r,0,w);b=clamp(b,0,h);return[x,y,Math.max(1,r-x),Math.max(1,b-y)]}
   async function ensureHands(){
     if(handDetector)return handDetector;if(handLoading)return handLoading;
-    handLoading=(async()=>{if(!root.handPoseDetection)throw new Error('Hand Pose Detection indisponível');const m=root.handPoseDetection.SupportedModels.MediaPipeHands;handDetector=await root.handPoseDetection.createDetector(m,{runtime:'tfjs',modelType:'full',maxHands:2});return handDetector})().catch(e=>{handLoading=null;throw e});return handLoading;
+    handLoading=(async()=>{if(!root.handPoseDetection)await loadScript(LIBS.hands);if(!root.handPoseDetection)throw new Error('Hand Pose Detection indisponível');const m=root.handPoseDetection.SupportedModels.MediaPipeHands;handDetector=await root.handPoseDetection.createDetector(m,{runtime:'tfjs',modelType:'full',maxHands:2});return handDetector})().catch(e=>{handLoading=null;throw e});return handLoading;
   }
   async function ensureSegmenter(){
     if(segmenter)return segmenter;if(segmenterLoading)return segmenterLoading;
-    segmenterLoading=(async()=>{if(!root.deeplab)throw new Error('DeepLab indisponível');segmenter=await root.deeplab.load({base:'ade20k',quantizationBytes:1});return segmenter})().catch(e=>{segmenterLoading=null;throw e});return segmenterLoading;
+    segmenterLoading=(async()=>{if(!root.deeplab)await loadScript(LIBS.segment);if(!root.deeplab)throw new Error('DeepLab indisponível');segmenter=await root.deeplab.load({base:'ade20k',quantizationBytes:1});return segmenter})().catch(e=>{segmenterLoading=null;throw e});return segmenterLoading;
   }
   function handEntities(hand,width,height){
     const pts=hand.keypoints||[], byName=new Map(pts.map(p=>[p.name,p]));if(pts.length<15)return[];
@@ -34,10 +42,10 @@
     return out;
   }
   async function analyzeHands(image){const d=await ensureHands(),hands=await d.estimateHands(image,{flipHorizontal:false});return(hands||[]).flatMap(h=>handEntities(h,image.width||image.videoWidth||1,image.height||image.videoHeight||1))}
-  async function ensurePose(){if(poseDetector)return poseDetector;if(poseLoading)return poseLoading;poseLoading=(async()=>{if(!root.poseDetection)throw new Error('Pose Detection indisponível');poseDetector=await root.poseDetection.createDetector(root.poseDetection.SupportedModels.MoveNet,{modelType:root.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING});return poseDetector})().catch(e=>{poseLoading=null;throw e});return poseLoading}
+  async function ensurePose(){if(poseDetector)return poseDetector;if(poseLoading)return poseLoading;poseLoading=(async()=>{if(!root.poseDetection)await loadScript(LIBS.pose);if(!root.poseDetection)throw new Error('Pose Detection indisponível');poseDetector=await root.poseDetection.createDetector(root.poseDetection.SupportedModels.MoveNet,{modelType:root.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING});return poseDetector})().catch(e=>{poseLoading=null;throw e});return poseLoading}
   function poseEntities(pose,w,h){const pts=pose.keypoints||[],m=new Map(pts.filter(p=>(p.score||0)>.25).map(p=>[p.name,p])),out=[],score=Number(pose.score)||.75;const get=(...n)=>n.map(x=>m.get(x)).filter(Boolean);const push=(id,ps,pad=18)=>{const b=boxOf(ps,w,h,pad);if(b)out.push({conceptId:id,semanticType:'part',bbox:b,confidence:score,source:'body-pose'})};push('head',get('nose','left_eye','right_eye','left_ear','right_ear'),28);push('torso',get('left_shoulder','right_shoulder','left_hip','right_hip'),24);push('left_arm',get('left_shoulder','left_elbow','left_wrist'),22);push('right_arm',get('right_shoulder','right_elbow','right_wrist'),22);push('left_leg',get('left_hip','left_knee','left_ankle'),24);push('right_leg',get('right_hip','right_knee','right_ankle'),24);push('left_elbow',get('left_elbow'),18);push('right_elbow',get('right_elbow'),18);push('left_knee',get('left_knee'),20);push('right_knee',get('right_knee'),20);push('left_foot',get('left_ankle'),24);push('right_foot',get('right_ankle'),24);return out}
   async function analyzePose(image){const d=await ensurePose(),poses=await d.estimatePoses(image,{maxPoses:1,flipHorizontal:false});return(poses||[]).flatMap(p=>poseEntities(p,image.width||1,image.height||1))}
-  async function ensureFace(){if(faceDetector)return faceDetector;if(faceLoading)return faceLoading;faceLoading=(async()=>{if(!root.faceLandmarksDetection)throw new Error('Face Landmarks indisponível');faceDetector=await root.faceLandmarksDetection.createDetector(root.faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,{runtime:'tfjs',refineLandmarks:true,maxFaces:2});return faceDetector})().catch(e=>{faceLoading=null;throw e});return faceLoading}
+  async function ensureFace(){if(faceDetector)return faceDetector;if(faceLoading)return faceLoading;faceLoading=(async()=>{if(!root.faceLandmarksDetection)await loadScript(LIBS.face);if(!root.faceLandmarksDetection)throw new Error('Face Landmarks indisponível');faceDetector=await root.faceLandmarksDetection.createDetector(root.faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,{runtime:'tfjs',refineLandmarks:true,maxFaces:2});return faceDetector})().catch(e=>{faceLoading=null;throw e});return faceLoading}
   function faceEntities(face,w,h){const p=face.keypoints||[],out=[],score=Number(face.score)||.85;const at=ids=>ids.map(i=>p[i]).filter(Boolean);const push=(id,ids,pad=6)=>{const b=boxOf(at(ids),w,h,pad);if(b)out.push({conceptId:id,semanticType:'subpart',bbox:b,confidence:score,source:'face-landmarks'})};const fb=boxOf(p,w,h,5);if(fb)out.push({conceptId:'face',semanticType:'part',bbox:fb,confidence:score,source:'face-landmarks'});push('right_eye',[33,133,159,145],8);push('left_eye',[362,263,386,374],8);push('right_eyebrow',[70,63,105,66,107],7);push('left_eyebrow',[336,296,334,293,300],7);push('nose',[1,2,98,327],8);push('mouth',[61,291,13,14],8);push('right_ear',[234],18);push('left_ear',[454],18);return out}
   async function analyzeFaces(image){const d=await ensureFace(),faces=await d.estimateFaces(image,{flipHorizontal:false});return(faces||[]).flatMap(f=>faceEntities(f,image.width||1,image.height||1))}
   function nearestLabel(rgb,legend){let best=null,dist=1e9;for(const[name,c]of Object.entries(legend||{})){const d=(rgb[0]-c[0])**2+(rgb[1]-c[1])**2+(rgb[2]-c[2])**2;if(d<dist){dist=d;best=name}}return dist<20?best:null}
