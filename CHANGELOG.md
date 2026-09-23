@@ -36,3 +36,11 @@
 - Card compacto de exploração mostra o conceito sem competir com a cena; detalhes continuam acessíveis ao expandir.
 - Ação primária em exploração mudou de “Continuar” para “Retomar câmera”.
 - Mantida integralmente a visão especializada da RC3.
+
+## V1.0 Pre-Alpha 1 RC5 — Universal Hierarchical Vision
+- Isolamento explícito dos estados Recognition/Exploration e bloqueio transacional de revisão durante exploração.
+- Specialist Router ampliado: mão + pose corporal + landmarks faciais + segmentação semântica.
+- Anatomia hierárquica: pessoa → cabeça/rosto/olhos/nariz/boca; braços/pernas; mão → dedos.
+- Visual Hierarchy genérica para objetos e seres: carro, bicicleta, árvore/planta, edifício/casa, computador e objetos compostos.
+- Drill-down passa a usar o conceito-pai para rejeitar partes semanticamente incompatíveis.
+- Cache RC5.

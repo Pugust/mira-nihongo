@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('fs'),assert=require('assert');
+const app=fs.readFileSync(__dirname+'/../js/app.js','utf8');
+const html=fs.readFileSync(__dirname+'/../index.html','utf8');
+const H=require('../js/visual-hierarchy-v1.js');
+assert(app.includes("uiMode:'recognition'"),'explicit UI mode missing');
+assert(app.includes("state.uiMode==='exploration'||state.sceneExplore"),'review must be transactionally blocked in exploration');
+assert(app.includes("state.uiEpoch++"),'UI epoch missing');
+assert(app.includes("if(epoch!==state.uiEpoch||state.uiMode==='exploration')return"),'stale async UI writes must be discarded');
+assert(app.includes("expectedParts?.(parentEntity?.conceptId)"),'hierarchy-aware drill-down missing');
+assert.deepStrictEqual(H.expectedParts('hand').slice(0,2),['palm','wrist']);
+assert(H.expectedParts('person').includes('head'));
+assert(H.expectedParts('car').includes('wheel'));
+assert(H.expectedParts('tree').includes('leaf'));
+assert(html.includes('@tensorflow-models/pose-detection'));
+assert(html.includes('@tensorflow-models/face-landmarks-detection'));
+console.log('RC5 UI isolation + hierarchy: OK');
