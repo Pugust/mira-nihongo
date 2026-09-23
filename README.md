@@ -1,15 +1,20 @@
-# Mira Nihongo V0.8 — World & Context
+# Mira Nihongo V0.9 — Reliability & Polish
 
-A V0.8 preserva o fluxo validado da V0.7 e acrescenta compreensão contextual conservadora ao quadro congelado.
+Versão de estabilização pré-V1.0. A V0.9 preserva visão, Interaction & Flow, Adaptive Learning e World & Context, concentrando-se em confiabilidade.
 
 ## Novidades
-- relações espaciais entre objetos já detectados;
-- partes relacionadas (garrafa → tampa; ventilador → hélice/base);
-- estados visuais somente após confirmação do usuário;
-- exploração do quadro congelado sem inferência pesada contínua;
-- comparação visual simples de tamanho;
-- integração com Adaptive Learning;
-- toggle de Contexto de cena;
-- cache PWA atualizado com `world-context.js`.
+- painel **Saúde do Mira** com câmera, modelos, motores, armazenamento, PWA e cache;
+- diagnóstico avançado local;
+- indicador offline discreto;
+- backup JSON versionado do progresso e preferências `mn-*`;
+- importação validada com rejeição de schemas futuros/arquivos estranhos e rollback em falha;
+- limpeza explícita dos dados do Mira sem tocar em dados de outros apps do mesmo domínio;
+- Service Worker V0.9 com limpeza seletiva de caches antigos do Mira e fallback de navegação offline;
+- reforço de `prefers-reduced-motion`, telas estreitas e alvos de toque já existentes;
+- captura local de erros/rejeições da sessão para diagnóstico, sem upload.
 
-A V0.8 não adiciona um novo modelo rodando continuamente. O processamento continua no navegador e não há código de upload de imagens.
+## Privacidade
+Nenhuma imagem, diagnóstico ou backup é enviado pelo código do Mira. O backup é gerado localmente.
+
+## Limite desta validação
+A nota 10/10 desta entrega cobre código e comportamento automatizável. Temperatura, consumo de bateria, câmera real, gestos do Android e conforto continuam exigindo teste físico.

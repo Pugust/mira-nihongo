@@ -1,29 +1,39 @@
-# Mira Nihongo V0.8 — Relatório de reavaliação
+# QA — Mira Nihongo V0.9
 
-## Regra
-10/10 vale para código e comportamento simulável no escopo V0.8. Precisão da câmera, temperatura, ergonomia e utilidade cotidiana continuam exigindo teste físico.
+## Regra de nota 10
+10/10 significa **código + UX/comportamento simulável dentro do escopo da V0.9**. Não substitui validação física no Android.
 
-## Ciclo 1 — 9,5/10
-Contexto passou a reutilizar detecções e quadro congelado. Relações, partes e exploração de foto foram introduzidas. Estados como ligado/desligado e cheio/vazio não podiam ser tratados como fatos: foram alterados para exigir confirmação explícita.
+## Reavaliação 1 — 9,7/10
+Diagnóstico, backup, importação, limpeza local, offline e PWA estavam implementados. A auditoria encontrou um contador inconsistente no novo teste e oportunidade de tornar o diagnóstico de armazenamento mais útil.
 
-## Ciclo 2 — 9,8/10
-Nenhum novo modelo contínuo foi adicionado. Foi detectado que `world-context.js` ainda não estava no cache PWA; corrigido com `mira-nihongo-v0-8-r1`.
+**Correções:** contador corrigido; `navigator.storage.estimate()` usado quando disponível, com fallback seguro.
 
-## Ciclo 3 — 9,9/10
-Regressões de relações, partes, estados e comparação passaram. O gerador foi corrigido para usar `います` com seres animados e `あります` com objetos.
+## Reavaliação 2 — 9,9/10
+Todas as regressões V0.5–V0.8 permaneceram aprovadas. Faltavam documentação final e empacotamento reproduzível.
 
-## Ciclo 4 — 10/10
-Relações usam limiar conservador; “nenhuma relação segura” é saída válida; estados não são inferidos automaticamente; exploração exige Freeze; V0.7 foi preservada; sintaxe e ZIP validados.
+**Correções:** README, changelog, relatório QA, versão/cache e pacote final alinhados.
+
+## Reavaliação final — 10/10 no escopo
+- backup só exporta chaves `mn-*`;
+- importação valida formato/schema e rejeita chaves externas;
+- rollback protege o estado anterior se a gravação falhar;
+- apagar dados não remove armazenamento alheio ao Mira;
+- offline não bloqueia a interface;
+- caches antigos removidos somente quando pertencem ao Mira;
+- nenhum novo modelo pesado/loop de visão foi adicionado;
+- 383 entradas de vocabulário preservadas;
+- V0.6 Interaction, V0.7 Adaptive Learning e V0.8 World Context preservados.
 
 ## Suíte final
-- Estática: 119/119
-- Visão: 9/9
-- Interação: 13/13
-- Adaptive Learning: 30/30
-- World Context: 8/8
-- Runtime DOM: 34/34
+- Static QA: **135/135**
+- Vision: **9/9**
+- Interaction: **13/13**
+- Adaptive Learning: **30/30**
+- World Context: **8/8**
+- Reliability: **14/14**
+- Runtime integrado: **34/34**
 
-**Total: 213/213.**
+**Total: 243/243 verificações/asserções/cenários aprovados.**
 
-## Nota final
-**10/10 — código + comportamento simulável da V0.8.**
+## Ainda exige aparelho real
+Tempo real de abertura; câmera/permissões; temperatura e bateria em 5/15/30 min; atualização do Service Worker em instalação existente; comportamento offline após os recursos necessários terem sido previamente carregados; importação/exportação pelo seletor de arquivos Android; safe areas e gestos do navegador.

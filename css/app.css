@@ -75,3 +75,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 /* V0.8 — World & Context */
 .world-context{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.045)}
 .world-context-head{display:flex;flex-direction:column;gap:3px}.world-context-head small,.photo-study-status{opacity:.72;line-height:1.35}.state-options,.world-actions{display:flex;gap:8px;overflow-x:auto;padding-top:8px}.state-options .soft-btn,.world-actions .soft-btn{flex:0 0 auto}.photo-study-status{display:block;padding-top:7px}.lesson-card.snap-compact .world-context{display:none}
+
+/* V0.9 — Reliability & Polish */
+.network-chip{position:absolute;z-index:26;top:calc(var(--safe-top) + 116px);right:12px;min-height:30px;padding:0 10px;border-radius:999px;display:flex;align-items:center;font-size:11px}
+.reliability-card{margin-top:12px;padding:13px;border:1px solid rgba(0,0,0,.09);border-radius:16px;background:rgba(0,0,0,.035)}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.section-heading strong{display:block}.section-heading small{display:block;margin-top:3px;color:#667085}
+.mini-soft{min-height:44px;padding:0 12px;border:0;border-radius:12px;background:rgba(0,0,0,.07);color:#111}
+.health-summary{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:11px 0}.health-summary span{display:flex;align-items:center;gap:7px;min-height:32px;font-size:12px}.health-summary b{color:#168653}
+.advanced-diagnostics{white-space:pre-wrap;word-break:break-word;padding:10px;border-radius:12px;background:#111;color:#e9edf3;font-size:11px;line-height:1.5}
+.data-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.data-actions .danger{grid-column:1/-1}.settings-btn.danger{color:#a32626}.backup-status{display:block;min-height:18px;margin-top:8px}.backup-status[data-bad="1"]{color:#a32626}
+@media(max-width:360px){.health-summary,.data-actions{grid-template-columns:1fr}.data-actions .danger{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
