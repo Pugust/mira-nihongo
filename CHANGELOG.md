@@ -25,3 +25,14 @@
 - A segmentação pode corrigir falsos positivos grosseiros do classificador quando uma superfície/estrutura contradiz a hipótese selecionada.
 - Drill-down consulta primeiro especialistas e só cai no MobileNet genérico com limiares muito mais conservadores.
 - Cache atualizado para `mira-nihongo-v1-prealpha1-rc3-r1`.
+
+## V1.0 Pre-Alpha 1 RC4 — Exploration UX & Navigation
+- Exploração congelada agora é um estado de interação próprio.
+- Revisões oportunistas e perguntas-surpresa ficam suspensas durante exploração.
+- Seleção de entidades não registra exposição adaptativa silenciosamente.
+- Breadcrumb hierárquico passou a ser clicável.
+- Overlays mostram somente entidade atual + filhos imediatos (ou irmãos quando em folha), reduzindo poluição visual.
+- Labels priorizam português; entidade selecionada mostra português + japonês.
+- Card compacto de exploração mostra o conceito sem competir com a cena; detalhes continuam acessíveis ao expandir.
+- Ação primária em exploração mudou de “Continuar” para “Retomar câmera”.
+- Mantida integralmente a visão especializada da RC3.

@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='mira-nihongo-v1-prealpha1-rc3-r1';
+const CACHE='mira-nihongo-v1-prealpha1-rc4-r1';
 const LOCAL=['./','./index.html','./css/app.css','./js/recognition-policy.js','./js/world-context.js','./js/vision-engine.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/interaction-engine.js','./js/freeze-engine.js','./js/recognition-fusion-v1.js','./js/world-model-v1.js','./js/visual-ontology-v1.js','./js/specialist-vision-v1.js','./js/app.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(LOCAL)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

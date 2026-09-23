@@ -1,23 +1,29 @@
-# Mira Nihongo V1.0 Pre-Alpha 1 RC3 — QA
+# Mira Nihongo V1.0 Pre-Alpha 1 RC4 — QA
 
-## Resultado automatizado
-- Testes JS: todos aprovados.
-- Static QA: 130/130.
-- Vocabulário legado: 383 entradas preservadas; conceitos especializados são instalados pela ontologia visual em runtime.
-- Sintaxe verificada para app.js, specialist-vision-v1.js e visual-ontology-v1.js.
+## Escopo
+RC4 trata exclusivamente a experiência de exploração e navegação sobre a Specialist Vision validada como avanço na RC3. O feedback físico mostrou que perguntas de revisão podiam interromper a exploração, o card mudava de estado de forma inesperada e a sobreposição simultânea de pessoa/mão/palma/dedos/punho tornava a interface visualmente ruidosa.
 
-## Regressões físicas que motivaram RC3
-A RC2 foi reprovada em Android real: piso ainda podia virar mão/prato; porta podia virar mão; mão real podia ser absorvida por pessoa; não havia informação anatômica para selecionar dedos.
+## Correções validadas por código/testes
+- `sceneExplore` é um estado explícito do fluxo pedagógico.
+- Recall/revisão oportunista é bloqueado durante exploração.
+- Exploração não registra exposição adaptativa automaticamente.
+- Frase de exploração é determinística e não muda por revisão/adaptação incidental.
+- Breadcrumb é reconstruído a partir do Scene Graph e cada nível é navegável.
+- Overlay hierárquico limita a visualização à entidade selecionada e seu nível relevante.
+- Labels de overlay priorizam português; japonês fica associado à seleção.
+- Card compacto usa estado “Explorando” e não exibe a sentença até expansão.
+- Ação de saída é “Retomar câmera”.
+- Specialist Vision, landmarks de mão, segmentação e regressões anteriores permanecem preservados.
 
-## Mudança estrutural
-RC3 deixa de tentar resolver esses casos somente por threshold. Introduz semantic segmentation e hand landmarks como especialistas sob demanda. O fallback genérico foi endurecido para evitar que ImageNet seja obrigado a nomear regiões sem objeto.
+## Execução final
+- Todas as suítes `tests/*.test.js`: PASS.
+- `static-qa.py`: 130/130 PASS.
+- Vocabulário carregado: 383 entradas.
+- Teste dedicado RC4 Exploration UX: PASS.
+- Service Worker: `mira-nihongo-v1-prealpha1-rc4-r1`.
 
-## Escopo da nota
-10/10 em código, arquitetura e comportamento automatizável/simulável dentro da RC3. A disponibilidade real dos modelos CDN, desempenho, segmentação e landmarks no Android/PWA exigem validação física. RC3 permanece Release Candidate até esse teste.
+## Reavaliação crítica
+Primeira passagem: 9,4/10 no escopo simulável — a navegação estava correta, mas o card compacto ainda competia visualmente com a cena e mantinha rótulo de reconhecimento comum. Correção aplicada: estado visual “Explorando” e sentença ocultada no snap compacto. Segunda passagem: 10/10 no escopo de código + arquitetura + UX/comportamento automatizável/simulável da RC4.
 
-## Teste físico prioritário
-1. Piso: deve resultar em piso/chão ou desconhecido; nunca mão/prato/ovelha.
-2. Porta: porta/estrutura ou desconhecido; nunca mão.
-3. Mão aberta: explorar cena deve produzir mão + palma + cinco dedos quando o especialista carregar.
-4. Tocar indicador/polegar/médio/anelar/mínimo deve selecionar a entidade específica.
-5. Tocar região ambígua sem evidência deve preferir “Ainda não reconheci esta região”.
+## Limite da nota
+A nota não valida ergonomia, transições percebidas, precisão de toque, segmentação ou landmarks no aparelho físico. Esses itens exigem nova validação Android e podem reprovar a RC4 fisicamente.

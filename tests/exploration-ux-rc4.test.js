@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('fs'), assert=require('assert');
+const app=fs.readFileSync('js/app.js','utf8');
+const css=fs.readFileSync('css/app.css','utf8');
+assert(app.includes("const exploring=!!(state.frozen&&state.sceneExplore)"),'exploration must be an explicit lesson state');
+assert(app.includes("const recall=!exploring&&state.reviewActive"),'surprise recall must be suppressed while exploring');
+assert(app.includes("if(!recall&&!quiz&&!exploring)recordLearningExposure(sentence)"),'exploration must not silently record adaptive exposure');
+assert(app.includes("◉ Retomar câmera"),'exploration must have a semantically correct exit action');
+assert(app.includes("function explorationEntities()"),'overlay must use hierarchy-aware visibility');
+assert(app.includes("className='crumb-btn'"),'breadcrumb must be interactive');
+assert(app.includes("selectSceneEntity(e)"),'breadcrumb must navigate entities');
+assert(app.includes("e.id===state.scene.selectedId?`${i.pt} · ${i.jp}`:i.pt"),'overlay labels must prioritize Portuguese during exploration');
+assert(app.includes("textContent='Explorando'"),'exploration card must expose its own state');
+assert(css.includes('.camera-stage.scene-explore .lesson-card.snap-compact .sentence-compact{display:none}'),'compact exploration card must not compete with the scene');
+assert(css.includes('calm exploration UI'),'RC4 exploration styling missing');
+console.log('RC4 exploration UX tests passed');
