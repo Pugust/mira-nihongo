@@ -1,3 +1,7 @@
+# RC7 — Performance Architecture
+
+- Startup lazy, análise progressiva, cancelamento de trabalho obsoleto, Camera Tools reorganizado e regressão shoe/laptop.
+
 # V1.0 Pre-Alpha 1 RC2
 
 - Corrige hit-testing de caixas sobrepostas: a menor entidade visual ganha o primeiro toque.

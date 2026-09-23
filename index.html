@@ -25,7 +25,7 @@
       <header class="topbar glass">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">◎</span>
-          <div class="brand-copy"><strong>Mira Nihongo</strong><small id="statusText">Preparando visão…</small></div>
+          <div class="brand-copy"><strong>Mira Nihongo</strong><small id="statusText">Pronto · abra a câmera</small></div>
         </div>
         <div class="top-actions">
           <button id="cameraToolsBtn" class="icon-btn" type="button" aria-label="Ferramentas da câmera">⌖</button>
@@ -38,7 +38,7 @@
       <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
       <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span><button id="exploreSceneBtn" class="explore-scene-btn" type="button">Explorar cena</button></div>
       <div id="sceneBreadcrumb" class="scene-breadcrumb glass hidden" aria-live="polite"></div>
-      <div id="cameraTools" class="camera-tools glass hidden" aria-label="Ferramentas da câmera"><button id="zoomOutBtn" type="button" aria-label="Diminuir zoom">−</button><input id="zoomRange" type="range" min="1" max="4" step="0.1" value="1" aria-label="Zoom"/><button id="zoomInBtn" type="button" aria-label="Aumentar zoom">＋</button><button id="torchBtn" type="button" class="hidden" aria-label="Lanterna">◉</button></div>
+      <div id="cameraTools" class="camera-tools glass hidden" aria-label="Ferramentas da câmera"><div class="camera-tools-head"><strong>Câmera</strong><button id="cameraToolsClose" type="button" aria-label="Fechar ferramentas">×</button></div><label class="camera-tool-row"><span>Zoom</span><button id="zoomOutBtn" type="button" aria-label="Diminuir zoom">−</button><input id="zoomRange" type="range" min="1" max="4" step="0.1" value="1" aria-label="Zoom"/><button id="zoomInBtn" type="button" aria-label="Aumentar zoom">＋</button></label><button id="torchBtn" type="button" class="camera-tool-wide hidden" aria-label="Lanterna">Lanterna</button><small id="cameraCapabilityHint">Os controles aparecem conforme a câmera expõe suporte.</small></div>
 
       <div id="crosshairWrap" class="crosshair-wrap" aria-hidden="true">
         <div class="crosshair"><span></span></div><div id="holdRing" class="hold-ring"></div>
@@ -153,7 +153,7 @@
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 1 RC6 · Visual World Model</strong><p>Recognition Fusion, Scene Graph interativo, múltiplas entidades e exploração visual por toque.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 1 RC7 · Performance Architecture</strong><p>Recognition Fusion, Scene Graph interativo, múltiplas entidades e exploração visual por toque.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -185,6 +185,7 @@
   <script src="js/interaction-engine.js"></script>
   <script src="js/freeze-engine.js"></script>
   <script src="js/recognition-fusion-v1.js"></script>
+  <script src="js/performance-orchestrator-v1.js"></script>
   <script src="js/world-model-v1.js"></script>
   <script src="js/visual-ontology-v1.js"></script>
   <script src="js/specialist-vision-v1.js"></script>
