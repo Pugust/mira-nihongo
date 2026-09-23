@@ -37,13 +37,13 @@ ok(manifest['start_url']=='./','manifest start url')
 
 # service worker cache includes core files
 sw=(root/'sw.js').read_text()
-for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js']:
+for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js']:
     ok(v in sw,f'sw missing {v}')
 
-# version markers and V0.7 adaptive-learning hooks
-for needle in ['Mira Nihongo V0.7','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle']:
+# version markers and V0.8 world-context hooks
+for needle in ['Mira Nihongo V0.8','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
     ok(needle in html,f'html missing {needle}')
-for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning']:
+for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning','renderWorldContext','exploreFrozenPhoto','mn-v08-world']:
     ok(needle in app,f'app missing {needle}')
 
 # V0.6 UX invariants preserved + V0.7 adaptive invariants
@@ -54,6 +54,10 @@ for needle_css in ['.lesson-card.snap-compact','.lesson-card.snap-medium','.less
     ok(needle_css in css,f'css missing UX hook {needle_css}')
 ok('mn-v06-sheet' not in app,'sheet position must remain session-only')
 ok(html.index('js/adaptive-learning.js') < html.index('js/app.js'),'adaptive learning must load before app')
+ok(html.index('js/world-context.js') < html.index('js/app.js'),'world context must load before app')
+world=(root/'js/world-context.js').read_text()
+for needle in ['bestRelation','relationSentence','stateOptions','partsFor','confirmedStateSentence','compare']:
+    ok(needle in world,f'world context missing {needle}')
 ok(html.index('js/interaction-engine.js') < html.index('js/app.js'),'interaction engine must load before app')
 adaptive=(root/'js/adaptive-learning.js').read_text()
 for needle in ['normalizeStore','migrateLegacy','applyOutcome','chooseCandidate','shouldRecall','recordExposure','reinforceSkills','summary']:

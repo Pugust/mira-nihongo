@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/../js/world-context.js','utf8'),ctx);const W=ctx.window.MiraWorldContext;
+let n=0;const t=(x,m)=>{assert.ok(x,m);n++};
+const table={class:'dining table',bbox:[0,100,300,100]}, bottle={class:'bottle',bbox:[100,45,60,50]};
+const r=W.bestRelation(bottle,[table]);t(r&&['above','near'].includes(r.relation),'relation');
+t(W.partsFor('bottle').some(x=>x.id==='cap'),'bottle cap part');
+t(W.stateOptions('bottle').length===2,'bottle state choices');
+t(W.stateOptions('chair').length===0,'no invented chair state');
+const a={jp:'ボトル',romaji:'botoru',pt:'garrafa'},b={jp:'机',romaji:'tsukue',pt:'mesa'};const s=W.relationSentence(a,b,'above');t(s.jp.includes('あります'),'inanimate arimasu');
+const p=W.relationSentence({jp:'人',romaji:'hito',pt:'pessoa',animate:true},b,'left');t(p.jp.includes('います'),'animate imasu');
+const st=W.confirmedStateSentence(a,W.stateOptions('bottle')[0]);t(st.jp.includes('いっぱい'),'confirmed state');
+t(W.compare({bbox:[0,0,200,200]},{bbox:[0,0,80,80]}).a==='大きい','comparison');
+console.log(`world-context: ${n}/${n}`);

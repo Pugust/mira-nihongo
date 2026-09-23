@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090b0f" />
-  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com aprendizado adaptativo e revisão contextual." />
+  <meta name="description" content="Mira Nihongo — imersão cotidiana em japonês pela câmera, com aprendizado adaptativo e compreensão de cena." />
   <title>Mira Nihongo</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
@@ -96,6 +96,12 @@
           </section>
 
           <div id="sceneLine" class="scene-line hidden"></div>
+          <section id="worldContextPanel" class="world-context hidden">
+            <div class="world-context-head"><strong>🌐 Mundo ao redor</strong><small id="worldContextSummary">Relações e estados aparecem aqui sem forçar conclusões.</small></div>
+            <div id="stateOptions" class="state-options hidden" aria-label="Estado observado"></div>
+            <div class="world-actions"><button id="photoStudyBtn" class="soft-btn" type="button">🖼 Explorar foto</button><button id="clearContextStateBtn" class="soft-btn hidden" type="button">Limpar estado</button></div>
+            <small id="photoStudyStatus" class="photo-study-status"></small>
+          </section>
           <div class="learning-toolbar">
             <button id="knowBtn" type="button" class="soft-btn">✓ Já sei</button>
             <button id="moreActionsBtn" type="button" class="soft-btn" aria-expanded="false">⋯ Mais</button>
@@ -142,8 +148,9 @@
     <label class="field"><span>Tamanho do texto</span><select id="fontSize"><option value="small">Compacto</option><option value="medium">Médio — recomendado</option><option value="large">Grande</option></select><small>Ajusta o conteúdo pedagógico sem mudar o tamanho dos alvos de toque.</small></label>
     <label class="switch-row"><span><strong>Feedback háptico</strong><small>Pulsos curtos ao reconhecer, congelar e confirmar.</small></span><input id="hapticsToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
+    <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.7 · Adaptive Learning</strong><p>O conteúdo evolui por palavra e por estrutura, com revisão oportunista sem metas punitivas.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.8 · World & Context</strong><p>O Mira combina aprendizado adaptativo com relações entre objetos, partes e estados confirmados por você.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -170,6 +177,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
   <script src="js/recognition-policy.js"></script>
+  <script src="js/world-context.js"></script>
   <script src="js/vision-engine.js"></script>
   <script src="js/japanese-data.js"></script>
   <script src="js/learning-engine.js"></script>
