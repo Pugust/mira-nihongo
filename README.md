@@ -7,3 +7,6 @@ A nota de QA cobre código, arquitetura e comportamento simulável. Reconhecimen
 
 
 RC2 corrige seleção de entidades sobrepostas e torna o drill-down conservador em regiões sem objeto, evitando acumular palpites arbitrários sobre chão/parede.
+
+### RC3 — Specialist Vision
+A RC3 adiciona visão especializada sob demanda. No quadro congelado, DeepLab/ADE20K fornece segmentação semântica de regiões e Hand Pose Detection fornece 21 landmarks por mão. Os landmarks são convertidos em entidades do Scene Graph para palma, punho e os cinco dedos. Esses modelos são carregados pela rede na primeira utilização; se estiverem indisponíveis, o Mira mantém o fluxo anterior e informa desconhecido em vez de depender deles como requisito para abrir o app.

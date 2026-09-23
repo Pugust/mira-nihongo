@@ -17,3 +17,11 @@
 - Ontologia inicial de ambientes, estruturas, superfícies, coletivos, materiais, partes e subpartes.
 - Auto Freeze permanece ON por padrão quando não há preferência salva; OFF explícito continua preservado.
 - Cache PWA versionado para Pre-Alpha 1 RC1.
+
+## V1.0 Pre-Alpha 1 RC3 — Specialist Vision
+- Adiciona segmentação semântica DeepLab/ADE20K sob demanda para superfícies/estruturas (piso, parede, porta, rua, céu etc.).
+- Adiciona Hand Pose Detection com 21 landmarks e regiões selecionáveis para palma, punho, polegar, indicador, médio, anelar e mínimo.
+- Specialist Router executa análise profunda somente após Scene Freeze / exploração, evitando custo contínuo na câmera ao vivo.
+- A segmentação pode corrigir falsos positivos grosseiros do classificador quando uma superfície/estrutura contradiz a hipótese selecionada.
+- Drill-down consulta primeiro especialistas e só cai no MobileNet genérico com limiares muito mais conservadores.
+- Cache atualizado para `mira-nihongo-v1-prealpha1-rc3-r1`.

@@ -1,8 +1,10 @@
-# Third-party
+# Third-party runtime dependencies
 
-Bibliotecas carregadas por CDN:
-- TensorFlow.js 4.22.0
-- COCO-SSD 2.2.3
-- MobileNet 2.1.1
+Mira Nihongo loads browser ML libraries from jsDelivr:
+- TensorFlow.js 4.22.0 — Apache-2.0
+- TensorFlow.js COCO-SSD 2.2.3 — Apache-2.0
+- TensorFlow.js MobileNet 2.1.1 — Apache-2.0
+- TensorFlow.js DeepLab — Apache-2.0
+- TensorFlow.js Hand Pose Detection — Apache-2.0
 
-Consulte as licenças dos respectivos projetos antes de redistribuição comercial.
+Model assets are fetched by the corresponding libraries at runtime. RC3 uses DeepLab/ADE20K for semantic segmentation and MediaPipe Hands through the TensorFlow.js hand-pose-detection API with the TFJS runtime.
