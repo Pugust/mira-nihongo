@@ -37,11 +37,18 @@ ok(manifest['start_url']=='./','manifest start url')
 
 # service worker cache includes core files
 sw=(root/'sw.js').read_text()
-for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js','./js/freeze-engine.js']:
+for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js','./js/freeze-engine.js','./js/recognition-fusion-v1.js','./js/perception-engine-v2.js','./js/ocr-engine-v1.js','./js/world-model-v2.js','./js/specialist-vision-v1.js','./js/multiscale-scene-v1.js','./js/visual-hierarchy-v1.js']:
     ok(v in sw,f'sw missing {v}')
+cache_match=re.search(r"const LOCAL=\[(.*?)\];",sw,re.S)
+cache_files=re.findall(r"'([^']+)'",cache_match.group(1)) if cache_match else []
+ok(bool(cache_match),'service worker LOCAL list parse')
+ok(len(cache_files)==len(set(cache_files)),'service worker LOCAL contains duplicates')
+for v in cache_files:
+    if v=='./': continue
+    ok((root/v.removeprefix('./')).exists(),f'service worker references missing file {v}')
 
 # version markers and V0.8 world-context hooks
-for needle in ['Mira Nihongo V1.0 Pre-Alpha 1','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
+for needle in ['Mira Nihongo V1.0 Pre-Alpha 2.1','visionRuntimeProfile','data-perception="aim"','data-perception="explore"','data-perception="read"','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
     ok(needle in html,f'html missing {needle}')
 for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning','renderWorldContext','exploreFrozenPhoto','mn-v08-world']:
     ok(needle in app,f'app missing {needle}')
@@ -72,9 +79,21 @@ for bad in ['fetch(', 'XMLHttpRequest', 'FormData(', 'navigator.sendBeacon']:
 js="const {JAPANESE_DB}=require('%s');console.log(JSON.stringify({n:Object.keys(JAPANESE_DB).length,keys:Object.keys(JAPANESE_DB)}));" % str(root/'js/japanese-data.js').replace('\\','\\\\')
 r=subprocess.run(['node','-e',js],capture_output=True,text=True,check=True)
 data=json.loads(r.stdout)
-ok(data['n']>=380,f'vocab too small: {data["n"]}')
+ok(data['n']==383,f'base vocab count changed unexpectedly: {data["n"]}')
 for k in ['utility_knife','hand','shoe','bottle_cap','fan','blade','shoelace','fan_blade','can_opener','vacuum','toolbox']:
     ok(k in data['keys'],f'missing vocab key {k}')
+
+# Pre-Alpha 2.1 consolidation invariants
+ok('mira-nihongo-v1-prealpha2-1-r1' in sw,'service worker cache version 2.1')
+for needle in ["perceptionRouter.run('live-analysis'","perceptionRouter.run('scene-analysis'","perceptionRouter.run('point-analysis'","perceptionRouter.run('human-arbitration'","perceptionRouter.run('ocr'",'requestVideoFrameCallback','startPerformanceObservers','stopPerformanceObservers','mn-vision-profile']:
+    ok(needle in app,f'2.1 app invariant missing {needle}')
+world2=(root/'js/world-model-v2.js').read_text()
+for needle in ['schemaVersion:2','trackingId','text:cleanText','PART_OF','HAS']:
+    ok(needle in world2,f'world model v2 missing {needle}')
+hierarchy=(root/'js/visual-hierarchy-v1.js').read_text()
+ok("bottle:['bottle_cap','label']" in hierarchy,'bottle cap hierarchy must use canonical bottle_cap')
+ok("finger:['fingernail']" in hierarchy,'fingernail hierarchy missing')
+ok("finger:['nail']" not in hierarchy,'semantic collision nail/fingernail returned')
 
 if errors:
     print(f'FAILED {len(errors)}/{checks}')

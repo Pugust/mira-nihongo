@@ -17,10 +17,11 @@
     breakdownToggle: document.getElementById('breakdownToggle'), breakdownPanel: document.getElementById('breakdownPanel'), breakdownTokens: document.getElementById('breakdownTokens'), tokenExplain: document.getElementById('tokenExplain'), patternBox: document.getElementById('patternBox'),
     sayToggle: document.getElementById('saySomethingToggle'), sayPanel: document.getElementById('saySomethingPanel'), intentGrid: document.getElementById('intentGrid'), intentAnswer: document.getElementById('intentAnswer'), sceneLine: document.getElementById('sceneLine'), worldContextPanel: document.getElementById('worldContextPanel'), worldContextSummary: document.getElementById('worldContextSummary'), stateOptions: document.getElementById('stateOptions'), photoStudy: document.getElementById('photoStudyBtn'), clearContextState: document.getElementById('clearContextStateBtn'), photoStudyStatus: document.getElementById('photoStudyStatus'),
     speakWord: document.getElementById('speakWordBtn'), speakSentence: document.getElementById('speakSentenceBtn'), know: document.getElementById('knowBtn'), review: document.getElementById('reviewBtn'), nextAction: document.getElementById('nextActionBtn'), learnThis: document.getElementById('learnThisBtn'), progressHint: document.getElementById('progressHint'), moreActions: document.getElementById('moreActionsBtn'), secondaryActions: document.getElementById('secondaryActions'),
-    immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'), fontSize: document.getElementById('fontSize'), haptics: document.getElementById('hapticsToggle'), adaptiveReview: document.getElementById('adaptiveReviewToggle'), worldContextToggle: document.getElementById('worldContextToggle'),
+    immersion: document.getElementById('immersionLevel'), performanceMode: document.getElementById('performanceMode'), visionRuntimeProfile: document.getElementById('visionRuntimeProfile'), confidence: document.getElementById('confidenceRange'), confidenceValue: document.getElementById('confidenceValue'), deepVision: document.getElementById('deepVisionToggle'), autoFreeze: document.getElementById('autoFreezeToggle'), stickyStrength: document.getElementById('stickyStrength'), showBoxes: document.getElementById('showBoxesToggle'), diagnostics: document.getElementById('diagnosticsToggle'), telemetryBox: document.getElementById('telemetryBox'), demoControl: document.getElementById('demonstrativeControl'), fontSize: document.getElementById('fontSize'), haptics: document.getElementById('hapticsToggle'), adaptiveReview: document.getElementById('adaptiveReviewToggle'), worldContextToggle: document.getElementById('worldContextToggle'),
     clearCorrections: document.getElementById('clearCorrectionsBtn'), correctionCount: document.getElementById('correctionCount'), resetProgress: document.getElementById('resetProgressBtn'), replayTutorial: document.getElementById('replayTutorialBtn'),
     vocabBtn: document.getElementById('vocabBtn'), vocabDialog: document.getElementById('vocabDialog'), vocabSearch: document.getElementById('vocabSearch'), vocabList: document.getElementById('vocabList'), correctionDialog: document.getElementById('correctionDialog'), correctionSearch: document.getElementById('correctionSearch'), correctionList: document.getElementById('correctionList'), correctionCandidates: document.getElementById('correctionCandidates'), correctionCandidateList: document.getElementById('correctionCandidateList'), cancelCorrection: document.getElementById('cancelCorrectionBtn'), historyBtn: document.getElementById('historyBtn'), historyDialog: document.getElementById('historyDialog'), historyList: document.getElementById('historyList'), learningBtn: document.getElementById('learningBtn'), learningDialog: document.getElementById('learningDialog'), learningStats: document.getElementById('learningStats'), dueReviewList: document.getElementById('dueReviewList'), grammarProgressList: document.getElementById('grammarProgressList'),
     exploreScene: document.getElementById('exploreSceneBtn'), sceneBreadcrumb: document.getElementById('sceneBreadcrumb'), cameraToolsBtn:document.getElementById('cameraToolsBtn'), cameraTools:document.getElementById('cameraTools'), cameraToolsClose:document.getElementById('cameraToolsClose'), cameraCapabilityHint:document.getElementById('cameraCapabilityHint'), zoomRange:document.getElementById('zoomRange'), zoomIn:document.getElementById('zoomInBtn'), zoomOut:document.getElementById('zoomOutBtn'), torch:document.getElementById('torchBtn'),
+    perceptionModes:document.getElementById('perceptionModes'), readPanel:document.getElementById('readPanel'), readStatus:document.getElementById('readStatus'), readNow:document.getElementById('readNowBtn'), readResults:document.getElementById('readResults'), visionProfileText:document.getElementById('visionProfileText'),
     tutorialCoach: document.getElementById('tutorialCoach'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialText: document.getElementById('tutorialText'), tutorialNext: document.getElementById('tutorialNextBtn'), tutorialSkip: document.getElementById('tutorialSkipBtn'), toast: document.getElementById('toast')
   };
 
@@ -172,14 +173,14 @@
     frozen:false, freezeReason:'', detailsOpen:false, sheetSnap:'compact', sheetDrag:null, sentenceSwipe:null, actionIndex:0, quizRevealed:false, currentCropHash:null, corrections:readJson('mn-corrections',[]), learningStore:initialLearningStore, progress:initialLearningStore.words, grammar:initialLearningStore.grammar, adaptiveReviewEnabled:localStorage.getItem('mn-v07-review')!=='0', worldContextEnabled:localStorage.getItem('mn-v08-world')!=='0', contextState:null, photoStudyActive:false, sceneMemory:[], reviewActive:false, reviewRevealed:false, reviewTimer:null, lastExposureSig:'', lessonPlan:null, history:readJson('mn-v05-history',[]),
     focus:{nx:.5,ny:.45,phase:'observing',stable:0,moving:0,prevPixels:null,lastHash:null,trackingHash:null,loopTimer:null,lastAnalysisAt:0,lastMotion:1,lastSharpness:0},
     revealPhase:0, revealTimer:null, analysisToken:0,
-    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null, scene:null, sceneExplore:false, sceneAnalyzing:false, sceneSegmentation:null, temporalLabels:[], cameraZoom:1, torchOn:false, uiMode:'recognition', uiEpoch:0, visionScheduler:new (window.MiraPerformanceV1?.VisionScheduler||class{cancel(){} snapshot(){return{}}})(), startup:{detectorRequested:false,detectorReady:false}
+    telemetry:{startedAt:Date.now(),focusSamples:0,heavyTotal:0,heavyTimes:[],avgHeavyMs:0,lastHeavyMs:0,frozenMs:0,frozenSince:0,uiActions:0}, tutorial:{active:false,step:0,pending:!localStorage.getItem('mn-v06-tutorial')}, annotationTimer:null, toastTimer:null, scene:null, sceneExplore:false, sceneAnalyzing:false, sceneJobSeq:0, sceneSegmentation:null, temporalLabels:[], cameraZoom:1, torchOn:false, uiMode:'recognition', uiEpoch:0, startup:{detectorRequested:false,detectorReady:false}, perceptionMode:localStorage.getItem('mn-perception-mode')||'aim', perceptionRouter:new (window.MiraPerceptionV2?.BudgetRouter||class{cancel(){} snapshot(){return{}} async run(_,fn){return{ok:true,value:await fn()}}})(), temporalTracker:new (window.MiraPerceptionV2?.TemporalTracker||class{push(){} reset(){}})(), ocrWords:[], specialistArbitrating:false, visionProfileSetting:localStorage.getItem('mn-vision-profile')||'auto', deviceProfiler:new (window.MiraPerceptionV2?.AdaptiveProfiler||class{constructor(){this.setting='auto'}set(v){this.setting=v}observe(){}tier(){return this.setting==='auto'?'standard':this.setting}config(){return{sampleMultiplier:1,multiscaleRegions:2,sceneSpecialists:2}}snapshot(){return{setting:this.setting,tier:this.tier(),averageMs:0,samples:0,config:this.config()}}})(localStorage.getItem('mn-vision-profile')||'auto'), perfObs:{cameraFps:0,uiFps:0,cameraCount:0,uiCount:0,lastCameraAt:0,lastUiAt:0,videoCb:null,raf:null}
   };
 
   init();
 
   function init(){
     restoreControls(); bindEvents(); renderVocabulary(els.vocabList,'',selectManual); renderVocabulary(els.correctionList,'',applyCorrection); updateDemoButtons(); updateStudyButton(); updateMemoryControls(); updateTelemetry();
-    applyUiPreferences();
+    applyUiPreferences(); updatePerceptionMode();
     if(!localStorage.getItem('mn-v07-learning'))saveProgress();
     if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     // RC7: no network/model download blocks first paint. Vision starts only after camera intent.
@@ -191,6 +192,7 @@
     els.start.addEventListener('click',startCamera); els.flip.addEventListener('click',flipCamera); els.settings.addEventListener('click',()=>safeShowModal(els.settingsDialog)); els.study.addEventListener('click',()=>safeShowModal(els.studyDialog)); els.scan.addEventListener('click',()=>requestAnalysis(true)); els.unknownCorrect.addEventListener('click',openCorrection);
     els.stage.addEventListener('pointerup',handleStageTap); els.exploreScene?.addEventListener('click',e=>{e.stopPropagation();toggleSceneExplore();if(state.frozen&&state.sceneExplore)analyzeFrozenScene()});
     els.cameraToolsBtn?.addEventListener('click',e=>{e.stopPropagation();els.cameraTools?.classList.toggle('hidden')}); els.cameraToolsClose?.addEventListener('click',e=>{e.stopPropagation();els.cameraTools?.classList.add('hidden')}); els.zoomRange?.addEventListener('input',()=>setCameraZoom(Number(els.zoomRange.value))); els.zoomIn?.addEventListener('click',()=>stepZoom(.25)); els.zoomOut?.addEventListener('click',()=>stepZoom(-.25)); els.torch?.addEventListener('click',toggleTorch);
+    els.perceptionModes?.querySelectorAll('[data-perception]').forEach(b=>b.addEventListener('click',()=>setPerceptionMode(b.dataset.perception))); els.readNow?.addEventListener('click',runOCR);
     bindSheetGestures(); bindSentenceSwipe();
     els.expandLesson.addEventListener('click',()=>{if(state.sheetDrag?.moved)return;setSheetSnap(window.MiraInteraction.nextSnap(state.sheetSnap,state.sheetSnap==='full'?-1:1),true)}); els.breakdownToggle.addEventListener('click',()=>{togglePanel(els.breakdownPanel);firstTip('breakdown','Toque em um bloco da frase para entender sua função.')}); els.sayToggle.addEventListener('click',()=>togglePanel(els.sayPanel));
     els.intentGrid.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(b)showIntent(b.dataset.intent)});
@@ -201,13 +203,14 @@
     document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.mode);safeClose(els.studyDialog)}));
     els.demoControl.querySelectorAll('[data-demo]').forEach(b=>b.addEventListener('click',()=>{state.demonstrative=b.dataset.demo;state.lessonPlan=null;localStorage.setItem('mn-demo',state.demonstrative);updateDemoButtons();renderLesson()}));
     els.performanceMode.addEventListener('change',async()=>{state.performanceMode=els.performanceMode.value;localStorage.setItem('mn-performance',state.performanceMode);if(state.cameraStarted){await openCamera(state.facingMode);resetObservation('Perfil atualizado')}showToast(`Perfil ${profile().label}.`)});
+    els.visionRuntimeProfile?.addEventListener('change',()=>{state.visionProfileSetting=els.visionRuntimeProfile.value;localStorage.setItem('mn-vision-profile',state.visionProfileSetting);state.deviceProfiler?.set?.(state.visionProfileSetting);updateTelemetry();showToast(`Vision Runtime: ${runtimeTier().toUpperCase()}.`)});
     els.immersion.addEventListener('change',()=>{state.immersionSetting=els.immersion.value;localStorage.setItem('mn-immersion',state.immersionSetting);renderLesson()});
     els.confidence.addEventListener('input',()=>{state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;localStorage.setItem('mn-score',String(state.minScore))});
     els.deepVision.addEventListener('change',()=>{state.deepVisionEnabled=els.deepVision.checked;localStorage.setItem('mn-deep-vision',state.deepVisionEnabled?'1':'0')});
     els.autoFreeze.addEventListener('change',()=>{state.autoFreezeEnabled=els.autoFreeze.checked;localStorage.setItem('mn-v05-autofreeze',state.autoFreezeEnabled?'1':'0')});
     els.stickyStrength.addEventListener('change',()=>{state.stickyStrength=els.stickyStrength.value;localStorage.setItem('mn-v05-sticky',state.stickyStrength)});
     els.showBoxes.addEventListener('change',()=>{state.showBoxes=els.showBoxes.checked;localStorage.setItem('mn-boxes',state.showBoxes?'1':'0');renderBoxes()});
-    els.diagnostics.addEventListener('change',()=>{state.diagnostics=els.diagnostics.checked;localStorage.setItem('mn-diagnostics',state.diagnostics?'1':'0');updateTelemetry();renderRecognitionState()});
+    els.diagnostics.addEventListener('change',()=>{state.diagnostics=els.diagnostics.checked;localStorage.setItem('mn-diagnostics',state.diagnostics?'1':'0');if(state.diagnostics)startPerformanceObservers();else stopPerformanceObservers();updateTelemetry();renderRecognitionState()});
     els.fontSize.addEventListener('change',()=>{state.fontSize=els.fontSize.value;localStorage.setItem('mn-v06-font',state.fontSize);applyUiPreferences()});
     els.haptics.addEventListener('change',()=>{state.hapticsEnabled=els.haptics.checked;localStorage.setItem('mn-v06-haptics',state.hapticsEnabled?'1':'0')});
     els.adaptiveReview.addEventListener('change',()=>{state.adaptiveReviewEnabled=els.adaptiveReview.checked;localStorage.setItem('mn-v07-review',state.adaptiveReviewEnabled?'1':'0');if(!state.adaptiveReviewEnabled)revealReviewNow(false)});
@@ -217,7 +220,7 @@
     els.resetProgress.addEventListener('click',()=>{state.learningStore=window.MiraAdaptiveLearning.normalizeStore(null,{});state.progress=state.learningStore.words;state.grammar=state.learningStore.grammar;localStorage.removeItem('mn-v07-learning');localStorage.removeItem('mn-v05-progress');localStorage.removeItem('mn-v04-progress');state.reviewActive=false;state.reviewRevealed=false;renderLesson();showToast('Aprendizado adaptativo redefinido.')});
     els.replayTutorial.addEventListener('click',()=>{safeClose(els.settingsDialog);startTutorial(true)});
     els.tutorialNext.addEventListener('click',()=>advanceTutorial()); els.tutorialSkip.addEventListener('click',finishTutorial);
-    window.addEventListener('resize',()=>{positionCrosshair();renderBoxes()}); window.addEventListener('pagehide',stopCamera); document.addEventListener('visibilitychange',()=>{if(document.hidden&&window.speechSynthesis)window.speechSynthesis.cancel()});
+    window.addEventListener('resize',()=>{positionCrosshair();renderBoxes()}); window.addEventListener('pagehide',stopCamera); document.addEventListener('visibilitychange',()=>{if(document.hidden){if(window.speechSynthesis)window.speechSynthesis.cancel();state.perceptionRouter?.cancel?.('hidden');stopPerformanceObservers()}else if(state.cameraStarted&&state.diagnostics)startPerformanceObservers()});
   }
 
   async function loadDetector(){
@@ -241,25 +244,64 @@
 
   async function openCamera(mode){
     if(state.frozen)setFrozen(false,'camera');els.stage.classList.remove('frozen');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');
-    stopStreamOnly();const p=profile();state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:mode},width:{ideal:p.width},height:{ideal:p.height},frameRate:{ideal:p.fps,max:p.maxFps}}});els.video.srcObject=state.stream;await els.video.play();await waitForVideo();const track=state.stream.getVideoTracks()[0];state.facingMode=track?.getSettings?.().facingMode||mode;els.stage.classList.toggle('camera-user',state.facingMode==='user');await tryEnableContinuousAutofocus(track);setupCameraCapabilities(track);positionCrosshair()
+    stopStreamOnly();const p=profile();state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:mode},width:{ideal:p.width},height:{ideal:p.height},frameRate:{ideal:p.fps,max:p.maxFps}}});els.video.srcObject=state.stream;await els.video.play();await waitForVideo();const track=state.stream.getVideoTracks()[0];state.facingMode=track?.getSettings?.().facingMode||mode;els.stage.classList.toggle('camera-user',state.facingMode==='user');await tryEnableContinuousAutofocus(track);setupCameraCapabilities(track);positionCrosshair();if(state.diagnostics)startPerformanceObservers()
   }
   async function flipCamera(){if(!state.cameraStarted)return;if(state.frozen)resumeLive();state.facingMode=state.facingMode==='environment'?'user':'environment';try{await openCamera(state.facingMode);resetObservation('Câmera trocada')}catch(e){showToast('Não consegui trocar de câmera.')}}
   async function tryEnableContinuousAutofocus(track){try{const caps=track?.getCapabilities?.();if(caps?.focusMode?.includes?.('continuous'))await track.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(_){/* recurso opcional do navegador/câmera */}}
   function activeTrack(){return state.stream?.getVideoTracks?.()[0]||null}
-  function setupCameraCapabilities(track){try{const c=track?.getCapabilities?.()||{};const z=c.zoom;if(els.zoomRange){els.zoomRange.min=z?.min??1;els.zoomRange.max=z?.max??1;els.zoomRange.step=z?.step??.1;els.zoomRange.disabled=!z;const current=track.getSettings?.().zoom??1;els.zoomRange.value=current;state.cameraZoom=current}els.zoomIn&&(els.zoomIn.disabled=!z);els.zoomOut&&(els.zoomOut.disabled=!z);els.torch?.classList.toggle('hidden',!c.torch);if(els.cameraCapabilityHint)els.cameraCapabilityHint.textContent=z||c.torch?'Controles oferecidos pela câmera atual.':'Esta câmera não expôs zoom nem lanterna ao navegador.';els.cameraToolsBtn?.classList.remove('hidden')}catch(_){}}
+  function setupCameraCapabilities(track){try{state.torchOn=false;els.torch?.classList.remove('active');const c=track?.getCapabilities?.()||{};const z=c.zoom;if(els.zoomRange){els.zoomRange.min=z?.min??1;els.zoomRange.max=z?.max??1;els.zoomRange.step=z?.step??.1;els.zoomRange.disabled=!z;const current=track.getSettings?.().zoom??1;els.zoomRange.value=current;state.cameraZoom=current}els.zoomIn&&(els.zoomIn.disabled=!z);els.zoomOut&&(els.zoomOut.disabled=!z);els.torch?.classList.toggle('hidden',!c.torch);if(els.cameraCapabilityHint)els.cameraCapabilityHint.textContent=z||c.torch?'Controles oferecidos pela câmera atual.':'Esta câmera não expôs zoom nem lanterna ao navegador.';els.cameraToolsBtn?.classList.remove('hidden')}catch(_){}}
   async function setCameraZoom(v){const t=activeTrack();if(!t)return;const c=t.getCapabilities?.()||{};if(c.zoom){const n=clamp(v,c.zoom.min,c.zoom.max);try{await t.applyConstraints({advanced:[{zoom:n}]});state.cameraZoom=n;return}catch(_){}}if(els.zoomRange)els.zoomRange.value=1;state.cameraZoom=1;showToast('Zoom não exposto por esta câmera/navegador.')}
   function stepZoom(d){if(!els.zoomRange)return;const n=clamp(Number(els.zoomRange.value||1)+d,Number(els.zoomRange.min||1),Number(els.zoomRange.max||4));els.zoomRange.value=n;setCameraZoom(n)}
   async function toggleTorch(){const t=activeTrack();if(!t)return;state.torchOn=!state.torchOn;try{await t.applyConstraints({advanced:[{torch:state.torchOn}]});els.torch?.classList.toggle('active',state.torchOn)}catch(_){state.torchOn=false;showToast('Lanterna não disponível nesta câmera.')}}
   function waitForVideo(){if(els.video.videoWidth)return Promise.resolve();return new Promise(r=>{const done=()=>r();els.video.addEventListener('loadedmetadata',done,{once:true});setTimeout(done,1500)})}
-  function stopStreamOnly(){state.visionScheduler?.cancel?.();if(state.stream){state.stream.getTracks().forEach(t=>t.stop());state.stream=null}}
-  function stopCamera(){clearTimeout(state.focus.loopTimer);clearTimeout(state.revealTimer);if(state.telemetry.frozenSince){state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0}stopStreamOnly()}
+  function stopStreamOnly(){state.perceptionRouter?.cancel?.('camera-reset');stopFocusLoop();if(state.stream){state.stream.getTracks().forEach(t=>t.stop());state.stream=null}}
+  function stopCamera(){stopFocusLoop();stopPerformanceObservers();clearTimeout(state.revealTimer);if(state.telemetry.frozenSince){state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0}stopStreamOnly()}
 
   function profile(){const ps={eco:{label:'Econômico',width:480,height:360,fps:24,maxFps:30,sampleMs:420,required:2,motion:.040,change:.115,detectRatio:.54,deepRatio:.30},balanced:{label:'Equilibrado',width:640,height:480,fps:30,maxFps:30,sampleMs:340,required:2,motion:.035,change:.105,detectRatio:.62,deepRatio:.28},accuracy:{label:'Precisão',width:960,height:540,fps:30,maxFps:60,sampleMs:280,required:3,motion:.030,change:.095,detectRatio:.68,deepRatio:.25}};return ps[state.performanceMode]||ps.balanced}
-
+  function runtimeTier(){return state.deviceProfiler?.tier?.()||'standard'}
+  function runtimeConfig(){return state.deviceProfiler?.config?.()||{sampleMultiplier:1,multiscaleRegions:2,sceneSpecialists:2}}
+  function effectiveSampleMs(){return Math.round(profile().sampleMs*(runtimeConfig().sampleMultiplier||1))}
+  function stopFocusLoop(){
+    const id=state.focus.loopTimer;if(id!=null){if(state.focus.loopKind==='video'&&els.video.cancelVideoFrameCallback)try{els.video.cancelVideoFrameCallback(id)}catch(_){ }else clearTimeout(id)}state.focus.loopTimer=null;state.focus.loopKind=null;
+  }
   function startFocusLoop(){
-    clearTimeout(state.focus.loopTimer);
-    const tick=()=>{focusTick().finally(()=>{if(state.cameraStarted&&!state.frozen)state.focus.loopTimer=setTimeout(tick,profile().sampleMs);else state.focus.loopTimer=null})};
-    tick();
+    stopFocusLoop();let nextDue=0;
+    if(typeof els.video.requestVideoFrameCallback==='function'){
+      state.focus.loopKind='video';const tick=(ts)=>{if(!state.cameraStarted||state.frozen){state.focus.loopTimer=null;return}if(ts>=nextDue){nextDue=ts+effectiveSampleMs();focusTick().catch(()=>{})}state.focus.loopTimer=els.video.requestVideoFrameCallback(tick)};state.focus.loopTimer=els.video.requestVideoFrameCallback(tick);return;
+    }
+    state.focus.loopKind='timer';const tick=()=>{focusTick().finally(()=>{if(state.cameraStarted&&!state.frozen)state.focus.loopTimer=setTimeout(tick,effectiveSampleMs());else state.focus.loopTimer=null})};tick();
+  }
+
+  function stopPerformanceObservers(){
+    const o=state.perfObs||{};
+    if(o.videoCb!=null&&typeof els.video.cancelVideoFrameCallback==='function')try{els.video.cancelVideoFrameCallback(o.videoCb)}catch(_){}
+    if(o.raf!=null)try{cancelAnimationFrame(o.raf)}catch(_){}
+    o.videoCb=null;o.raf=null;o.cameraCount=0;o.uiCount=0;o.lastCameraAt=0;o.lastUiAt=0;
+  }
+  function startPerformanceObservers(){
+    stopPerformanceObservers();
+    if(!state.diagnostics||document.hidden)return;
+    const o=state.perfObs,now=performance.now();o.lastCameraAt=now;o.lastUiAt=now;o.cameraCount=0;o.uiCount=0;
+    if(state.stream&&typeof els.video.requestVideoFrameCallback==='function'){
+      const cameraTick=(ts)=>{
+        if(!state.diagnostics||document.hidden||!state.stream){o.videoCb=null;return}
+        o.cameraCount++;
+        const span=ts-o.lastCameraAt;
+        if(span>=950){o.cameraFps=o.cameraCount*1000/Math.max(1,span);o.cameraCount=0;o.lastCameraAt=ts}
+        o.videoCb=els.video.requestVideoFrameCallback(cameraTick);
+      };
+      o.videoCb=els.video.requestVideoFrameCallback(cameraTick);
+    }else{
+      o.cameraFps=Number(activeTrack()?.getSettings?.().frameRate)||0;
+    }
+    const uiTick=(ts)=>{
+      if(!state.diagnostics||document.hidden){o.raf=null;return}
+      o.uiCount++;
+      const span=ts-o.lastUiAt;
+      if(span>=950){o.uiFps=o.uiCount*1000/Math.max(1,span);o.uiCount=0;o.lastUiAt=ts}
+      o.raf=requestAnimationFrame(uiTick);
+    };
+    o.raf=requestAnimationFrame(uiTick);
   }
 
   async function focusTick(){
@@ -290,19 +332,25 @@
   async function requestAnalysis(manual){
     if(state.frozen){if(manual)showToast('A imagem está congelada. Toque em Continuar para procurar outro objeto.');return}
     if(!state.cameraStarted){if(manual)showToast('Abra a câmera primeiro.');return}if(!state.detector){if(manual)showToast('Detector ainda está carregando.');return}if(state.analyzing||state.verifying)return;
-    state.analyzing=true;state.focus.lastAnalysisAt=Date.now();setPhase('analyzing');setStatus('Analisando o foco…');const token=++state.analysisToken;const started=performance.now();recordHeavy();
-    try{
-      const roi=focusBox(profile().detectRatio);drawVideoBoxToCanvas(roi,els.detect);const local=await state.detector.detect(els.detect,12,state.minScore);if(token!==state.analysisToken)return;
+    state.analyzing=true;state.focus.lastAnalysisAt=Date.now();setPhase('analyzing');setStatus('Analisando o foco…');const token=++state.analysisToken;recordHeavy();
+    const result=await state.perceptionRouter.run('live-analysis',async({isCurrent})=>{
+      const roi=focusBox(profile().detectRatio);drawVideoBoxToCanvas(roi,els.detect);const local=await state.detector.detect(els.detect,12,state.minScore);if(token!==state.analysisToken||!isCurrent())return;
       state.lastPredictions=local.filter(p=>JAPANESE_DB[p.class]).map(p=>mapPredictionFromCanvas(p,roi,els.detect));
-      const target=chooseTarget(state.lastPredictions);
+      const target=chooseTarget(state.lastPredictions);const tracked=state.temporalTracker?.push?.(target?.class,target?.score||0);
       state.temporalLabels.push(target?.class||null);state.temporalLabels=state.temporalLabels.slice(-3);
       if(target){
         const part=window.MiraVisionEngine?.inferPartCandidate?.({target,focusPoint:focusPointInVideo(),focusBox:focusBox(profile().deepRatio)})||null;
         await acceptDetectorTarget(target,token,part);
       }else if(manual) await deepAnalyzeFocus(token,true); else showEmptyState('Mire em algo','Ainda não encontrei um objeto seguro. A análise detalhada só roda quando necessária.');
+      if(tracked?.stableLabel&&target&&tracked.stableLabel!==target.class&&state.diagnostics)console.debug('Temporal hold',tracked.stableLabel,'vs',target.class);
       renderBoxes();
-    }catch(e){console.error(e);setStatus('Falha temporária na análise');if(manual)showToast('A análise falhou; tente novamente.')}finally{
-      const ms=Math.max(1,performance.now()-started);state.telemetry.lastHeavyMs=ms;state.telemetry.avgHeavyMs=state.telemetry.avgHeavyMs?state.telemetry.avgHeavyMs*.78+ms*.22:ms;state.analyzing=false;if(state.frozen)setPhase('frozen');else if(state.selectedKey)setPhase('tracking');else setPhase('observing');updateTelemetry();
+    },{defer:false,priority:1});
+    try{
+      if(result?.dropped&&manual)showToast('Outra análise visual ainda está terminando. Tente novamente em instantes.');
+      if(result?.error){console.error(result.error);setStatus('Falha temporária na análise');if(manual)showToast('A análise falhou; tente novamente.')}
+    }finally{
+      if(result?.ms){state.telemetry.lastHeavyMs=result.ms;state.telemetry.avgHeavyMs=state.telemetry.avgHeavyMs?state.telemetry.avgHeavyMs*.78+result.ms*.22:result.ms;state.deviceProfiler?.observe?.(result.ms)}
+      state.analyzing=false;if(state.frozen)setPhase('frozen');else if(state.selectedKey)setPhase('tracking');else setPhase('observing');updateTelemetry();
     }
   }
 
@@ -392,7 +440,7 @@
   }
 
   function clearSelection(clearCandidates=true){state.selectedKey=null;state.selectedPrediction=null;state.rawDetectorKey=null;state.recognition={kind:'idle',reason:'',detectorScore:null,verifierScore:null,verifierLabel:'',family:null};if(clearCandidates)state.candidates=[];state.focus.trackingHash=null;state.reviewActive=false;state.reviewRevealed=false;state.lastExposureSig='';state.lessonPlan=null;clearTimeout(state.revealTimer);clearTimeout(state.reviewTimer);els.lessonCard.classList.add('hidden');renderBoxes()}
-  function resetObservation(status='Mire em algo'){clearSelection();state.focus.phase='observing';state.focus.stable=0;state.focus.moving=0;state.focus.prevPixels=null;state.focus.lastHash=null;state.analysisToken++;setPhase('observing');showEmptyState('Mire em algo','Quando a região estabilizar, eu analiso uma vez e paro.');setStatus(status)}
+  function resetObservation(status='Mire em algo'){clearSelection();state.focus.phase='observing';state.focus.stable=0;state.focus.moving=0;state.focus.prevPixels=null;state.focus.lastHash=null;state.temporalLabels=[];state.temporalTracker?.reset?.();state.analysisToken++;setPhase('observing');showEmptyState('Mire em algo','Quando a região estabilizar, eu analiso uma vez e paro.');setStatus(status)}
   function setPhase(phase){state.focus.phase=phase;els.holdRing.className=`hold-ring ${phase}`}
 
   function currentItem(){return state.selectedKey?JAPANESE_DB[state.selectedKey]:null}
@@ -515,16 +563,17 @@
     if(v===state.frozen){renderLesson();return}
     if(v){
       if(!captureFreezeFrame()&&state.cameraStarted)return;
-      state.frozen=true;state.freezeReason=reason;state.scene=null;state.sceneExplore=false;ensureScene();for(const p of state.lastPredictions)addScenePrediction(p);if(state.selectedPrediction){const e=addScenePrediction(state.selectedPrediction);if(e)window.MiraWorldModelV1?.select?.(state.scene,e.id)};state.telemetry.frozenSince=Date.now();state.analysisToken++;clearTimeout(state.focus.loopTimer);state.focus.loopTimer=null;els.stage.classList.add('frozen');els.stage.classList.remove('annotations-hidden');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus('Congelado');haptic([10,35,10]);clearTimeout(state.annotationTimer);state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),700);
+      state.frozen=true;state.freezeReason=reason;state.scene=null;state.sceneExplore=false;ensureScene();for(const p of state.lastPredictions)addScenePrediction(p);if(state.selectedPrediction){const e=addScenePrediction(state.selectedPrediction);if(e)window.MiraWorldModelV1?.select?.(state.scene,e.id)};state.telemetry.frozenSince=Date.now();state.analysisToken++;stopFocusLoop();els.stage.classList.add('frozen');els.stage.classList.remove('annotations-hidden');els.freezeCanvas.classList.remove('hidden');els.freezeBanner.classList.remove('hidden');setPhase('frozen');setStatus('Congelado');haptic([10,35,10]);clearTimeout(state.annotationTimer);state.annotationTimer=setTimeout(()=>els.stage.classList.add('annotations-hidden'),700);
       try{els.video.pause()}catch(_){/* opcional */} renderSceneBreadcrumb();renderBoxes();
       if(reason==='manual')showToast('Imagem congelada.');
+      if(state.perceptionMode==='read')setTimeout(()=>runOCR(),60);else if(['person','hand','face'].includes(state.selectedKey))setTimeout(()=>arbitrateFrozenHuman(),40);
     }else{
-      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';state.scene=null;state.sceneExplore=false;state.sceneSegmentation=null;els.stage.classList.remove('scene-explore');els.exploreScene?.classList.remove('active');els.sceneBreadcrumb?.classList.add('hidden');clearTimeout(state.annotationTimer);els.stage.classList.remove('frozen','annotations-hidden');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
+      if(state.telemetry.frozenSince)state.telemetry.frozenMs+=Date.now()-state.telemetry.frozenSince;state.telemetry.frozenSince=0;state.frozen=false;state.freezeReason='';clearOCRBoxes();state.scene=null;state.sceneExplore=false;state.sceneSegmentation=null;els.stage.classList.remove('scene-explore');els.exploreScene?.classList.remove('active');els.sceneBreadcrumb?.classList.add('hidden');clearTimeout(state.annotationTimer);els.stage.classList.remove('frozen','annotations-hidden');els.freezeCanvas.classList.add('hidden');els.freezeBanner.classList.add('hidden');try{const p=els.video.play();if(p?.catch)p.catch(()=>{})}catch(_){/* ignore */}
       setPhase(state.selectedKey?'tracking':'observing');if(state.cameraStarted)startFocusLoop();
     }
     renderLesson();updateTelemetry();
   }
-  function resumeLive(){state.uiMode='recognition';state.uiEpoch++;state.analysisToken++;state.visionScheduler?.cancel?.();state.sceneAnalyzing=false;els.cameraTools?.classList.add('hidden');
+  function resumeLive(){state.uiMode='recognition';state.uiEpoch++;state.analysisToken++;state.perceptionRouter?.cancel?.('resume-live');clearOCRBoxes();state.sceneJobSeq++;state.sceneAnalyzing=false;els.cameraTools?.classList.add('hidden');
     if(state.frozen)setFrozen(false,'resume');setSheetSnap('compact',false);resetObservation('Mire no próximo objeto');
   }
 
@@ -604,53 +653,123 @@
     const scene=state.scene;if(!scene)return[];const selected=scene.entities.find(e=>e.id===scene.selectedId);if(!selected)return[];const children=scene.entities.filter(e=>e.parentId===selected.id&&e.bbox);if(children.length)return[selected,...children];if(selected.parentId){const siblings=scene.entities.filter(e=>e.parentId===selected.parentId&&e.bbox);return siblings.length?[selected,...siblings.filter(e=>e.id!==selected.id)]:[selected]}return[selected];
   }
   async function analyzeFrozenScene(){
-    if(!state.frozen||!state.detector||state.sceneAnalyzing)return;state.sceneAnalyzing=true;const scene=ensureScene();
-    try{
+    if(!state.frozen||!state.detector)return;const jobId=++state.sceneJobSeq;state.sceneAnalyzing=true;const scene=ensureScene();const epoch=state.uiEpoch;
+    const result=await state.perceptionRouter.run('scene-analysis',async({isCurrent})=>{
       for(const p of state.lastPredictions)addScenePrediction(p,null,'live-detector');
-      recordHeavy();const preds=await state.detector.detect(els.freezeCanvas,20,Math.max(.38,state.minScore-.08));if(!state.frozen)return;const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;
+      recordHeavy();const preds=await state.detector.detect(els.freezeCanvas,20,Math.max(.38,state.minScore-.08));if(!state.frozen||epoch!==state.uiEpoch||!isCurrent())return;
+      const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;
       for(const p of preds){if(!JAPANESE_DB[p.class])continue;addScenePrediction({...p,bbox:[p.bbox[0]*sx,p.bbox[1]*sy,p.bbox[2]*sx,p.bbox[3]*sy],_stageBox:true},null,'frozen-detector')}
-      const useful=scene.entities.some(e=>e.status==='stable'&&e.confidence>=.62);
-      if(!useful&&state.frozen)await analyzeMultiScaleScene(scene);
-      if(state.sceneExplore&&state.frozen)await analyzeSpecialists(scene);
-      if(state.sceneExplore&&state.frozen&&!scene.entities.some(e=>e.status==='stable'))await analyzeSceneEnvironment(scene);renderBoxes();
-    }catch(e){console.warn('Scene analysis failed',e)}finally{state.sceneAnalyzing=false}
+      // Structure-first is deliberately restricted to user-requested scene exploration.
+      // It may find a cabinet/wardrobe/large fixture, but never promotes an arbitrary
+      // texture-classifier label as a discrete object.
+      if(state.deepVisionEnabled&&state.frozen&&isCurrent())await analyzeMultiScaleScene(scene,isCurrent);
+      if(state.sceneExplore&&state.frozen&&isCurrent())await analyzeSpecialists(scene,isCurrent);
+      if(state.sceneExplore&&state.frozen&&isCurrent()&&!scene.entities.some(e=>e.status==='stable'))await analyzeSceneEnvironment(scene);
+    },{defer:true,priority:2});
+    try{if(result?.error)console.warn('Scene analysis failed',result.error);if(result?.ms){state.deviceProfiler?.observe?.(result.ms);state.telemetry.lastHeavyMs=result.ms;state.telemetry.avgHeavyMs=state.telemetry.avgHeavyMs?state.telemetry.avgHeavyMs*.8+result.ms*.2:result.ms}if(result?.ok&&state.frozen&&epoch===state.uiEpoch)renderBoxes()}
+    finally{if(jobId===state.sceneJobSeq)state.sceneAnalyzing=false;updateTelemetry()}
   }
-  async function analyzeMultiScaleScene(scene){
-    if(!state.deepVisionEnabled||!window.MiraMultiScaleSceneV1)return;const verifier=await ensureVerifier();if(!verifier)return;const W=els.freezeCanvas.width,H=els.freezeCanvas.height,samples=[];
-    for(const r of window.MiraMultiScaleSceneV1.regions(W,H).slice(0,3)){if(!state.frozen)break;const c=document.createElement('canvas');c.width=224;c.height=224;c.getContext('2d').drawImage(els.freezeCanvas,r.x,r.y,r.w,r.h,0,0,224,224);recordHeavy();const raw=await verifier.classify(c,8);samples.push({...r,candidates:mappedCandidates(raw)})}
-    const ranked=window.MiraMultiScaleSceneV1.aggregate(samples),top=ranked.find(window.MiraMultiScaleSceneV1.accept);if(!top||!JAPANESE_DB[top.key])return;
-    const existing=scene.entities.find(e=>e.conceptId===top.key);if(existing)return;const box=[els.stage.clientWidth*.04,els.stage.clientHeight*.12,els.stage.clientWidth*.92,els.stage.clientHeight*.70];window.MiraWorldModelV1.addEntity(scene,{conceptId:top.key,semanticType:semanticType(top.key),bbox:box,confidence:Math.min(.86,.45+top.mean+top.support*.05),status:top.support>=3?'stable':'tentative',source:'multiscale-scene',evidence:[{source:'multi-scale',score:top.mean,support:top.support,regions:top.regions}]})
+  async function analyzeMultiScaleScene(scene,isCurrent=()=>true){
+    if(!state.deepVisionEnabled||!window.MiraMultiScaleSceneV1)return;const verifier=await ensureVerifier();if(!verifier||!state.frozen)return;const W=els.freezeCanvas.width,H=els.freezeCanvas.height,samples=[],limit=Math.max(1,runtimeConfig().multiscaleRegions||2);
+    for(const r of window.MiraMultiScaleSceneV1.regions(W,H).slice(0,limit)){if(!state.frozen||!isCurrent())break;const c=document.createElement('canvas');c.width=224;c.height=224;c.getContext('2d').drawImage(els.freezeCanvas,r.x,r.y,r.w,r.h,0,0,224,224);recordHeavy();const raw=await verifier.classify(c,8);samples.push({...r,candidates:mappedCandidates(raw)})}
+    const ranked=window.MiraMultiScaleSceneV1.aggregate(samples),top=window.MiraPerceptionV2?.structureFirstDecision?.(ranked,{largeRegion:true})||ranked.find(x=>x.structural&&window.MiraMultiScaleSceneV1.accept(x));if(!top||!top.structural||!window.MiraMultiScaleSceneV1.accept(top)||!JAPANESE_DB[top.key])return;
+    const existing=scene.entities.find(e=>e.conceptId===top.key);if(existing){window.MiraWorldModelV1?.addEvidence?.(scene,existing.id,{source:'multi-scale',score:top.mean,support:top.support,regions:top.regions});return}
+    const box=[els.stage.clientWidth*.04,els.stage.clientHeight*.12,els.stage.clientWidth*.92,els.stage.clientHeight*.70];window.MiraWorldModelV1.addEntity(scene,{conceptId:top.key,semanticType:semanticType(top.key),bbox:box,confidence:Math.min(.86,.45+top.mean+top.support*.05),status:top.support>=3?'stable':'tentative',source:'multiscale-structure',trackingId:`structure:${top.key}`,evidence:[{source:'multi-scale',score:top.mean,support:top.support,regions:top.regions}]})
   }
-  async function analyzeSpecialists(scene){
-    const specialist=window.MiraSpecialistVisionV1;if(!specialist||!state.frozen)return;
-    let handEntities=[];
+  function scaleSpecialistEntities(raw){const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;return(raw||[]).map(e=>({...e,bbox:e.bbox?[e.bbox[0]*sx,e.bbox[1]*sy,e.bbox[2]*sx,e.bbox[3]*sy]:null}))}
+  function addHandsToScene(scene,raw){
+    const entities=scaleSpecialistEntities(raw),hands=entities.filter(e=>e.conceptId==='hand');
+    for(const h of hands){let parent=scene.entities.find(x=>x.conceptId==='hand'&&x.bbox&&iouBox(x.bbox,h.bbox)>.25);if(!parent)parent=window.MiraWorldModelV1.addEntity(scene,{...h,status:'stable',trackingId:`hand:${Math.round(h.bbox?.[0]||0)}:${Math.round(h.bbox?.[1]||0)}`,evidence:[{source:'hand-landmarks',score:h.confidence}]});else window.MiraWorldModelV1?.updateEntity?.(scene,parent.id,{bbox:h.bbox,confidence:h.confidence,status:'stable',source:'hand-landmarks',evidence:[{source:'hand-landmarks',score:h.confidence}]});
+      for(const part of entities.filter(x=>x!==h&&x.bbox&&JAPANESE_DB[x.conceptId]&&iouBox(expandBox(h.bbox,12),x.bbox)>.01)){if(scene.entities.some(q=>q.conceptId===part.conceptId&&q.parentId===parent.id&&q.bbox&&iouBox(q.bbox,part.bbox)>.35))continue;window.MiraWorldModelV1.addEntity(scene,{...part,parentId:parent.id,status:'stable',evidence:[{source:'hand-landmarks',score:part.confidence}]})}
+    }return entities;
+  }
+  function addPoseToScene(scene,raw){
+    for(const part of scaleSpecialistEntities(raw)){if(!part.bbox||!JAPANESE_DB[part.conceptId])continue;const person=scene.entities.find(x=>x.conceptId==='person'&&x.bbox&&pointInBox(part.bbox[0]+part.bbox[2]/2,part.bbox[1]+part.bbox[3]/2,x.bbox));const dup=scene.entities.find(x=>x.conceptId===part.conceptId&&x.bbox&&iouBox(x.bbox,part.bbox)>.45);if(!dup)window.MiraWorldModelV1.addEntity(scene,{...part,parentId:person?.id||null,status:'stable',source:'body-pose',evidence:[{source:'body-pose',score:part.confidence}]})}
+  }
+  function addFacesToScene(scene,raw){
+    const faces=scaleSpecialistEntities(raw);for(const f of faces.filter(x=>x.conceptId==='face')){let person=scene.entities.find(x=>x.conceptId==='person'&&x.bbox&&pointInBox(f.bbox[0]+f.bbox[2]/2,f.bbox[1]+f.bbox[3]/2,x.bbox));let face=scene.entities.find(x=>x.conceptId==='face'&&x.bbox&&iouBox(x.bbox,f.bbox)>.45);if(!face)face=window.MiraWorldModelV1.addEntity(scene,{...f,parentId:person?.id||null,status:'stable',source:'face-landmarks',trackingId:`face:${Math.round(f.bbox[0])}:${Math.round(f.bbox[1])}`,evidence:[{source:'face-landmarks',score:f.confidence}]});for(const part of faces.filter(x=>x!==f&&x.bbox&&JAPANESE_DB[x.conceptId]&&pointInBox(x.bbox[0]+x.bbox[2]/2,x.bbox[1]+x.bbox[3]/2,f.bbox))){if(!scene.entities.some(q=>q.conceptId===part.conceptId&&q.bbox&&iouBox(q.bbox,part.bbox)>.45))window.MiraWorldModelV1.addEntity(scene,{...part,parentId:face.id,status:'stable',source:'face-landmarks',evidence:[{source:'face-landmarks',score:part.confidence}]})}}
+  }
+  async function analyzeSpecialists(scene,isCurrent=()=>true){
+    const specialist=window.MiraSpecialistVisionV1;if(!specialist||!state.frozen)return;const selected=scene.entities.find(e=>e.id===scene.selectedId),key=selected?.conceptId||state.selectedKey,budget=Math.max(1,runtimeConfig().sceneSpecialists||1);let used=0;
     try{
-      recordHeavy();const raw=await specialist.analyzeHands(els.freezeCanvas);const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;
-      handEntities=raw.map(e=>({...e,bbox:e.bbox?[e.bbox[0]*sx,e.bbox[1]*sy,e.bbox[2]*sx,e.bbox[3]*sy]:null}));
-      const hands=handEntities.filter(e=>e.conceptId==='hand');
-      for(const h of hands){let parent=scene.entities.find(x=>x.conceptId==='hand'&&x.bbox&&iouBox(x.bbox,h.bbox)>.25);if(!parent)parent=window.MiraWorldModelV1.addEntity(scene,{...h,status:'stable',evidence:[{source:'hand-landmarks',score:h.confidence}]});else{parent.bbox=h.bbox;parent.confidence=Math.max(parent.confidence,h.confidence);parent.status='stable';parent.source='hand-landmarks'}
-        for(const part of handEntities.filter(x=>x!==h&&x.bbox&&iouBox(expandBox(h.bbox,12),x.bbox)>.01)){if(scene.entities.some(q=>q.conceptId===part.conceptId&&q.parentId===parent.id&&q.bbox&&iouBox(q.bbox,part.bbox)>.35))continue;window.MiraWorldModelV1.addEntity(scene,{...part,parentId:parent.id,status:'stable',evidence:[{source:'hand-landmarks',score:part.confidence}]})}
-      }
-    }catch(e){console.warn('Hand specialist unavailable',e)}
-    const scaleEntities=raw=>{const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;return(raw||[]).map(e=>({...e,bbox:e.bbox?[e.bbox[0]*sx,e.bbox[1]*sy,e.bbox[2]*sx,e.bbox[3]*sy]:null}))};
-    const addSpecialistParts=(raw,source)=>{for(const part of scaleEntities(raw)){if(!part.bbox||!JAPANESE_DB[part.conceptId])continue;let parent=null;if(part.conceptId==='face'||part.conceptId==='head'||part.conceptId==='torso'||part.conceptId.includes('_arm')||part.conceptId.includes('_leg'))parent=scene.entities.find(x=>x.conceptId==='person');else if(['left_eye','right_eye','left_eyebrow','right_eyebrow','nose','mouth','left_ear','right_ear'].includes(part.conceptId))parent=scene.entities.find(x=>x.conceptId==='face')||scene.entities.find(x=>x.conceptId==='head');const dup=scene.entities.find(x=>x.conceptId===part.conceptId&&x.bbox&&iouBox(x.bbox,part.bbox)>.45);if(!dup)window.MiraWorldModelV1.addEntity(scene,{...part,parentId:parent?.id||null,status:'stable',source,evidence:[{source,score:part.confidence}]})}};
-    try{recordHeavy();addSpecialistParts(await specialist.analyzePose(els.freezeCanvas),'body-pose')}catch(e){console.warn('Body pose specialist unavailable',e)}
-    try{recordHeavy();const faces=scaleEntities(await specialist.analyzeFaces(els.freezeCanvas));for(const f of faces.filter(x=>x.conceptId==='face')){let person=scene.entities.find(x=>x.conceptId==='person'&&x.bbox&&pointInBox(f.bbox[0]+f.bbox[2]/2,f.bbox[1]+f.bbox[3]/2,x.bbox));let face=scene.entities.find(x=>x.conceptId==='face'&&x.bbox&&iouBox(x.bbox,f.bbox)>.45);if(!face)face=window.MiraWorldModelV1.addEntity(scene,{...f,parentId:person?.id||null,status:'stable',source:'face-landmarks',evidence:[{source:'face-landmarks',score:f.confidence}]});for(const part of faces.filter(x=>x!==f&&x.bbox&&pointInBox(x.bbox[0]+x.bbox[2]/2,x.bbox[1]+x.bbox[3]/2,f.bbox))){if(!scene.entities.some(q=>q.conceptId===part.conceptId&&q.bbox&&iouBox(q.bbox,part.bbox)>.45))window.MiraWorldModelV1.addEntity(scene,{...part,parentId:face.id,status:'stable',source:'face-landmarks',evidence:[{source:'face-landmarks',score:part.confidence}]})}}}catch(e){console.warn('Face specialist unavailable',e)}
-    try{
-      recordHeavy();const seg=await specialist.segment(els.freezeCanvas);state.sceneSegmentation=seg;
-      // Correct gross classifier hallucinations when a dense semantic region contradicts them.
-      const selected=scene.entities.find(e=>e.id===scene.selectedId), b=selected?.bbox;
-      if(b){const cx=(b[0]+b[2]/2)*els.freezeCanvas.width/els.stage.clientWidth,cy=(b[1]+b[3]/2)*els.freezeCanvas.height/els.stage.clientHeight;const hit=specialist.labelAt(seg,cx,cy,els.freezeCanvas.width,els.freezeCanvas.height);if(hit?.conceptId&&JAPANESE_DB[hit.conceptId]){const hasRealHand=handEntities.some(e=>e.conceptId==='hand');const semanticSurface=['floor','wall','door','street','ground','sky','building'].includes(hit.conceptId);if(semanticSurface&&(!hasRealHand||selected.conceptId!=='hand')){const rb=specialist.regionBox(seg,hit.raw,els.freezeCanvas.width,els.freezeCanvas.height),stageBox=rb?[rb[0]*els.stage.clientWidth/els.freezeCanvas.width,rb[1]*els.stage.clientHeight/els.freezeCanvas.height,rb[2]*els.stage.clientWidth/els.freezeCanvas.width,rb[3]*els.stage.clientHeight/els.freezeCanvas.height]:b;let ent=scene.entities.find(e=>e.conceptId===hit.conceptId&&e.source==='semantic-segmentation');if(!ent)ent=window.MiraWorldModelV1.addEntity(scene,{conceptId:hit.conceptId,semanticType:semanticType(hit.conceptId),bbox:stageBox,confidence:.88,status:'stable',source:'semantic-segmentation',evidence:[{source:'deeplab-ade20k',score:.88}]});selectSceneEntity(ent)}}}
-    }catch(e){console.warn('Semantic segmentation unavailable',e)}
+      if(['hand','palm','wrist','thumb','index_finger','middle_finger','ring_finger','pinky_finger'].includes(key)&&used<budget){recordHeavy();addHandsToScene(scene,await specialist.analyzeHands(els.freezeCanvas));used++}
+      else if(['face','head','left_eye','right_eye','nose','mouth'].includes(key)&&used<budget){recordHeavy();addFacesToScene(scene,await specialist.analyzeFaces(els.freezeCanvas));used++}
+      else if(key==='person'&&used<budget){recordHeavy();addPoseToScene(scene,await specialist.analyzePose(els.freezeCanvas));used++;if(runtimeTier()==='advanced'&&used<budget&&isCurrent()){recordHeavy();addFacesToScene(scene,await specialist.analyzeFaces(els.freezeCanvas));used++}}
+    }catch(e){console.warn('Targeted specialist unavailable',e)}
   }
+
   function expandBox(b,p){return[Math.max(0,b[0]-p),Math.max(0,b[1]-p),b[2]+p*2,b[3]+p*2]}
   async function analyzeSceneEnvironment(scene){
     if(!state.deepVisionEnabled)return;const verifier=await ensureVerifier();if(!verifier||!state.frozen)return;try{recordHeavy();const cs=await verifier.classify(els.freezeCanvas,8);const joined=cs.map(x=>String(x.className||'').toLowerCase()).join(' | ');const rules=[[/forest|woodland|rainforest/,'forest'],[/street|road|highway/,'street'],[/cliff|valley|seashore|lakeside/,'ground'],[/palace|skyscraper|apartment|building/,'city']];for(const[re,key]of rules){if(re.test(joined)&&JAPANESE_DB[key]&&!scene.entities.some(e=>e.conceptId===key)){window.MiraWorldModelV1.addEntity(scene,{conceptId:key,semanticType:semanticType(key),confidence:.52,status:'tentative',source:'scene-classifier',evidence:[{source:'scene-classifier'}]});break}}}catch(_){/* optional */}
   }
+  function childAtPoint(scene,parentId,x,y){return(scene?.entities||[]).filter(e=>e.parentId===parentId&&e.bbox&&pointInBox(x,y,e.bbox)).sort((a,b)=>a.bbox[2]*a.bbox[3]-b.bbox[2]*b.bbox[3]||b.confidence-a.confidence)[0]||null}
   async function analyzeFrozenPoint(x,y,parentId=null){
-    if(state.sceneAnalyzing||!state.frozen)return;const verifier=await ensureVerifier();if(!verifier){showToast('Visão detalhada indisponível.');return}state.sceneAnalyzing=true;setStatus('Analisando esta região…');
-    try{const specialist=window.MiraSpecialistVisionV1;if(specialist){const ix=x*els.freezeCanvas.width/els.stage.clientWidth,iy=y*els.freezeCanvas.height/els.stage.clientHeight;try{const seg=state.sceneSegmentation||await specialist.segment(els.freezeCanvas);state.sceneSegmentation=seg;const hit=specialist.labelAt(seg,ix,iy,els.freezeCanvas.width,els.freezeCanvas.height);if(hit?.conceptId&&JAPANESE_DB[hit.conceptId]){const rb=specialist.regionBox(seg,hit.raw,els.freezeCanvas.width,els.freezeCanvas.height);if(rb){const sb=[rb[0]*els.stage.clientWidth/els.freezeCanvas.width,rb[1]*els.stage.clientHeight/els.freezeCanvas.height,rb[2]*els.stage.clientWidth/els.freezeCanvas.width,rb[3]*els.stage.clientHeight/els.freezeCanvas.height];let ent=state.scene.entities.find(q=>q.conceptId===hit.conceptId&&q.bbox&&iouBox(q.bbox,sb)>.45);if(!ent)ent=window.MiraWorldModelV1.addEntity(ensureScene(),{conceptId:hit.conceptId,semanticType:semanticType(hit.conceptId),bbox:sb,confidence:.88,status:'stable',source:'semantic-segmentation',parentId,evidence:[{source:'deeplab-ade20k',score:.88}]});selectSceneEntity(ent);return}}}catch(e){console.warn('Point segmentation failed',e)}}const size=Math.max(96,Math.min(180,Math.min(els.stage.clientWidth,els.stage.clientHeight)*.34)),c=document.createElement('canvas');c.width=224;c.height=224;const sx=els.freezeCanvas.width/els.stage.clientWidth,sy=els.freezeCanvas.height/els.stage.clientHeight;const rx=Math.max(0,(x-size/2)*sx),ry=Math.max(0,(y-size/2)*sy),rw=Math.min(size*sx,els.freezeCanvas.width-rx),rh=Math.min(size*sy,els.freezeCanvas.height-ry);c.getContext('2d').drawImage(els.freezeCanvas,rx,ry,rw,rh,0,0,224,224);recordHeavy();const classes=await verifier.classify(c,12),mapped=mappedCandidates(classes);if(!mapped.length){showToast('Ainda não reconheci esta região.');return}const parentEntity=parentId?state.scene?.entities.find(q=>q.id===parentId):null,expected=window.MiraVisualHierarchyV1?.expectedParts?.(parentEntity?.conceptId)||[];const ranked=expected.length?mapped.filter(c=>expected.includes(c.key)):mapped;const top=ranked[0],second=ranked[1];if(!top){showToast('Ainda não localizei uma parte segura nesta região.');return}const key=top.key;if(!JAPANESE_DB[key]){showToast('Ainda não reconheci esta região.');return}const confidence=top.probability||top.score||0,margin=confidence-(second?.probability||second?.score||0),family=window.MiraVisionEngine?.familyOf?.(key);const minConfidence=family==='animal'?.62:.42,minMargin=family==='animal'?.18:.14;if(confidence<minConfidence||margin<minMargin){showToast('Ainda não reconheci esta região.');return}const e=window.MiraWorldModelV1.addEntity(ensureScene(),{conceptId:key,semanticType:semanticType(key),bbox:[Math.max(0,x-size/2),Math.max(0,y-size/2),Math.min(size,els.stage.clientWidth),Math.min(size,els.stage.clientHeight)],confidence,status:confidence>.62?'stable':'tentative',source:'drill-down',parentId,evidence:[{source:'mobilenet',score:confidence},{source:'class-margin',score:margin}]});selectSceneEntity(e)}catch(e){console.warn(e);showToast('Não consegui analisar esta região.')}finally{state.sceneAnalyzing=false;setStatus('Congelado')}
+    if(!state.frozen)return;const jobId=++state.sceneJobSeq;state.sceneAnalyzing=true;setStatus('Analisando esta região…');const epoch=state.uiEpoch;
+    const result=await state.perceptionRouter.run('point-analysis',async({isCurrent})=>{
+      const scene=ensureScene(),parentEntity=parentId?scene?.entities.find(q=>q.id===parentId):null,expected=window.MiraVisualHierarchyV1?.expectedParts?.(parentEntity?.conceptId)||[],specialist=window.MiraSpecialistVisionV1;
+      // Human drill-down uses landmarks before generic segmentation/classification.
+      if(specialist&&parentEntity&&expected.length){
+        try{
+          const k=parentEntity.conceptId,budget=Math.max(1,runtimeConfig().sceneSpecialists||1);let used=0;
+          if(['hand','palm','wrist','thumb','index_finger','middle_finger','ring_finger','pinky_finger'].includes(k)){recordHeavy();addHandsToScene(scene,await specialist.analyzeHands(els.freezeCanvas));used++}
+          else if(k==='person'){
+            recordHeavy();addHandsToScene(scene,await specialist.analyzeHands(els.freezeCanvas));used++;
+            if(!childAtPoint(scene,parentId,x,y)&&budget>used&&isCurrent()){recordHeavy();addFacesToScene(scene,await specialist.analyzeFaces(els.freezeCanvas));used++}
+          }else if(['face','head'].includes(k)){recordHeavy();addFacesToScene(scene,await specialist.analyzeFaces(els.freezeCanvas));used++}
+          const hitChild=childAtPoint(scene,parentId,x,y);if(hitChild&&isCurrent()){selectSceneEntity(hitChild);return}
+        }catch(e){console.warn('Point specialist unavailable',e)}
+      }
+      if(!state.frozen||epoch!==state.uiEpoch||!isCurrent())return;
+      // Semantic segmentation is useful for surfaces/structures and unknown regions,
+      // but is intentionally not loaded before every object-part tap.
+      const parentType=parentEntity?.semanticType||null,trySeg=!parentEntity||['surface','structure','environment','spatial'].includes(parentType);
+      if(specialist&&trySeg){
+        const ix=x*els.freezeCanvas.width/els.stage.clientWidth,iy=y*els.freezeCanvas.height/els.stage.clientHeight;
+        try{recordHeavy();const seg=state.sceneSegmentation||await specialist.segment(els.freezeCanvas);state.sceneSegmentation=seg;if(!isCurrent())return;const hit=specialist.labelAt(seg,ix,iy,els.freezeCanvas.width,els.freezeCanvas.height);if(hit?.conceptId&&JAPANESE_DB[hit.conceptId]){const rb=specialist.regionBox(seg,hit.raw,els.freezeCanvas.width,els.freezeCanvas.height);if(rb){const sb=[rb[0]*els.stage.clientWidth/els.freezeCanvas.width,rb[1]*els.stage.clientHeight/els.freezeCanvas.height,rb[2]*els.stage.clientWidth/els.freezeCanvas.width,rb[3]*els.stage.clientHeight/els.freezeCanvas.height];let ent=scene.entities.find(q=>q.conceptId===hit.conceptId&&q.bbox&&iouBox(q.bbox,sb)>.45);if(!ent)ent=window.MiraWorldModelV1.addEntity(scene,{conceptId:hit.conceptId,semanticType:semanticType(hit.conceptId),bbox:sb,confidence:.88,status:'stable',source:'semantic-segmentation',parentId,evidence:[{source:'deeplab-ade20k',score:.88}]});selectSceneEntity(ent);return}}}catch(e){console.warn('Point segmentation failed',e)}
+      }
+      const verifier=await ensureVerifier();if(!verifier){showToast('Visão detalhada indisponível.');return}if(!isCurrent())return;
+      const size=Math.max(96,Math.min(180,Math.min(els.stage.clientWidth,els.stage.clientHeight)*.34)),c=document.createElement('canvas');c.width=224;c.height=224;const sx=els.freezeCanvas.width/els.stage.clientWidth,sy=els.freezeCanvas.height/els.stage.clientHeight;const rx=Math.max(0,(x-size/2)*sx),ry=Math.max(0,(y-size/2)*sy),rw=Math.min(size*sx,els.freezeCanvas.width-rx),rh=Math.min(size*sy,els.freezeCanvas.height-ry);c.getContext('2d').drawImage(els.freezeCanvas,rx,ry,rw,rh,0,0,224,224);recordHeavy();const classes=await verifier.classify(c,12);if(!isCurrent())return;const mapped=mappedCandidates(classes);if(!mapped.length){showToast('Ainda não reconheci esta região.');return}const ranked=expected.length?mapped.filter(c=>expected.includes(c.key)):mapped;const top=ranked[0],second=ranked[1];if(!top){showToast(expected.length?'Ainda não localizei uma parte segura nesta região.':'Ainda não reconheci esta região.');return}const key=top.key;if(!JAPANESE_DB[key]){showToast('Ainda não reconheci esta região.');return}const confidence=top.probability||top.score||0,margin=confidence-(second?.probability||second?.score||0),family=window.MiraVisionEngine?.familyOf?.(key);const minConfidence=family==='animal'?.62:.44,minMargin=family==='animal'?.18:.15;if(confidence<minConfidence||margin<minMargin){showToast('Ainda não reconheci esta região.');return}const e=window.MiraWorldModelV1.addEntity(scene,{conceptId:key,semanticType:semanticType(key),bbox:[Math.max(0,x-size/2),Math.max(0,y-size/2),Math.min(size,els.stage.clientWidth),Math.min(size,els.stage.clientHeight)],confidence,status:confidence>.62?'stable':'tentative',source:'drill-down',parentId,evidence:[{source:'mobilenet',score:confidence},{source:'class-margin',score:margin}]});selectSceneEntity(e)
+    },{defer:true,priority:3});
+    try{if(result?.error){console.warn(result.error);showToast('Não consegui analisar esta região.')}if(result?.ms)state.deviceProfiler?.observe?.(result.ms)}finally{if(jobId===state.sceneJobSeq)state.sceneAnalyzing=false;if(state.frozen&&epoch===state.uiEpoch)setStatus('Congelado');updateTelemetry()}
   }
+
+  function setPerceptionMode(mode){
+    if(!['aim','explore','read'].includes(mode))mode='aim';const changed=mode!==state.perceptionMode;if(changed){state.uiEpoch++;state.perceptionRouter?.cancel?.('perception-mode-change');clearOCRBoxes()}state.perceptionMode=mode;localStorage.setItem('mn-perception-mode',mode);updatePerceptionMode();
+    if(mode==='explore'){if(state.frozen){toggleSceneExplore(true);analyzeFrozenScene()}else showToast('Congele uma cena para explorar.')}else if(mode==='read'){if(state.sceneExplore)toggleSceneExplore(false);if(state.frozen)runOCR();else showToast('Congele uma cena e toque em Ler texto.')}else{if(state.sceneExplore)toggleSceneExplore(false);els.readPanel?.classList.add('hidden')}
+  }
+  function updatePerceptionMode(){els.perceptionModes?.querySelectorAll('[data-perception]').forEach(b=>b.classList.toggle('active',b.dataset.perception===state.perceptionMode));els.readPanel?.classList.toggle('hidden',state.perceptionMode!=='read')}
+  function specialistTargetCanvasBox(){
+    const sw=els.stage.clientWidth,sh=els.stage.clientHeight,cw=els.freezeCanvas.width,ch=els.freezeCanvas.height;if(!sw||!sh)return null;let b=null;
+    const selected=state.scene?.entities?.find(e=>e.id===state.scene.selectedId);if(selected?.bbox)b=selected.bbox;else if(state.selectedPrediction?.bbox)b=videoBoxToStage(state.selectedPrediction.bbox);
+    if(state.selectedKey==='person'){const side=Math.min(sw,sh)*.34,cx=state.focus.nx*sw,cy=state.focus.ny*sh;b=[Math.max(0,cx-side/2),Math.max(0,cy-side/2),side,side]}
+    return b?[b[0]*cw/sw,b[1]*ch/sh,b[2]*cw/sw,b[3]*ch/sh]:null;
+  }
+  async function arbitrateFrozenHuman(){
+    if(!state.frozen||state.specialistArbitrating||!window.MiraSpecialistVisionV1||!window.MiraPerceptionV2)return;state.specialistArbitrating=true;const epoch=state.uiEpoch,current=state.selectedKey,targetBox=specialistTargetCanvasBox();
+    const result=await state.perceptionRouter.run('human-arbitration',async({isCurrent})=>{const sp=window.MiraSpecialistVisionV1;let faces=[],hands=[];const overlap=list=>Math.max(0,...(list||[]).filter(x=>x.bbox).map(x=>window.MiraPerceptionV2.iou?.(x.bbox,targetBox)||0));
+      if(current==='person'){try{recordHeavy();hands=await sp.analyzeHands(els.freezeCanvas)}catch(_){}if(isCurrent()&&overlap(hands)<.05)try{recordHeavy();faces=await sp.analyzeFaces(els.freezeCanvas)}catch(_){} }
+      else if(current==='hand'){try{recordHeavy();faces=await sp.analyzeFaces(els.freezeCanvas)}catch(_){}if(isCurrent()&&overlap(faces)<.08)try{recordHeavy();hands=await sp.analyzeHands(els.freezeCanvas)}catch(_){} }
+      else {try{recordHeavy();hands=await sp.analyzeHands(els.freezeCanvas)}catch(_){}if(isCurrent()&&overlap(hands)<.08)try{recordHeavy();faces=await sp.analyzeFaces(els.freezeCanvas)}catch(_){} }
+      return{faces,hands};
+    },{defer:true,priority:4});
+    try{
+      if(!result?.ok||!state.frozen||epoch!==state.uiEpoch)return;const scene=ensureScene();if(result.value.hands?.length)addHandsToScene(scene,result.value.hands);if(result.value.faces?.length)addFacesToScene(scene,result.value.faces);const pick=window.MiraPerceptionV2.chooseHuman({...result.value,current,targetBox});if(!pick){renderBoxes();return}if(pick.conceptId===state.selectedKey){renderBoxes();return}
+      const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height,b=pick.entity?.bbox,stageBox=b?[b[0]*sx,b[1]*sy,b[2]*sx,b[3]*sy]:[els.stage.clientWidth*.2,els.stage.clientHeight*.15,els.stage.clientWidth*.6,els.stage.clientHeight*.55];let ent=scene.entities.find(e=>e.conceptId===pick.conceptId&&e.bbox&&iouBox(e.bbox,stageBox)>.25);if(!ent)ent=window.MiraWorldModelV1.addEntity(scene,{conceptId:pick.conceptId,semanticType:semanticType(pick.conceptId),bbox:stageBox,confidence:pick.entity?.confidence||.9,status:'stable',source:pick.reason,trackingId:`${pick.conceptId}:specialist`,evidence:[{source:pick.reason,score:pick.entity?.confidence||.9}]});window.MiraWorldModelV1?.select?.(scene,ent.id);const m=videoCoverMetrics(),vb=[(stageBox[0]-m.ox)/m.scale,(stageBox[1]-m.oy)/m.scale,stageBox[2]/m.scale,stageBox[3]/m.scale];selectObject(pick.conceptId,{class:pick.conceptId,score:ent.confidence,bbox:vb,_specialist:true},{kind:'stable',reason:'Confirmado por '+pick.reason,detectorScore:ent.confidence});renderBoxes();showToast(pick.conceptId==='hand'?'Especialista confirmou uma mão.':'Especialista confirmou um rosto.');
+      if(result.ms)state.deviceProfiler?.observe?.(result.ms)
+    }finally{state.specialistArbitrating=false;updateTelemetry()}
+  }
+  function clearOCRBoxes(){els.boxes?.querySelectorAll('.ocr-box').forEach(x=>x.remove?.());state.ocrWords=[]}
+  function localJapaneseForText(text){const n=normalize(text);if(!n)return null;for(const [key,item] of Object.entries(JAPANESE_DB)){const hay=[item.pt,item.jp,item.kana,item.romaji,...(item.aliases||[])].map(normalize);if(hay.some(x=>x&&(x===n||n.includes(x))))return{key,item}}return null}
+  function attachOCRToWorldModel(words){const scene=state.scene;if(!scene||!window.MiraWorldModelV1?.attachText)return;const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;for(const w of words||[]){if(!w.bbox)continue;const sb=[w.bbox.x0*sx,w.bbox.y0*sy,(w.bbox.x1-w.bbox.x0)*sx,(w.bbox.y1-w.bbox.y0)*sy],cx=sb[0]+sb[2]/2,cy=sb[1]+sb[3]/2,ent=window.MiraWorldModelV1.hitTest(scene,cx,cy);if(ent){window.MiraWorldModelV1.attachText(scene,ent.id,{text:w.text,confidence:w.confidence,bbox:sb,source:'ocr'});window.MiraWorldModelV1.addEvidence?.(scene,ent.id,{source:'ocr',kind:'text',label:w.text,score:(w.confidence||0)/100})}}}
+  async function runOCR(){
+    if(state.perceptionMode!=='read')return;if(!state.frozen){showToast('Congele a cena antes de ler.');return}if(!window.MiraOCRV1)return;clearOCRBoxes();els.readStatus.textContent='Preparando OCR local…';els.readNow.disabled=true;const epoch=state.uiEpoch,scale=runtimeConfig().ocrScale||1;
+    const r=await state.perceptionRouter.run('ocr',({signal})=>window.MiraOCRV1.recognize(els.freezeCanvas,{scale,signal}),{defer:true,priority:4});
+    try{
+      if(!r?.ok||epoch!==state.uiEpoch||!state.frozen||state.perceptionMode!=='read'){if(r?.error&&!r.cancelled)console.warn('OCR failed',r.error);return}const out=r.value;state.ocrWords=out.words||[];attachOCRToWorldModel(state.ocrWords);els.readStatus.textContent=out.text?`Texto detectado · ${Math.round(out.confidence||0)}%`:'Nenhum texto seguro encontrado.';els.readResults.replaceChildren();const lines=(out.text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean).slice(0,12);for(const line of lines){const d=document.createElement('div');d.className='read-result-line';const known=localJapaneseForText(line);d.textContent=known?`${line} → ${known.item.jp} · ${known.item.kana||''} · ${known.item.pt}`:line;els.readResults.appendChild(d)}renderOCRBoxes();if(r.ms)state.deviceProfiler?.observe?.(r.ms)
+    }catch(e){console.warn('OCR failed',e);els.readStatus.textContent='OCR indisponível neste momento.';showToast('Não consegui iniciar a leitura de texto.')}finally{els.readNow.disabled=false;updateTelemetry()}
+  }
+  function renderOCRBoxes(){if(!state.frozen||state.perceptionMode!=='read')return;const sx=els.stage.clientWidth/els.freezeCanvas.width,sy=els.stage.clientHeight/els.freezeCanvas.height;for(const w of state.ocrWords.slice(0,24)){if(!w.bbox)continue;const b=document.createElement('div');b.className='ocr-box';b.style.left=`${w.bbox.x0*sx}px`;b.style.top=`${w.bbox.y0*sy}px`;b.style.width=`${Math.max(4,(w.bbox.x1-w.bbox.x0)*sx)}px`;b.style.height=`${Math.max(4,(w.bbox.y1-w.bbox.y0)*sy)}px`;const sp=document.createElement('span');sp.textContent=w.text;b.appendChild(sp);els.boxes.appendChild(b)}}
+
   function positionCrosshair(){els.crosshairWrap.style.left=`${state.focus.nx*100}%`;els.crosshairWrap.style.top=`${state.focus.ny*100}%`}
   function focusPointInVideo(){const m=videoCoverMetrics();let sx=state.focus.nx*m.cw,sy=state.focus.ny*m.ch;if(state.facingMode==='user')sx=m.cw-sx;return{x:(sx-m.ox)/m.scale,y:(sy-m.oy)/m.scale}}
   function focusBox(ratio){const p=focusPointInVideo(),vw=els.video.videoWidth||1,vh=els.video.videoHeight||1;return window.MiraRecognitionPolicy?.makeCrosshairBox?.(vw,vh,p,ratio)||[Math.max(0,p.x-100),Math.max(0,p.y-100),200,200]}
@@ -664,7 +783,7 @@
     els.boxes.replaceChildren();
     if(state.frozen&&state.scene){
       const list=state.sceneExplore?explorationEntities():state.scene.entities.filter(e=>e.id===state.scene.selectedId&&e.bbox);
-      for(const e of list){const i=JAPANESE_DB[e.conceptId];if(!i)continue;const b=document.createElement('button');b.type='button';b.className=`detection-box scene-${e.status} scene-${e.semanticType}`+(e.id===state.scene.selectedId?' scene-selected selected':'');b.style.left=`${e.bbox[0]}px`;b.style.top=`${e.bbox[1]}px`;b.style.width=`${e.bbox[2]}px`;b.style.height=`${e.bbox[3]}px`;b.dataset.entityId=e.id;b.setAttribute('aria-label',`Selecionar ${i.pt}`);const sp=document.createElement('span');sp.textContent=state.diagnostics?`${i.pt} · ${i.jp} ${Math.round(e.confidence*100)}%`:(e.id===state.scene.selectedId?`${i.pt} · ${i.jp}`:i.pt);b.appendChild(sp);b.addEventListener('pointerup',ev=>{ev.stopPropagation();selectSceneEntity(e)});els.boxes.appendChild(b)}return;
+      for(const e of list){const i=JAPANESE_DB[e.conceptId];if(!i)continue;const b=document.createElement('button');b.type='button';b.className=`detection-box scene-${e.status} scene-${e.semanticType}`+(e.id===state.scene.selectedId?' scene-selected selected':'');b.style.left=`${e.bbox[0]}px`;b.style.top=`${e.bbox[1]}px`;b.style.width=`${e.bbox[2]}px`;b.style.height=`${e.bbox[3]}px`;b.dataset.entityId=e.id;b.setAttribute('aria-label',`Selecionar ${i.pt}`);const sp=document.createElement('span');sp.textContent=state.diagnostics?`${i.pt} · ${i.jp} ${Math.round(e.confidence*100)}%`:(e.id===state.scene.selectedId?`${i.pt} · ${i.jp}`:i.pt);b.appendChild(sp);b.addEventListener('pointerup',ev=>{ev.stopPropagation();selectSceneEntity(e)});els.boxes.appendChild(b)}if(state.perceptionMode==='read')renderOCRBoxes();return;
     }
     if(!state.showBoxes&&!state.selectedPrediction)return;const m=videoCoverMetrics();const list=state.showBoxes?state.lastPredictions:(state.selectedPrediction?[state.selectedPrediction]:[]);list.forEach(p=>{if(!p?.bbox||!JAPANESE_DB[p.class])return;const [x,y,w,h]=p.bbox,b=document.createElement('div');b.className='detection-box'+(p===state.selectedPrediction||p.class===state.selectedKey?' selected':'');b.style.left=`${m.ox+x*m.scale}px`;b.style.top=`${m.oy+y*m.scale}px`;b.style.width=`${w*m.scale}px`;b.style.height=`${h*m.scale}px`;const sp=document.createElement('span');sp.textContent=state.diagnostics?`${JAPANESE_DB[p.class].jp} ${Math.round((p.score||0)*100)}%`:JAPANESE_DB[p.class].jp;b.appendChild(sp);els.boxes.appendChild(b)})
   }
@@ -678,11 +797,21 @@
   function setMode(mode){state.mode=MODE_META[mode]?mode:'daily';localStorage.setItem('mn-v07-mode',state.mode);state.quizRevealed=false;state.reviewActive=false;state.reviewRevealed=true;state.lastExposureSig='';state.lessonPlan=null;clearTimeout(state.reviewTimer);updateStudyButton();renderLesson()}
   function updateStudyButton(){const m=MODE_META[state.mode]||MODE_META.daily;els.studyModeIcon.textContent=m.icon;els.studyModeLabel.textContent=m.label;document.querySelectorAll('.mode-btn[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode))}
   function updateDemoButtons(){els.demoControl.querySelectorAll('[data-demo]').forEach(b=>b.classList.toggle('active',b.dataset.demo===state.demonstrative))}
-  function restoreControls(){if(!['eco','balanced','accuracy'].includes(state.performanceMode))state.performanceMode='balanced';if(!['auto','1','2','3'].includes(state.immersionSetting))state.immersionSetting='auto';if(!['normal','strong'].includes(state.stickyStrength))state.stickyStrength='strong';els.performanceMode.value=state.performanceMode;els.immersion.value=state.immersionSetting;els.confidence.value=String(clamp(state.minScore,.35,.80));state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;els.deepVision.checked=state.deepVisionEnabled;els.autoFreeze.checked=state.autoFreezeEnabled;els.stickyStrength.value=state.stickyStrength;els.showBoxes.checked=state.showBoxes;els.diagnostics.checked=state.diagnostics;els.fontSize.value=state.fontSize;els.haptics.checked=state.hapticsEnabled;els.adaptiveReview.checked=state.adaptiveReviewEnabled;if(els.worldContextToggle)els.worldContextToggle.checked=state.worldContextEnabled;applyUiPreferences()}
+  function restoreControls(){if(!['eco','balanced','accuracy'].includes(state.performanceMode))state.performanceMode='balanced';if(!['auto','1','2','3'].includes(state.immersionSetting))state.immersionSetting='auto';if(!['normal','strong'].includes(state.stickyStrength))state.stickyStrength='strong';els.performanceMode.value=state.performanceMode;if(els.visionRuntimeProfile){if(!['auto','lite','standard','advanced'].includes(state.visionProfileSetting))state.visionProfileSetting='auto';els.visionRuntimeProfile.value=state.visionProfileSetting;state.deviceProfiler?.set?.(state.visionProfileSetting)}els.immersion.value=state.immersionSetting;els.confidence.value=String(clamp(state.minScore,.35,.80));state.minScore=Number(els.confidence.value);els.confidenceValue.value=`${Math.round(state.minScore*100)}%`;els.deepVision.checked=state.deepVisionEnabled;els.autoFreeze.checked=state.autoFreezeEnabled;els.stickyStrength.value=state.stickyStrength;els.showBoxes.checked=state.showBoxes;els.diagnostics.checked=state.diagnostics;els.fontSize.value=state.fontSize;els.haptics.checked=state.hapticsEnabled;els.adaptiveReview.checked=state.adaptiveReviewEnabled;if(els.worldContextToggle)els.worldContextToggle.checked=state.worldContextEnabled;applyUiPreferences()}
   function updateMemoryControls(){els.correctionCount.textContent=String(state.corrections.length);els.clearCorrections.disabled=!state.corrections.length}
 
   function recordHeavy(){const now=Date.now();state.telemetry.heavyTotal++;state.telemetry.heavyTimes.push(now);state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000)}
-  function updateTelemetry(){const now=Date.now();state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000);const perMin=state.telemetry.heavyTimes.length;const load=state.frozen?'pausada':perMin<=5?'baixa':perMin<=12?'moderada':'alta';const sched=state.visionScheduler?.snapshot?.()||{};const frozenMs=state.telemetry.frozenMs+(state.telemetry.frozenSince?now-state.telemetry.frozenSince:0);const activeMs=Math.max(1,now-state.telemetry.startedAt);const frozenPct=Math.round(clamp(frozenMs/activeMs,0,1)*100);els.loadText.textContent=load;els.loadChip.classList.toggle('hidden',!state.diagnostics);els.telemetryBox.innerHTML=`<strong>Telemetria local</strong><br>Estado: ${state.focus.phase} · inferências pesadas/min: ${perMin} · média: ${Math.round(state.telemetry.avgHeavyMs||0)} ms · tempo com IA pausada: ${frozenPct}% · fila descartada: ${sched.dropped||0}.<br><small>“Carga” é uma estimativa pela frequência de inferência; não mede a temperatura física do aparelho.</small>`}
+  function updateTelemetry(){
+    const now=Date.now();state.telemetry.heavyTimes=state.telemetry.heavyTimes.filter(t=>now-t<60000);const perMin=state.telemetry.heavyTimes.length;const load=state.frozen?'pausada':perMin<=5?'baixa':perMin<=12?'moderada':'alta';
+    const perception=state.perceptionRouter?.snapshot?.()||{},profiler=state.deviceProfiler?.snapshot?.()||{setting:'auto',tier:'standard',averageMs:0},specialists=window.MiraSpecialistVisionV1?.snapshot?.()||{},ocr=window.MiraOCRV1?.snapshot?.()||{};
+    const tier=String(profiler.tier||'standard').toUpperCase(),setting=profiler.setting==='auto'?`AUTO→${tier}`:`${tier} (manual)`;
+    if(els.visionProfileText)els.visionProfileText.textContent=`${setting} · percepção ${Math.round(perception.avgMs||0)} ms · fila ${perception.queueDepth||0}`;
+    const frozenMs=state.telemetry.frozenMs+(state.telemetry.frozenSince?now-state.telemetry.frozenSince:0),activeMs=Math.max(1,now-state.telemetry.startedAt),frozenPct=Math.round(clamp(frozenMs/activeMs,0,1)*100);
+    els.loadText.textContent=load;els.loadChip.classList.toggle('hidden',!state.diagnostics);
+    if(!state.diagnostics){els.telemetryBox.innerHTML='<strong>Diagnóstico desativado</strong><br><small>Ative Diagnóstico para observar FPS, fila e módulos de visão localmente.</small>';return}
+    const modules=[['Hands','hands'],['Face','face'],['Pose','pose'],['Segmentation','segmentation']].map(([label,k])=>`${label}: ${specialists[k]?.loading?'loading':specialists[k]?.loaded?'pronto':'idle'}`).join(' · '),ocrState=ocr.status==='loading'||ocr.status==='recognizing'?ocr.status:ocr.loaded?'pronto':'idle',backend=window.tf?.getBackend?.()||'n/a';
+    els.telemetryBox.innerHTML=`<strong>Vision Runtime</strong><br>Câmera: ${state.perfObs.cameraFps?state.perfObs.cameraFps.toFixed(1):'—'} FPS · UI: ${state.perfObs.uiFps?state.perfObs.uiFps.toFixed(1):'—'} FPS · perfil: ${setting}<br>Percepção: ${Math.round(perception.avgMs||0)} ms · ativa: ${perception.activeTask||'nenhuma'} · pendente: ${perception.pendingTask||'nenhuma'} · fila: ${perception.queueDepth||0} · descartadas: ${perception.dropped||0}<br>${modules} · OCR: ${ocrState}<br>Backend: ${backend} · inferências pesadas/min: ${perMin} · IA pausada: ${frozenPct}%<br><small>Diagnóstico local; FPS e tempos são observados no navegador e não medem temperatura física.</small>`;
+  }
 
   function showEmptyState(title,subtitle){els.emptyHint.querySelector('strong').textContent=title;els.emptyHint.querySelector('span').textContent=subtitle;els.emptyHint.classList.remove('hidden')}
   function hideEmpty(){els.emptyHint.classList.add('hidden')}
@@ -697,5 +826,5 @@
   function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
   function cap(s){return s?String(s).charAt(0).toUpperCase()+String(s).slice(1):''}
 
-  window.MiraDebug = { state, profile, selectObject, currentSentence, renderLesson, resetObservation, requestAnalysis, sampleFocus, computeDHash, hammingHex, setFrozen, resumeLive, renderHistory, renderLearningDashboard, revealReviewNow, mappedCandidates, estimateSkinRatio, estimateForegroundBox, setSheetSnap, changeSentence, startTutorial, advanceTutorial, renderWorldContext, exploreFrozenPhoto };
+  window.MiraDebug = { state, profile, selectObject, currentSentence, renderLesson, resetObservation, requestAnalysis, sampleFocus, computeDHash, hammingHex, setFrozen, resumeLive, renderHistory, renderLearningDashboard, revealReviewNow, mappedCandidates, estimateSkinRatio, estimateForegroundBox, setSheetSnap, changeSentence, startTutorial, advanceTutorial, renderWorldContext, exploreFrozenPhoto, setPerceptionMode, arbitrateFrozenHuman, runOCR };
 })();

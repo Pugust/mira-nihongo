@@ -1,3 +1,25 @@
+# V1.0 Pre-Alpha 2.1 — Perception Consolidation
+
+- Auditoria da Pre-Alpha 2 contra RC7/RC6/RC5 e preservação das mecânicas históricas.
+- Scheduler legado da RC7 deixa de ser carregado no runtime; há um único orçamento de percepção.
+- `BudgetRouter` refeito para nunca liberar o orçamento pesado antes da tarefa cancelada realmente terminar; fila limitada a uma pendência com prioridade/supersessão.
+- Live analysis, scene analysis, point analysis, arbitragem humana e OCR passam pelo mesmo orçamento de percepção.
+- Arbitragem Hand/Face agora usa proximidade/IoU do alvo, reduzindo mão→pessoa e rosto distante→mão.
+- Especialistas de cena são direcionados pelo conceito e pelo perfil; segmentação deixa de fazer parte da cascata automática.
+- Multi-scale em grandes regiões passa a promover somente classes estruturais.
+- Drill-down humano consulta landmarks antes do MobileNet genérico.
+- World Model 2.0: `trackingId`, `text`, evidências e relações automáticas `PART_OF/HAS`.
+- OCR refeito com carregamento lazy, jpn+eng+por, extração compatível com estruturas diferentes do Tesseract e cancelamento lógico por sessão.
+- OCR anexa texto/evidência à entidade do World Model sob a região lida.
+- Vision Runtime: Auto/Lite/Standard/Advanced com override persistente e adaptação por latência observada.
+- Performance Observatory: FPS de câmera/UI, tempo/fila do router, módulos carregados, OCR e backend.
+- Loop visual usa `requestVideoFrameCallback()` quando disponível.
+- Câmera reinicializa estado de torch/capabilities em cada track.
+- Correção de ontologia: `fingernail=爪` separado de `nail=釘`; `bottle_cap` canônico; hierarquias de cabinet/wardrobe/backpack ampliadas.
+- Service Worker atualizado para `mira-nihongo-v1-prealpha2-1-r1` e inclui `world-model-v2.js`.
+- Base de vocabulário preservada em 383 entradas; conceitos novos da ontologia continuam instalados somente em runtime.
+- Auto Freeze continua ON por padrão e OFF explícito continua persistente.
+
 # RC7 — Performance Architecture
 
 - Startup lazy, análise progressiva, cancelamento de trabalho obsoleto, Camera Tools reorganizado e regressão shoe/laptop.
@@ -55,3 +77,14 @@
 - Camera tools: zoom with hardware capability when available, safe digital fallback, and torch when exposed by the browser/device.
 - Frozen-scene deep analysis now samples six spatial scales and requires repeated evidence before accepting large structural hypotheses.
 - Added cabinet ImageNet aliases and multi-scale structural support to improve large/distant furniture recognition without weakening animal false-positive rejection.
+
+## V1.0 Pre-Alpha 2 — Perception Engine
+- Nova camada de percepção com Router de orçamento: uma inferência pesada por vez, descarte de trabalho obsoleto e telemetria por tarefa.
+- Specialist Arbitration para regiões humanas: Face/Hand landmarks passam a ter autoridade sobre rótulos genéricos, sem reativar todos os especialistas continuamente.
+- Tracking temporal independente para reduzir troca semântica por um único frame divergente.
+- Três experiências de percepção: Mirar, Explorar e Ler.
+- OCR experimental e estritamente sob demanda; primeira execução baixa o runtime/modelos de idioma. Texto conhecido pelo vocabulário local é enriquecido com japonês sem API paga.
+- World Model, drill-down, segmentação, anatomia, Auto Freeze, aprendizado adaptativo e mecânicas anteriores preservados.
+- Vision Runtime adaptativo expõe perfil Lite/Standard/Advanced com base no ambiente e medições locais.
+- Startup continua sem carregar modelos de visão antes da intenção de abrir a câmera.
+- Auto Freeze continua ON por padrão quando não existe preferência salva e preserva OFF quando escolhido explicitamente.

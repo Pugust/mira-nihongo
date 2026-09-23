@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('assert');
+const W=require('../js/world-model-v2.js');
+const scene=W.createScene({width:1080,height:1920});
+assert.equal(scene.schemaVersion,2);
+const parent=W.addEntity(scene,{id:'cab',conceptId:'cabinet',semanticType:'structure',bbox:[0,0,800,1200],confidence:.8,trackingId:'structure:cabinet',evidence:[{source:'multiscale',score:.8}]});
+const child=W.addEntity(scene,{id:'drawer',conceptId:'drawer',semanticType:'part',bbox:[50,200,700,200],confidence:.75,parentId:parent.id,text:[{text:'PUSH'}]});
+assert.equal(child.parentId,'cab');assert(parent.children.includes('drawer'));
+assert(scene.relations.some(r=>r.fromId==='drawer'&&r.toId==='cab'&&r.type==='PART_OF'));
+assert(scene.relations.some(r=>r.fromId==='cab'&&r.toId==='drawer'&&r.type==='HAS'));
+assert.equal(W.byTrackingId(scene,'structure:cabinet').id,'cab');
+W.addEvidence(scene,'drawer',{source:'ocr',kind:'text',label:'PUSH'});W.addEvidence(scene,'drawer',{source:'ocr',kind:'text',label:'PUSH',score:.9});
+assert.equal(child.evidence.filter(x=>x.source==='ocr'&&x.label==='PUSH').length,1,'same evidence identity should update, not duplicate');
+W.attachText(scene,'drawer',{text:'PUSH',bbox:[1,2,3,4]});W.attachText(scene,'drawer',{text:'PUSH',bbox:[1,2,3,4]});
+assert.equal(child.text.filter(x=>x.text==='PUSH'&&x.bbox).length,1);
+assert.equal(W.hitTest(scene,100,250).id,'drawer');W.select(scene,'drawer');assert.deepStrictEqual(scene.breadcrumb,['cab','drawer']);
+const snap=W.snapshot(scene);assert.notStrictEqual(snap,scene);assert.equal(snap.entities.find(x=>x.id==='drawer').trackingId,null);
+console.log('world-model-v2: schema/evidence/text/hierarchy/relations OK');

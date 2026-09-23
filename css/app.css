@@ -101,3 +101,17 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 /* RC7: camera tools belong to the edge, never over the recognition target. */
 .camera-tools{top:calc(var(--safe-top) + 70px);right:12px;width:min(300px,calc(100% - 24px));display:block;padding:10px;border-radius:18px}.camera-tools.hidden{display:none}.camera-tools-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.camera-tools-head strong{font-size:13px}.camera-tools-head button{width:30px!important;height:30px!important}.camera-tool-row{display:grid;grid-template-columns:auto 34px 1fr 34px;gap:7px;align-items:center}.camera-tool-row>span{font-size:12px;color:var(--muted)}.camera-tools input{width:100%;min-width:80px}.camera-tool-wide{width:100%!important;margin-top:8px;font-size:13px!important}.camera-tools small{display:block;margin-top:7px;color:var(--muted);font-size:10px;line-height:1.3}
 .camera-stage.frozen .camera-tools{display:none}
+
+
+/* Pre-Alpha 2 — perception modes */
+.perception-modes{position:absolute;z-index:18;top:76px;left:50%;transform:translateX(-50%);display:flex;padding:4px;gap:3px;border-radius:16px;max-width:calc(100% - 28px)}
+.perception-modes button{border:0;background:transparent;color:rgba(255,255,255,.72);padding:8px 12px;border-radius:12px;font:inherit;font-size:12px;font-weight:700;white-space:nowrap}
+.perception-modes button.active{background:rgba(255,255,255,.16);color:#fff}
+.read-panel{position:absolute;z-index:24;left:14px;right:14px;top:126px;padding:12px;border-radius:18px;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}
+.read-panel>div:first-child{display:flex;flex-direction:column}.read-panel small{opacity:.72}.read-panel button{border:0;border-radius:12px;padding:9px 12px;font-weight:750}.read-results{grid-column:1/-1;max-height:26vh;overflow:auto;font-size:13px;line-height:1.45}.read-result-line{padding:7px 0;border-top:1px solid rgba(255,255,255,.12)}
+.ocr-box{position:absolute;border:1.5px solid rgba(255,255,255,.85);border-radius:5px;pointer-events:none}.ocr-box span{position:absolute;left:0;bottom:100%;background:rgba(8,10,14,.86);padding:2px 5px;border-radius:5px;font-size:10px;color:#fff;white-space:nowrap}
+@media(max-width:380px){.perception-modes button{padding:7px 9px;font-size:11px}}
+/* keep perception controls below the existing study/freeze row */
+.perception-modes{top:calc(var(--safe-top) + 112px)}
+.read-panel{top:calc(var(--safe-top) + 154px)}
+@media(max-height:700px){.perception-modes{top:calc(var(--safe-top) + 103px)}.read-panel{top:calc(var(--safe-top) + 143px)}}
