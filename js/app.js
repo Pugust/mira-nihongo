@@ -472,11 +472,16 @@
   function finishTutorial(){state.tutorial.active=false;state.tutorial.pending=false;els.tutorialCoach.classList.add('hidden');localStorage.setItem('mn-v06-tutorial','done')}
   function toggleDetails(){setSheetSnap(state.sheetSnap==='compact'?'medium':'compact',true)}
   function captureFreezeFrame(){
-    if(!state.cameraStarted||!els.video.videoWidth)return false;
+    if(!state.cameraStarted||!els.video.videoWidth||!els.video.videoHeight)return false;
     const cw=Math.max(1,Math.round(els.stage.clientWidth)),ch=Math.max(1,Math.round(els.stage.clientHeight));
-    const scale=Math.min(2,window.devicePixelRatio||1);els.freezeCanvas.width=Math.round(cw*scale);els.freezeCanvas.height=Math.round(ch*scale);
-    const ctx=els.freezeCanvas.getContext('2d');ctx.setTransform(scale,0,0,scale,0,0);ctx.clearRect(0,0,cw,ch);
-    const m=videoCoverMetrics();ctx.drawImage(els.video,m.ox,m.oy,m.vw*m.scale,m.vh*m.scale);return true;
+    const dpr=Math.min(2,window.devicePixelRatio||1);els.freezeCanvas.width=Math.round(cw*dpr);els.freezeCanvas.height=Math.round(ch*dpr);
+    const ctx=els.freezeCanvas.getContext('2d');if(!ctx)return false;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,cw,ch);
+    // drawImage(source, sx, sy, sw, sh, dx, dy, dw, dh): crop the camera frame
+    // exactly like CSS object-fit:cover. The old code incorrectly used negative
+    // destination coordinates with the *scaled* video size, which can leave the
+    // frozen canvas blank/misaligned on portrait phones.
+    const crop=window.MiraFreeze?.coverCrop(els.video.videoWidth,els.video.videoHeight,cw,ch);if(!crop)return false;
+    try{ctx.drawImage(els.video,crop.sx,crop.sy,crop.sw,crop.sh,0,0,crop.dw,crop.dh);return true}catch(e){console.warn('Freeze frame capture failed',e);return false}
   }
   function setFrozen(v,reason='manual'){
     if(v===state.frozen){renderLesson();return}

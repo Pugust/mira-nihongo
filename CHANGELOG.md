@@ -1,7 +1,7 @@
 # Changelog
-## V0.9.1 — Reliability Hotfix
-- reconstrução sobre a V0.8;
-- preservação byte-a-byte dos oito módulos funcionais centrais;
-- Reliability isolado após `app.js`;
-- Service Worker baseado na estratégia V0.8, cache `mira-nihongo-v0-9-1-r1`;
-- mantém diagnóstico e backup sem alterar o pipeline de reconhecimento/congelamento.
+## V0.9.2 — Freeze Hotfix
+- corrigido cálculo de captura do frame congelado;
+- novo `freeze-engine.js` puro/testável;
+- cobertura específica portrait/landscape;
+- base reconstruída sobre V0.8;
+- nenhum modelo de visão ou política de reconhecimento alterado.

@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+const c={globalThis:null};c.globalThis=c;vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/freeze-engine.js'),'utf8'),c);
+const f=c.MiraFreeze.coverCrop;let n=0;const ok=(x,m)=>{assert.ok(x,m);n++};
+let x=f(640,480,360,800);ok(x.sw<640,'portrait crops horizontal source');ok(Math.abs(x.sh-480)<1e-6,'portrait keeps source height');ok(x.sx>0&&x.sy===0,'portrait centers x');ok(x.dw===360&&x.dh===800,'portrait fills destination');
+x=f(1920,1080,412,915);ok(x.sw<1920&&Math.abs(x.sh-1080)<1e-6,'16:9 camera portrait crop');ok(x.sx>0&&x.sy===0,'16:9 centered');
+x=f(480,640,360,800);ok(Math.abs(x.sw-288)<1e-6&&x.sh===640,'portrait camera crop');ok(x.sx>0&&x.sy===0,'portrait camera centered');
+x=f(640,480,800,360);ok(x.sw===640&&x.sh<480,'landscape crops vertical');ok(x.sy>0&&x.sx===0,'landscape centers y');
+ok(f(0,480,360,800)===null,'invalid source rejected');
+console.log(`freeze-engine: ${n}/11 passed`);

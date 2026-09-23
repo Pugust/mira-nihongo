@@ -150,11 +150,7 @@
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.9.1 · Reliability Hotfix</strong><p>Base funcional V0.8 preservada integralmente; confiabilidade adicionada de forma isolada.</p></section>
-    <section class="reliability-card"><strong>Confiabilidade</strong><small>Ferramentas locais, isoladas do reconhecimento.</small>
-<div id="healthSummary" class="health-summary" role="status">Verificando…</div>
-<details><summary>Diagnóstico avançado</summary><pre id="advancedDiagnostics" class="advanced-diagnostics">—</pre></details>
-<div class="data-actions"><button id="refreshHealthBtn" class="settings-btn" type="button">Atualizar diagnóstico</button><button id="exportDataBtn" class="settings-btn" type="button">Exportar progresso</button><button id="importDataBtn" class="settings-btn" type="button">Importar backup</button><input id="importDataFile" class="hidden" type="file" accept="application/json,.json"><button id="clearLocalDataBtn" class="settings-btn danger" type="button">Apagar meus dados</button></div><small id="backupStatus" class="backup-status"></small></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V0.9.2 · Freeze Hotfix</strong><p>Hotfix do congelamento visual em telas móveis, preservando o comportamento da V0.8.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -187,7 +183,7 @@
   <script src="js/learning-engine.js"></script>
   <script src="js/adaptive-learning.js"></script>
   <script src="js/interaction-engine.js"></script>
+  <script src="js/freeze-engine.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/reliability-engine.js"></script>
 </body>
 </html>

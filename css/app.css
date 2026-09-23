@@ -75,7 +75,3 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 /* V0.8 — World & Context */
 .world-context{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.045)}
 .world-context-head{display:flex;flex-direction:column;gap:3px}.world-context-head small,.photo-study-status{opacity:.72;line-height:1.35}.state-options,.world-actions{display:flex;gap:8px;overflow-x:auto;padding-top:8px}.state-options .soft-btn,.world-actions .soft-btn{flex:0 0 auto}.photo-study-status{display:block;padding-top:7px}.lesson-card.snap-compact .world-context{display:none}
-
-/* V0.9.1 reliability hotfix: settings-only styles */
-.reliability-card{margin-top:12px;padding:13px;border:1px solid rgba(0,0,0,.09);border-radius:16px;background:rgba(0,0,0,.035)}
-.reliability-card>small{display:block;margin-top:3px;opacity:.7}.health-summary{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:11px 0}.health-summary span{display:flex;gap:7px;min-height:32px;align-items:center}.advanced-diagnostics{white-space:pre-wrap;padding:10px;border-radius:12px;background:#111;color:#eee;font-size:11px}.data-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.settings-btn.danger{color:#a32626}.backup-status{display:block;min-height:18px;margin-top:8px}

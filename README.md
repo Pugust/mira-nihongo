@@ -1,10 +1,8 @@
-# Mira Nihongo V0.9.1 — Reliability Hotfix
+# Mira Nihongo V0.9.2 — Freeze Hotfix
+Reconstruído sobre a V0.8 enviada pelo usuário. Corrige a captura visual do Freeze.
 
-Hotfix reconstruído diretamente sobre a V0.8 enviada pelo usuário.
+## Causa
+`captureFreezeFrame()` calculava `object-fit: cover` e passava offsets negativos como destino ao `drawImage`, junto com dimensões já escaladas. Em telas portrait, isso podia gerar um frame congelado incorreto/fora do canvas, fazendo o vídeo parecer continuar ou o congelamento não ser visualmente preservado.
 
-A auditoria mostrou que os arquivos centrais de visão da V0.9 anterior eram idênticos à V0.8; portanto, a perda percebida de comportamento não veio de remoção deliberada do Auto Freeze no `app.js`. Para eliminar interferência de integração/cache, a V0.9.1 parte novamente da V0.8 e adiciona Reliability de forma isolada.
-
-- `app.js`, Vision, World Context, Adaptive Learning, Interaction, Learning, Recognition Policy e Japanese Data permanecem byte-a-byte iguais à V0.8.
-- Reliability carrega depois do app principal.
-- Service Worker volta à estratégia funcional da V0.8, com cache novo V0.9.1 e apenas o novo módulo adicionado.
-- Auto Freeze permanece com a mesma lógica e mesma chave de preferência da V0.8.
+## Correção
+O novo `freeze-engine.js` calcula um recorte na imagem de origem (`sx/sy/sw/sh`) e desenha exatamente no canvas visível (`0,0,cw,ch`). Há testes para câmeras 4:3, 16:9, portrait e landscape.
