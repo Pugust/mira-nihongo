@@ -1,20 +1,10 @@
-# Mira Nihongo V0.9 — Reliability & Polish
+# Mira Nihongo V0.9.1 — Reliability Hotfix
 
-Versão de estabilização pré-V1.0. A V0.9 preserva visão, Interaction & Flow, Adaptive Learning e World & Context, concentrando-se em confiabilidade.
+Hotfix reconstruído diretamente sobre a V0.8 enviada pelo usuário.
 
-## Novidades
-- painel **Saúde do Mira** com câmera, modelos, motores, armazenamento, PWA e cache;
-- diagnóstico avançado local;
-- indicador offline discreto;
-- backup JSON versionado do progresso e preferências `mn-*`;
-- importação validada com rejeição de schemas futuros/arquivos estranhos e rollback em falha;
-- limpeza explícita dos dados do Mira sem tocar em dados de outros apps do mesmo domínio;
-- Service Worker V0.9 com limpeza seletiva de caches antigos do Mira e fallback de navegação offline;
-- reforço de `prefers-reduced-motion`, telas estreitas e alvos de toque já existentes;
-- captura local de erros/rejeições da sessão para diagnóstico, sem upload.
+A auditoria mostrou que os arquivos centrais de visão da V0.9 anterior eram idênticos à V0.8; portanto, a perda percebida de comportamento não veio de remoção deliberada do Auto Freeze no `app.js`. Para eliminar interferência de integração/cache, a V0.9.1 parte novamente da V0.8 e adiciona Reliability de forma isolada.
 
-## Privacidade
-Nenhuma imagem, diagnóstico ou backup é enviado pelo código do Mira. O backup é gerado localmente.
-
-## Limite desta validação
-A nota 10/10 desta entrega cobre código e comportamento automatizável. Temperatura, consumo de bateria, câmera real, gestos do Android e conforto continuam exigindo teste físico.
+- `app.js`, Vision, World Context, Adaptive Learning, Interaction, Learning, Recognition Policy e Japanese Data permanecem byte-a-byte iguais à V0.8.
+- Reliability carrega depois do app principal.
+- Service Worker volta à estratégia funcional da V0.8, com cache novo V0.9.1 e apenas o novo módulo adicionado.
+- Auto Freeze permanece com a mesma lógica e mesma chave de preferência da V0.8.

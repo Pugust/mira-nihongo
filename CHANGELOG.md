@@ -1,13 +1,7 @@
 # Changelog
-
-## V0.9 — Reliability & Polish
-- diagnóstico de saúde e diagnóstico avançado;
-- indicador de operação offline;
-- exportação/importação de backup local versionado;
-- exclusão explícita dos dados locais do Mira;
-- captura de erros da sessão;
-- Service Worker `mira-nihongo-v0-9-r1`;
-- fallback offline e limpeza somente dos caches pertencentes ao Mira;
-- acessibilidade/reduced motion reforçados;
-- nova suíte `reliability-engine.test.js`;
-- nenhuma nova inferência pesada contínua.
+## V0.9.1 — Reliability Hotfix
+- reconstrução sobre a V0.8;
+- preservação byte-a-byte dos oito módulos funcionais centrais;
+- Reliability isolado após `app.js`;
+- Service Worker baseado na estratégia V0.8, cache `mira-nihongo-v0-9-1-r1`;
+- mantém diagnóstico e backup sem alterar o pipeline de reconhecimento/congelamento.

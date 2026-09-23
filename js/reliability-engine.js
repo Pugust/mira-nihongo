@@ -4,7 +4,7 @@
   const state={errors:[],lastHealth:null};
   const byId=id=>document.getElementById(id);
   const safeJson=(s,f=null)=>{try{return JSON.parse(s)}catch{return f}};
-  const bytes=s=>new Blob([s]).size;
+  const bytes=s=>{try{return typeof Blob==='function'?new Blob([s]).size:new TextEncoder().encode(s).length}catch{return s.length*2}};
   function storageSnapshot(){
     const data={};
     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PREFIX))data[k]=localStorage.getItem(k)}

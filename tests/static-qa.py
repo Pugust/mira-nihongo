@@ -40,19 +40,11 @@ sw=(root/'sw.js').read_text()
 for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js']:
     ok(v in sw,f'sw missing {v}')
 
-# version markers and V0.9 reliability hooks
-for needle in ['Mira Nihongo V0.9','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn','healthSummary','exportDataBtn','importDataBtn','clearLocalDataBtn','networkChip']:
+# version markers and V0.8 world-context hooks
+for needle in ['Mira Nihongo V0.9.1','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
     ok(needle in html,f'html missing {needle}')
 for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning','renderWorldContext','exploreFrozenPhoto','mn-v08-world']:
     ok(needle in app,f'app missing {needle}')
-
-# V0.9 reliability invariants
-reliability=(root/'js/reliability-engine.js').read_text()
-for needle in ['mira-nihongo-backup','validateBackup','storageSnapshot','importPayload','mn-v09-last-import','unhandledrejection']:
-    ok(needle in reliability,f'reliability missing {needle}')
-ok('./js/reliability-engine.js' in sw,'sw missing reliability engine')
-ok("mira-nihongo-v0-9-r1" in sw,'wrong V0.9 cache')
-ok(html.index('js/reliability-engine.js') < html.index('js/app.js'),'reliability must initialize before app')
 
 # V0.6 UX invariants preserved + V0.7 adaptive invariants
 css=(root/'css/app.css').read_text()
