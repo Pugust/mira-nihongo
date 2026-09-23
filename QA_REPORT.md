@@ -35,3 +35,20 @@
 
 ## Limites desta RC
 A arquitetura suporta superfícies/regiões e ambientes, mas esta RC ainda não inclui um modelo dedicado de segmentação semântica. Portanto, chão/parede/céu não terão máscaras precisas em toda cena. Ambientes usam classificação conservadora inicial; partes pequenas dependem do drill-down localizado. Esses limites são intencionais para a Pre-Alpha 1 e não são apresentados como reconhecimento universal.
+
+## RC2 — feedback físico Android
+
+Falhas reproduzidas a partir das capturas do usuário:
+- múltiplos palpites arbitrários acumulavam-se sobre uma superfície sem objeto (ovelha, borracha, caneta, interruptor);
+- caixas DOM sobrepostas podiam interceptar o toque e selecionar a entidade maior (`person`) em vez da menor (`hand`);
+- tocar novamente numa entidade já selecionada não entrava em drill-down.
+
+Correções RC2:
+- hit-test centralizado no Scene Graph e prioridade geométrica para a menor entidade;
+- overlays visuais sem captura de ponteiro;
+- segundo toque dentro da entidade selecionada inicia análise filha;
+- drill-down rejeita classificação sem confiança e margem mínimas;
+- animais e classes de alta confusão têm aceitação de cena mais conservadora;
+- cache PWA atualizado para `mira-nihongo-v1-prealpha1-rc2-r1`.
+
+Validação automatizada após correções: todas as suítes Node passaram e `static-qa.py` passou 128/128. Validação física da RC2 ainda necessária.

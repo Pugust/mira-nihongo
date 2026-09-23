@@ -545,8 +545,10 @@
     const r=els.stage.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
     if(state.frozen){
       const entity=window.MiraWorldModelV1?.hitTest?.(state.scene,sx,sy);
-      if(entity){selectSceneEntity(entity);return}
-      analyzeFrozenPoint(sx,sy);return;
+      // First tap selects the smallest entity under the finger. A second tap inside
+      // the selected entity drills down instead of letting a larger parent steal it.
+      if(entity&&entity.id!==state.scene?.selectedId){selectSceneEntity(entity);return}
+      analyzeFrozenPoint(sx,sy,entity?.id||state.scene?.selectedId||null);return;
     }
     state.focus.nx=clamp(sx/r.width,.08,.92);state.focus.ny=clamp(sy/r.height,.16,.78);positionCrosshair();resetObservation('Ponto de foco alterado');showToast('Foco movido. Mantenha o objeto estável.');
   }
@@ -556,9 +558,19 @@
   function ensureScene(){if(!state.scene)state.scene=window.MiraWorldModelV1?.createScene?.({width:els.stage.clientWidth,height:els.stage.clientHeight})||null;return state.scene}
   function semanticType(key){return window.MiraVisualOntologyV1?.typeOf?.(key)||'object'}
   function videoBoxToStage(box){const m=videoCoverMetrics();return[m.ox+box[0]*m.scale,m.oy+box[1]*m.scale,box[2]*m.scale,box[3]*m.scale]}
+  function scenePredictionAllowed(p){
+    if(!p?.bbox||!JAPANESE_DB[p.class])return false;
+    const score=Number(p.score)||0,family=window.MiraVisionEngine?.familyOf?.(p.class);
+    const highRisk=window.MiraRecognitionPolicy?.isHighConfusion?.(p.class)||window.MiraVisionEngine?.HIGH_RISK?.has?.(p.class);
+    // Scene overlays are teaching affordances, so precision is preferred over recall.
+    // Animals and known confusion classes need substantially stronger detector evidence.
+    if(family==='animal')return score>=.76;
+    if(highRisk)return score>=.68;
+    return score>=.48;
+  }
   function addScenePrediction(p,parentId=null,source='detector'){
-    const scene=ensureScene();if(!scene||!p?.bbox||!JAPANESE_DB[p.class])return null;const box=p._stageBox?p.bbox:videoBoxToStage(p.bbox);const dup=scene.entities.find(e=>e.conceptId===p.class&&e.bbox&&iouBox(e.bbox,box)>.55);if(dup)return dup;
-    return window.MiraWorldModelV1.addEntity(scene,{conceptId:p.class,semanticType:semanticType(p.class),bbox:box,confidence:p.score||.5,status:(p.score||0)>=.68?'stable':'tentative',source,parentId,evidence:[{source,score:p.score||0}]});
+    const scene=ensureScene();if(!scene||!scenePredictionAllowed(p))return null;const box=p._stageBox?p.bbox:videoBoxToStage(p.bbox);const dup=scene.entities.find(e=>e.conceptId===p.class&&e.bbox&&iouBox(e.bbox,box)>.55);if(dup)return dup;
+    return window.MiraWorldModelV1.addEntity(scene,{conceptId:p.class,semanticType:semanticType(p.class),bbox:box,confidence:p.score||.5,status:(p.score||0)>=.72?'stable':'tentative',source,parentId,evidence:[{source,score:p.score||0}]});
   }
   function iouBox(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),r=Math.min(a[0]+a[2],b[0]+b[2]),d=Math.min(a[1]+a[3],b[1]+b[3]),inter=Math.max(0,r-x)*Math.max(0,d-y),u=a[2]*a[3]+b[2]*b[3]-inter;return u?inter/u:0}
   function selectSceneEntity(entity){
@@ -579,9 +591,9 @@
   async function analyzeSceneEnvironment(scene){
     if(!state.deepVisionEnabled)return;const verifier=await ensureVerifier();if(!verifier||!state.frozen)return;try{recordHeavy();const cs=await verifier.classify(els.freezeCanvas,8);const joined=cs.map(x=>String(x.className||'').toLowerCase()).join(' | ');const rules=[[/forest|woodland|rainforest/,'forest'],[/street|road|highway/,'street'],[/cliff|valley|seashore|lakeside/,'ground'],[/palace|skyscraper|apartment|building/,'city']];for(const[re,key]of rules){if(re.test(joined)&&JAPANESE_DB[key]&&!scene.entities.some(e=>e.conceptId===key)){window.MiraWorldModelV1.addEntity(scene,{conceptId:key,semanticType:semanticType(key),confidence:.52,status:'tentative',source:'scene-classifier',evidence:[{source:'scene-classifier'}]});break}}}catch(_){/* optional */}
   }
-  async function analyzeFrozenPoint(x,y){
+  async function analyzeFrozenPoint(x,y,parentId=null){
     if(state.sceneAnalyzing||!state.frozen)return;const verifier=await ensureVerifier();if(!verifier){showToast('Visão detalhada indisponível.');return}state.sceneAnalyzing=true;setStatus('Analisando esta região…');
-    try{const size=Math.max(96,Math.min(180,Math.min(els.stage.clientWidth,els.stage.clientHeight)*.34)),c=document.createElement('canvas');c.width=224;c.height=224;const sx=els.freezeCanvas.width/els.stage.clientWidth,sy=els.freezeCanvas.height/els.stage.clientHeight;const rx=Math.max(0,(x-size/2)*sx),ry=Math.max(0,(y-size/2)*sy),rw=Math.min(size*sx,els.freezeCanvas.width-rx),rh=Math.min(size*sy,els.freezeCanvas.height-ry);c.getContext('2d').drawImage(els.freezeCanvas,rx,ry,rw,rh,0,0,224,224);recordHeavy();const classes=await verifier.classify(c,12),mapped=mappedCandidates(classes);if(!mapped.length){showToast('Ainda não reconheci esta região.');return}const top=mapped[0],key=top.key;if(!JAPANESE_DB[key]){showToast('Ainda não reconheci esta região.');return}const confidence=top.probability||top.score||.5;const e=window.MiraWorldModelV1.addEntity(ensureScene(),{conceptId:key,semanticType:semanticType(key),bbox:[Math.max(0,x-size/2),Math.max(0,y-size/2),Math.min(size,els.stage.clientWidth),Math.min(size,els.stage.clientHeight)],confidence,status:confidence>.62?'stable':'tentative',source:'drill-down',evidence:[{source:'mobilenet',score:confidence}]});selectSceneEntity(e)}catch(e){console.warn(e);showToast('Não consegui analisar esta região.')}finally{state.sceneAnalyzing=false;setStatus('Congelado')}
+    try{const size=Math.max(96,Math.min(180,Math.min(els.stage.clientWidth,els.stage.clientHeight)*.34)),c=document.createElement('canvas');c.width=224;c.height=224;const sx=els.freezeCanvas.width/els.stage.clientWidth,sy=els.freezeCanvas.height/els.stage.clientHeight;const rx=Math.max(0,(x-size/2)*sx),ry=Math.max(0,(y-size/2)*sy),rw=Math.min(size*sx,els.freezeCanvas.width-rx),rh=Math.min(size*sy,els.freezeCanvas.height-ry);c.getContext('2d').drawImage(els.freezeCanvas,rx,ry,rw,rh,0,0,224,224);recordHeavy();const classes=await verifier.classify(c,12),mapped=mappedCandidates(classes);if(!mapped.length){showToast('Ainda não reconheci esta região.');return}const top=mapped[0],second=mapped[1],key=top.key;if(!JAPANESE_DB[key]){showToast('Ainda não reconheci esta região.');return}const confidence=top.probability||top.score||0,margin=confidence-(second?.probability||second?.score||0),family=window.MiraVisionEngine?.familyOf?.(key);const minConfidence=family==='animal'?.45:.20,minMargin=family==='animal'?.12:.055;if(confidence<minConfidence||margin<minMargin){showToast('Ainda não reconheci esta região.');return}const e=window.MiraWorldModelV1.addEntity(ensureScene(),{conceptId:key,semanticType:semanticType(key),bbox:[Math.max(0,x-size/2),Math.max(0,y-size/2),Math.min(size,els.stage.clientWidth),Math.min(size,els.stage.clientHeight)],confidence,status:confidence>.62?'stable':'tentative',source:'drill-down',parentId,evidence:[{source:'mobilenet',score:confidence},{source:'class-margin',score:margin}]});selectSceneEntity(e)}catch(e){console.warn(e);showToast('Não consegui analisar esta região.')}finally{state.sceneAnalyzing=false;setStatus('Congelado')}
   }
   function positionCrosshair(){els.crosshairWrap.style.left=`${state.focus.nx*100}%`;els.crosshairWrap.style.top=`${state.focus.ny*100}%`}
   function focusPointInVideo(){const m=videoCoverMetrics();let sx=state.focus.nx*m.cw,sy=state.focus.ny*m.ch;if(state.facingMode==='user')sx=m.cw-sx;return{x:(sx-m.ox)/m.scale,y:(sy-m.oy)/m.scale}}
