@@ -1,32 +1,32 @@
-# Mira Nihongo V1.0 Pre-Alpha 2.1 — Perception Consolidation
+# Mira Nihongo V1.0 Pre-Alpha 3 — Semantic AI
 
-Mira Nihongo é uma PWA mobile-first para aprender japonês a partir do mundo real. A visão de produto continua sendo:
+Mira Nihongo é uma PWA mobile-first para aprender japonês explorando o mundo real pela câmera.
 
-> Apontar para o mundo, tocar em qualquer parte dele e explorar como aquilo é expresso em japonês.
+> **Visão do produto:** apontar para o mundo, tocar em qualquer parte dele e explorar como aquilo é expresso em japonês.
 
-Esta build ainda é **Pre-Alpha**. Ela consolida a arquitetura criada na Pre-Alpha 2 antes de ampliar novamente o escopo visual.
+Esta build continua **Pre-Alpha**. A Pre-Alpha 2.1 consolidou performance e percepção especializada; a Pre-Alpha 3 adiciona uma camada de IA semântica real no navegador sem transformar a IA no controlador do aplicativo.
 
-## Modos de percepção
+## Modos
 
-- **◎ Mirar** — reconhecimento rápido, com Stable Focus, detector e verificação somente quando necessária.
-- **◇ Explorar** — congela a cena, cria um World Model e permite selecionar entidades/partes ou tocar em uma região para análise aprofundada.
-- **文 Ler** — OCR local sob demanda sobre a imagem congelada. O OCR pode anexar texto às entidades do World Model e reutilizar o vocabulário japonês conhecido pelo Mira.
+- **◎ Mirar** — caminho rápido: detector, Stable Focus, verificação e tracking.
+- **◇ Explorar** — Scene Freeze, World Model, partes, especialistas e análise direcionada por toque.
+- **文 Ler** — OCR local + tradução para japonês + leitura/kana/rōmaji + overlay visual estilo Lens.
 
-## Arquitetura 2.1
+## Arquitetura
 
 ```text
-Camera / frozen snapshot
+Camera / Frozen Scene
         ↓
-Frame Scheduler
+Perception Router
+ ├─ Fast detector / verifier
+ ├─ Hand / Face / Pose specialists
+ ├─ Segmentation / Structure First
+ ├─ OCR
+ ├─ Semantic AI (CLIP zero-shot)
+ ├─ Language AI (PT/EN → JA)
+ └─ Japanese Reading (dictionary → Kuromoji fallback)
         ↓
-Perception Budget Router
- ├─ detector + verifier
- ├─ hand / face / pose specialists
- ├─ semantic segmentation
- ├─ structure-first multi-scale
- └─ OCR
-        ↓
-Evidence / rejection / temporal consistency
+Evidence Fusion / rejection / temporal consistency
         ↓
 World Model 2.0
         ↓
@@ -35,52 +35,120 @@ Interactive Scene
 Japanese + Adaptive Learning
 ```
 
-### O que foi consolidado
+## Semantic AI
 
-- O scheduler legado da RC7 não é mais carregado; existe uma única autoridade de orçamento.
-- Um único **Budget Router** serializa tarefas pesadas e mantém no máximo uma tarefa pendente. Cancelar uma cena invalida o resultado antigo, mas não libera falsamente o orçamento enquanto a inferência anterior ainda está fisicamente executando.
-- Trabalho assíncrono usa epoch/session guards para não escrever em uma cena/interface que já mudou.
-- **Specialist Arbitration** é espacial: uma mão próxima ao alvo pode corrigir `person`, e um rosto confirmado pode rejeitar um falso `hand`, sem deixar um rosto distante roubar o alvo focal.
-- Exploração automática não dispara continuamente detector + mãos + rosto + pose + segmentação. Especialistas são escolhidos pelo conceito e pelo perfil; segmentação fica principalmente para toque/região apropriada.
-- Multi-scale de grande região aceita apenas hipóteses estruturais, preservando `unknown` em texturas ambíguas.
-- **World Model 2.0** adiciona evidence, trackingId, text e relações hierárquicas `PART_OF/HAS`.
-- **OCR** continua lazy/on-demand; não participa do caminho crítico do startup.
-- **Vision Runtime** possui Automático, Lite, Standard e Advanced. O Automático adapta orçamento usando capacidades do ambiente e tempos de inferência observados; o usuário pode sobrescrever manualmente.
-- **Vision Diagnostics** observa FPS da câmera/UI, tempo do router, fila, tarefas descartadas, status dos especialistas/OCR e backend TF quando disponível.
-- O loop visual usa `requestVideoFrameCallback()` quando suportado e mantém a taxa da IA separada do preview.
+A IA semântica é **escalonamento**, não caminho padrão.
 
-## Regressões tratadas como permanentes
+1. O pipeline tradicional propõe uma hipótese.
+2. Se a hipótese for tentativo/conflitante, o usuário pode tocar em **✦ Conferir com IA**.
+3. No primeiro uso, o navegador baixa o modelo CLIP compatível com Transformers.js.
+4. O recorte da região congelada é avaliado por zero-shot image classification contra candidatos semânticos.
+5. O resultado entra na Evidence Fusion; a IA não grava memória nem transforma automaticamente uma sugestão divergente em fato.
+6. Depois do primeiro uso bem-sucedido, hipóteses tentativas podem ser verificadas automaticamente, mantendo o mesmo orçamento de inferência.
 
-- mão ≠ pessoa;
-- rosto ≠ mão;
-- tênis ≠ notebook;
-- piso/parede/textura ≠ animal ou objeto arbitrário;
-- estrutura grande (como armário) não deve depender de um palpite de textura;
-- dedos continuam exploráveis;
-- retorno à câmera invalida trabalho antigo;
-- controles de câmera são reconsultados por track;
-- startup não baixa modelos de visão antes da intenção de abrir a câmera;
-- surprise review não pode ser substituído por callback atrasado;
-- Auto Freeze é ON quando não existe preferência e preserva OFF explícito.
+Casos de regressão adicionados explicitamente:
+- violão/guitarra ≠ banheiro/vaso sanitário;
+- chinelo/sandália de dedo ≠ prancha de surfe;
+- preservação de mão ≠ pessoa, rosto ≠ mão, tênis ≠ notebook e texturas ≠ objetos arbitrários.
 
-## Vocabulário e ontologia
+### Modelo inicial
 
-O arquivo base `japanese-data.js` continua com **383 entradas**, preservando compatibilidade de progresso/migração. A ontologia visual pode instalar conceitos adicionais em runtime sem alterar a base congelada. Nesta versão foi corrigida a colisão semântica entre:
+- `Xenova/clip-vit-base-patch32`
+- Transformers.js 3.8.1
+- WebGPU tentado primeiro; fallback WASM.
+- worker dedicado, lazy-load e descarte após ociosidade.
 
-- `nail` = **釘** (prego), já existente no vocabulário;
-- `fingernail` = **爪** (unha), conceito visual separado.
+A Pre-Alpha 3 **não é um VLM universal**. O CLIP é usado como verificador/classificador zero-shot entre candidatos conhecidos pelo Mira. Uma VLM maior pode ser testada futuramente somente se medições reais no aparelho justificarem o custo.
 
-Também foi corrigida a hierarquia `bottle → bottle_cap` e ampliada a busca hierárquica de armário/guarda-roupa/mochila.
+## Ler — OCR + tradução + rōmaji
 
-## Offline e privacidade
+Fluxo:
 
-- O fluxo central continua sem API paga.
-- Imagens da câmera não são enviadas pelo `app.js` para servidor próprio.
-- Modelos externos/línguas de OCR podem ser baixados na primeira utilização e depois dependem do cache HTTP do navegador.
-- O Service Worker mantém os arquivos locais da aplicação disponíveis offline após instalação adequada do cache.
+```text
+Imagem congelada
+   ↓
+Tesseract OCR (jpn + eng + por)
+   ↓
+linhas + caixas
+   ↓
+detecção de idioma
+   ↓
+PT/EN → japonês
+   ↓
+leitura japonesa
+   ↓
+kana + rōmaji
+   ↓
+overlay ancorado à região de texto + painel educacional
+```
 
-## Validação
+### Tradução
 
-A regra do projeto é: **implementar → testar → reavaliar criticamente → corrigir → repetir até 10/10 no escopo automatizável → empacotar**.
+O Mira tenta primeiro a API de tradução integrada ao navegador quando disponível. Se não houver suporte, usa Transformers.js local:
 
-O QA automatizado cobre código, invariantes arquiteturais, regressões simuláveis, sintaxe, vocabulário e integridade do pacote. Ele **não prova** FPS real, qualidade de OCR, precisão visual, disponibilidade de zoom/lanterna, aquecimento ou comportamento final no Xiaomi 14T. Esses pontos precisam de teste físico antes de promover a build.
+- Português → Inglês: `Xenova/opus-mt-ROMANCE-en`
+- Inglês → Japonês: `Xenova/opus-mt-en-jap`
+
+Para texto já em japonês, não há tradução desnecessária.
+
+### Leitura e rōmaji
+
+A leitura usa três níveis:
+
+1. entrada exata do banco japonês do Mira;
+2. mapa local de expressões comuns;
+3. para kanji ainda não resolvidos, **Kuromoji** é carregado em Web Worker sob demanda, extrai a leitura morfológica e o Mira converte para hiragana + rōmaji.
+
+O objetivo é que um texto português reconhecido possa aparecer como:
+
+```text
+EMPURRE A PORTA
+ドアを押してください
+ doa o oshite kudasai
+```
+
+O OCR reconstrói linhas com bounding boxes e as traduções são desenhadas sobre a imagem congelada em overlays não interativos, mantendo também o painel de resultados.
+
+## Performance
+
+A regra central da 2.1 permanece:
+
+- um trabalho pesado por vez;
+- no máximo uma pendência no Budget Router;
+- trabalho obsoleto é invalidado por epoch/session;
+- Semantic AI, tradução e leitura japonesa são lazy/on-demand;
+- câmera e UI não aguardam download de modelo no startup;
+- CLIP é descarregado depois de ociosidade;
+- modelos de tradução são liberados depois de cada etapa;
+- Kuromoji só é carregado quando uma tradução contém kanji sem leitura local completa.
+
+## Privacidade e custo
+
+- Sem API paga obrigatória.
+- A fotografia/crop é processada no navegador/worker; o Mira não envia a imagem para backend próprio.
+- Rede é usada para baixar bibliotecas, modelos e dicionários na primeira utilização.
+- Depois do download, a disponibilidade offline depende dos caches do navegador dos assets externos.
+- Os arquivos centrais da PWA continuam no Service Worker local.
+
+## Compatibilidade preservada
+
+A base `japanese-data.js` permanece com **383 entradas**, preservando progresso/migrações. A ontologia visual instala conceitos adicionais em runtime, incluindo `guitar` e `flip_flop`, sem alterar a contagem congelada.
+
+Continuam preservados:
+- Auto Freeze ON por padrão e OFF explícito persistente;
+- Stable Focus / Sticky Lock;
+- memória de correções e histórico;
+- lesson sheet / gestures;
+- aprendizado adaptativo / review;
+- World Model / Scene Graph;
+- anatomia e dedos;
+- câmera/zoom/torch quando suportados;
+- backup, offline/degraded, acessibilidade e diagnostics.
+
+## Regra de nota 10
+
+Processo obrigatório:
+
+**implementar → testar → reavaliar criticamente → corrigir → repetir → empacotar somente após 10/10 no escopo automatizável.**
+
+O 10/10 **não inclui validação física**. Precisão real do CLIP, qualidade da tradução, downloads, WebGPU, FPS, memória, aquecimento, câmera e comportamento final no Xiaomi 14T só podem ser confirmados no aparelho.

@@ -1,3 +1,23 @@
+# V1.0 Pre-Alpha 3 — Semantic AI
+
+- Auditoria de recuperação após a geração interrompida: o workspace estava íntegro; o ZIP final foi reconstruído e passou a ter verificação de integridade por manifesto SHA-256.
+- Camada de IA semântica real, local no navegador, usando Transformers.js + CLIP zero-shot sob demanda.
+- WebGPU é tentado para Semantic AI; WASM é fallback.
+- `✦ Conferir com IA` aparece em hipóteses tentativas e nas ações adicionais; após o primeiro uso bem-sucedido, tentativas podem ser escaladas automaticamente.
+- Evidence Fusion preservada: resultado divergente da IA continua tentativo e exige confirmação; a IA não grava memória diretamente.
+- Regressões explícitas: `guitar != toilet` e `flip_flop != surfboard`, além das regressões permanentes anteriores.
+- Ontologia runtime adiciona `guitar`, `flip_flop`, `sandal` e `slipper` sem alterar as 383 entradas-base.
+- Modo **Ler** passa a traduzir PT/EN → japonês sem API paga: Browser Translator quando disponível; fallback Transformers.js com `opus-mt-ROMANCE-en` e `opus-mt-en-jap`.
+- OCR passa a reconstruir linhas/bounding boxes e não apenas palavras soltas.
+- Leitura japonesa agora usa banco local primeiro e Kuromoji lazy em Web Worker para resolver kanji restantes; rōmaji é gerado a partir da leitura.
+- Tradução japonesa + rōmaji ganham overlay ancorado ao texto congelado, além do painel de leitura.
+- Semantic AI, Language AI e Japanese Reading passam pelo mesmo Perception Budget Router, sem inferências pesadas concorrentes.
+- Workers/modelos são carregados somente por intenção e descartados/encerrados quando possível.
+- Startup continua sem baixar CLIP, tradução ou Kuromoji.
+- Service Worker atualizado para `mira-nihongo-v1-prealpha3-r2` e inclui os novos módulos/workers locais.
+- Auto Freeze permanece ON por padrão e preserva OFF explícito.
+- Vocabulário congelado preservado em 383 entradas.
+
 # V1.0 Pre-Alpha 2.1 — Perception Consolidation
 
 - Auditoria da Pre-Alpha 2 contra RC7/RC6/RC5 e preservação das mecânicas históricas.

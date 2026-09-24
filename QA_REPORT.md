@@ -1,29 +1,63 @@
-# Mira Nihongo V1.0 Pre-Alpha 1 RC4 — QA
+# Mira Nihongo V1.0 Pre-Alpha 3 — Final QA Summary
 
 ## Escopo
-RC4 trata exclusivamente a experiência de exploração e navegação sobre a Specialist Vision validada como avanço na RC3. O feedback físico mostrou que perguntas de revisão podiam interromper a exploração, o card mudava de estado de forma inesperada e a sobreposição simultânea de pessoa/mão/palma/dedos/punho tornava a interface visualmente ruidosa.
 
-## Correções validadas por código/testes
-- `sceneExplore` é um estado explícito do fluxo pedagógico.
-- Recall/revisão oportunista é bloqueado durante exploração.
-- Exploração não registra exposição adaptativa automaticamente.
-- Frase de exploração é determinística e não muda por revisão/adaptação incidental.
-- Breadcrumb é reconstruído a partir do Scene Graph e cada nível é navegável.
-- Overlay hierárquico limita a visualização à entidade selecionada e seu nível relevante.
-- Labels de overlay priorizam português; japonês fica associado à seleção.
-- Card compacto usa estado “Explorando” e não exibe a sentença até expansão.
-- Ação de saída é “Retomar câmera”.
-- Specialist Vision, landmarks de mão, segmentação e regressões anteriores permanecem preservados.
+Relatório-resumo da build atual. Os arquivos `QA_RC5.md`, `QA_RC6.md`, `QA_RC7.md`, `QA_PREALPHA2.md` e `QA_PREALPHA2_1.md` permanecem no pacote como histórico de regressões; este arquivo representa o estado mais recente.
 
-## Execução final
-- Todas as suítes `tests/*.test.js`: PASS.
-- `static-qa.py`: 130/130 PASS.
-- Vocabulário carregado: 383 entradas.
-- Teste dedicado RC4 Exploration UX: PASS.
-- Service Worker: `mira-nihongo-v1-prealpha1-rc4-r1`.
+## Estado recuperado após interrupção
 
-## Reavaliação crítica
-Primeira passagem: 9,4/10 no escopo simulável — a navegação estava correta, mas o card compacto ainda competia visualmente com a cena e mantinha rótulo de reconhecimento comum. Correção aplicada: estado visual “Explorando” e sentença ocultada no snap compacto. Segunda passagem: 10/10 no escopo de código + arquitetura + UX/comportamento automatizável/simulável da RC4.
+A conversa do ChatGPT entrou em estado de infinite thinking durante a geração. A auditoria posterior confirmou que o **workspace final de código estava íntegro**, mas o primeiro ZIP gerado estava incompleto: faltavam `js/japanese-reading-worker-v1.js` e `tests/ocr-engine-v1.test.js`.
 
-## Limite da nota
-A nota não valida ergonomia, transições percebidas, precisão de toque, segmentação ou landmarks no aparelho físico. Esses itens exigem nova validação Android e podem reprovar a RC4 fisicamente.
+O arquivo incompleto não deve ser usado. O pacote final foi reconstruído a partir do workspace auditado e recebe um manifesto SHA-256 verificável.
+
+## Validação automatizada final do workspace
+
+- **25/25 arquivos de teste JavaScript:** PASS.
+- **Static QA:** 242/242 PASS.
+- **Vocabulário-base:** 383 entradas preservadas.
+- **Syntax check:** 26 arquivos JavaScript/Service Worker PASS.
+- **Manifest integrity test:** PASS.
+- Regressões históricas RC4–Pre-Alpha 2.1 continuam verdes.
+- Regressões novas: `guitar != toilet` e `flip_flop != surfboard` codificadas.
+- Auto Freeze: ausência de preferência => ON; OFF explícito => persistente.
+- Service Worker referencia somente arquivos locais existentes.
+- Nenhum caminho de upload da imagem da câmera para backend próprio foi introduzido.
+
+## Pre-Alpha 3 validada por código
+
+- Semantic AI lazy/on-demand via Transformers.js + CLIP zero-shot.
+- Worker dedicado para IA visual.
+- OCR multilíngue `jpn + eng + por`.
+- Tradução PT/EN -> japonês, com Browser Translator quando disponível e fallback Transformers.js local.
+- Leitura/kana/rōmaji com banco local e fallback Kuromoji em worker.
+- Tradução visual ancorada por bounding boxes reconstruídas do OCR.
+- Todo trabalho pesado novo passa pelo Budget Router consolidado.
+- World Model 2.0, especialistas de mão/rosto/pose, tracking e aprendizagem adaptativa preservados.
+
+## Dependências públicas verificadas na revisão
+
+A arquitetura foi conferida contra a documentação/model cards atuais de Transformers.js e Hugging Face para:
+
+- `zero-shot-image-classification` com `Xenova/clip-vit-base-patch32`;
+- pipeline `translation` com `Xenova/opus-mt-ROMANCE-en`;
+- pipeline `translation` com `Xenova/opus-mt-en-jap`.
+
+A API `Translator`/`LanguageDetector` do navegador é tratada como oportunista/experimental; quando indisponível ou falha, a rota Transformers.js permanece como fallback.
+
+## Fora do escopo automatizável
+
+Ainda exige Xiaomi 14T / GitHub Pages real:
+
+- primeiro download dos modelos;
+- WebGPU real e fallback WASM;
+- latência e consumo de RAM;
+- temperatura/aquecimento;
+- qualidade real de CLIP em violão/chinelo e objetos novos;
+- qualidade de tradução PT -> JA;
+- posicionamento do overlay Lens na câmera real;
+- cache/offline de assets externos após primeiro uso;
+- FPS e retorno à câmera após Semantic AI/OCR/tradução.
+
+## Nota
+
+**10/10 no escopo automatizável.** O ZIP final reconstruído foi extraído em uma pasta limpa; lista de arquivos e SHA-256 coincidiram integralmente com a fonte, e toda a bateria foi executada novamente com sucesso. A validação física permanece explicitamente pendente.

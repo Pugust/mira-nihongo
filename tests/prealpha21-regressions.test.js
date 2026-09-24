@@ -1,9 +1,9 @@
 'use strict';
 const fs=require('fs'),assert=require('assert');
 const app=fs.readFileSync('js/app.js','utf8'),html=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8'),hier=fs.readFileSync('js/visual-hierarchy-v1.js','utf8'),world=fs.readFileSync('js/world-model-v2.js','utf8');
-assert(html.includes('Pre-Alpha 2.1 · Perception Consolidation'));
+assert(html.includes('Pre-Alpha 3 · Semantic AI'),'new release marker missing while preserving prior architecture');
 assert(html.includes('visionRuntimeProfile'));
-assert(sw.includes('mira-nihongo-v1-prealpha2-1-r1'));assert(sw.includes('./js/world-model-v2.js'));
+assert(sw.includes('mira-nihongo-v1-prealpha3-r2'));assert(sw.includes('./js/world-model-v2.js'));
 assert(app.includes("localStorage.getItem('mn-v05-autofreeze')!=='0'"),'new install Auto Freeze must default ON');
 assert(app.includes("localStorage.setItem('mn-v05-autofreeze',state.autoFreezeEnabled?'1':'0')"),'explicit Auto Freeze choice must persist');
 assert(app.includes('requestVideoFrameCallback'),'video frame scheduler must be used when available');

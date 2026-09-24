@@ -36,7 +36,13 @@
 
       <button id="studyBtn" class="study-pill glass" type="button"><span id="studyModeIcon">👁</span><span id="studyModeLabel">Cotidiano</span><span>⌄</span></button>
       <div id="perceptionModes" class="perception-modes glass" role="group" aria-label="Modo de percepção"><button type="button" data-perception="aim" class="active">◎ Mirar</button><button type="button" data-perception="explore">◇ Explorar</button><button type="button" data-perception="read">文 Ler</button></div>
-      <div id="readPanel" class="read-panel glass hidden" aria-live="polite"><div><strong>Leitura visual</strong><small id="readStatus">Congele uma cena para ler.</small></div><button id="readNowBtn" type="button">Ler texto</button><div id="readResults" class="read-results"></div></div>
+      <div id="readPanel" class="read-panel glass hidden" aria-live="polite">
+        <div><strong>Leitura visual</strong><small id="readStatus">Congele uma cena para ler.</small></div>
+        <button id="readNowBtn" type="button">Ler texto</button>
+        <label class="read-language"><span>Idioma</span><select id="readSourceLanguage"><option value="auto">Auto</option><option value="pt">Português</option><option value="en">English</option><option value="ja">日本語</option></select></label>
+        <button id="readTranslateBtn" class="ai-read-btn" type="button" disabled>✦ Traduzir IA</button>
+        <div id="readResults" class="read-results"></div>
+      </div>
       <div id="loadChip" class="load-chip glass hidden">Carga estimada: <strong id="loadText">baixa</strong></div>
       <div id="freezeBanner" class="freeze-banner glass hidden"><span>❄ Congelado</span><button id="exploreSceneBtn" class="explore-scene-btn" type="button">Explorar cena</button></div>
       <div id="sceneBreadcrumb" class="scene-breadcrumb glass hidden" aria-live="polite"></div>
@@ -69,7 +75,7 @@
             <div id="sentenceRomaji" class="sentence-romaji">—</div>
           </div>
           <button id="primaryFlowAction" class="primary-flow-action hidden" type="button">▶ Continuar</button>
-          <div id="tentativePanel" class="tentative-panel hidden"><p id="tentativeReason">Ainda não tenho certeza.</p><div id="candidateStrip" class="candidate-strip hidden"></div><div class="tentative-actions"><button id="confirmBtn" class="primary compact" type="button">✓ É isso</button><button id="correctBtn" class="soft-btn compact" type="button">✎ Corrigir</button></div></div>
+          <div id="tentativePanel" class="tentative-panel hidden"><p id="tentativeReason">Ainda não tenho certeza.</p><div id="candidateStrip" class="candidate-strip hidden"></div><div class="tentative-actions"><button id="semanticAiBtn" class="soft-btn compact ai-action" type="button">✦ Conferir com IA</button><button id="confirmBtn" class="primary compact" type="button">✓ É isso</button><button id="correctBtn" class="soft-btn compact" type="button">✎ Corrigir</button></div></div>
         </div>
 
         <div id="lessonDetails" class="lesson-details" aria-hidden="true">
@@ -115,6 +121,7 @@
             <button id="reviewBtn" type="button" class="soft-btn">↺ Quero revisar</button>
             <button id="nextActionBtn" type="button" class="soft-btn">↪ Outra frase</button>
             <button id="learnThisBtn" type="button" class="soft-btn">✎ Corrigir objeto</button>
+            <button id="semanticAiMoreBtn" type="button" class="soft-btn">✦ Conferir com IA</button>
           </div>
           <small id="progressHint" class="progress-hint"></small>
         </div>
@@ -147,6 +154,8 @@
     <fieldset><legend>Demonstrativo</legend><div class="segmented" id="demonstrativeControl"><button type="button" data-demo="kore" class="active">これ · comigo</button><button type="button" data-demo="sore">それ · com você</button><button type="button" data-demo="are">あれ · longe</button></div></fieldset>
     <label class="field"><span>Confiança mínima</span><div class="range-row"><input id="confidenceRange" type="range" min="0.35" max="0.80" value="0.50" step="0.05" /><output id="confidenceValue">50%</output></div></label>
     <label class="switch-row"><span><strong>Verificador detalhado</strong><small>MobileNet entra apenas em classes confusas ou quando o detector principal não consegue decidir.</small></span><input id="deepVisionToggle" type="checkbox" checked /></label>
+    <label class="switch-row"><span><strong>IA semântica local</strong><small>CLIP zero-shot roda no navegador somente sob demanda ou em hipóteses tentativas após a primeira autorização. O primeiro uso baixa o modelo e pode demorar.</small></span><input id="semanticAiToggle" type="checkbox" checked /></label>
+    <label class="switch-row"><span><strong>Tradução IA local</strong><small>No modo Ler, traduz PT/EN → japonês sem API paga. O navegador tenta primeiro a tradução integrada; no celular, o fallback Transformers.js é baixado sob demanda e pode consumir centenas de MB na primeira vez.</small></span><input id="languageAiToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Congelar ao reconhecer</strong><small>Congela o quadro automaticamente, pausa a IA e mantém a leitura enquanto você estuda ou corrige.</small></span><input id="autoFreezeToggle" type="checkbox" checked /></label>
     <label class="field"><span>Persistência da leitura</span><select id="stickyStrength"><option value="strong">Forte — recomendado</option><option value="normal">Normal</option></select><small>Quando o congelamento automático estiver desligado, tolera pequenos movimentos antes de abandonar o objeto.</small></label>
     <label class="switch-row"><span><strong>Mostrar caixas</strong><small>Útil para diagnóstico; desligado é mais limpo.</small></span><input id="showBoxesToggle" type="checkbox" /></label>
@@ -156,7 +165,7 @@
     <label class="switch-row"><span><strong>Revisão oportunista</strong><small>Quando uma palavra familiar reaparece no momento certo, o Mira faz uma pergunta curta antes de revelar.</small></span><input id="adaptiveReviewToggle" type="checkbox" checked /></label>
     <label class="switch-row"><span><strong>Contexto de cena</strong><small>Usa relações entre objetos já detectados e memória curta da cena. Uma análise completa da foto só acontece quando você pedir ou usar o modo Cena.</small></span><input id="worldContextToggle" type="checkbox" checked /></label>
     <div id="telemetryBox" class="telemetry-box"></div><div id="visionProfileBox" class="telemetry-box"><strong>Vision Runtime</strong><br><span id="visionProfileText">Perfil adaptativo aguardando medições.</span></div>
-    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 2.1 · Perception Consolidation</strong><p>Perception Router consolidado, arbitragem espacial de especialistas, World Model 2.0, OCR sob demanda e orçamento adaptativo sem sobrepor inferências pesadas.</p></section>
+    <div class="settings-actions"><button id="clearCorrectionsBtn" class="settings-btn" type="button">Limpar correções visuais <span id="correctionCount">0</span></button><button id="resetProgressBtn" class="settings-btn" type="button">Redefinir aprendizado adaptativo</button><button id="replayTutorialBtn" class="settings-btn" type="button">Refazer tutorial rápido</button></div><section class="about-note"><strong>Mira Nihongo V1.0 Pre-Alpha 3 · Semantic AI</strong><p>IA semântica local sob demanda, Evidence Fusion com CLIP, tradução visual PT/EN → japonês, leitura/rōmaji com fallback morfológico local e preservação do Perception Router consolidado.</p></section>
     <section class="privacy-note"><strong>Privacidade</strong><p>A câmera é processada no navegador. Não há código para enviar fotos a um servidor; os modelos são baixados das CDNs declaradas.</p></section>
   </form></dialog>
 
@@ -189,6 +198,9 @@
   <script src="js/freeze-engine.js"></script>
   <script src="js/recognition-fusion-v1.js"></script>
   <script src="js/perception-engine-v2.js"></script>
+  <script src="js/semantic-ai-v1.js"></script>
+  <script src="js/japanese-reading-v1.js"></script>
+  <script src="js/language-ai-v1.js"></script>
   <script src="js/ocr-engine-v1.js"></script>
   <script src="js/world-model-v1.js"></script>
   <script src="js/world-model-v2.js"></script>

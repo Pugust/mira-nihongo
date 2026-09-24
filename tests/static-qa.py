@@ -37,7 +37,7 @@ ok(manifest['start_url']=='./','manifest start url')
 
 # service worker cache includes core files
 sw=(root/'sw.js').read_text()
-for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js','./js/freeze-engine.js','./js/recognition-fusion-v1.js','./js/perception-engine-v2.js','./js/ocr-engine-v1.js','./js/world-model-v2.js','./js/specialist-vision-v1.js','./js/multiscale-scene-v1.js','./js/visual-hierarchy-v1.js']:
+for v in ['./index.html','./css/app.css','./js/vision-engine.js','./js/app.js','./js/japanese-data.js','./js/learning-engine.js','./js/adaptive-learning.js','./js/recognition-policy.js','./js/interaction-engine.js','./js/world-context.js','./js/freeze-engine.js','./js/recognition-fusion-v1.js','./js/perception-engine-v2.js','./js/semantic-ai-v1.js','./js/semantic-ai-worker-v1.js','./js/japanese-reading-v1.js','./js/japanese-reading-worker-v1.js','./js/language-ai-v1.js','./js/language-ai-worker-v1.js','./js/ocr-engine-v1.js','./js/world-model-v2.js','./js/specialist-vision-v1.js','./js/multiscale-scene-v1.js','./js/visual-hierarchy-v1.js']:
     ok(v in sw,f'sw missing {v}')
 cache_match=re.search(r"const LOCAL=\[(.*?)\];",sw,re.S)
 cache_files=re.findall(r"'([^']+)'",cache_match.group(1)) if cache_match else []
@@ -48,7 +48,7 @@ for v in cache_files:
     ok((root/v.removeprefix('./')).exists(),f'service worker references missing file {v}')
 
 # version markers and V0.8 world-context hooks
-for needle in ['Mira Nihongo V1.0 Pre-Alpha 2.1','visionRuntimeProfile','data-perception="aim"','data-perception="explore"','data-perception="read"','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
+for needle in ['Mira Nihongo V1.0 Pre-Alpha 3','visionRuntimeProfile','semanticAiBtn','readTranslateBtn','semanticAiToggle','languageAiToggle','readSourceLanguage','data-perception="aim"','data-perception="explore"','data-perception="read"','freezeCanvas','freezeBanner','autoFreezeToggle','stickyStrength','candidateStrip','historyDialog','primaryFlowAction','moreActionsBtn','tutorialCoach','fontSize','hapticsToggle','reviewPrompt','learningObjective','learningBtn','learningDialog','adaptiveReviewToggle','worldContextToggle','worldContextPanel','photoStudyBtn']:
     ok(needle in html,f'html missing {needle}')
 for needle in ['setFrozen(true','resumeLive','rankVision','familyConsensus','renderCandidateStrip','renderCorrectionCandidates','registerHistory','estimateSkinRatio','estimateForegroundBox','setSheetSnap','bindSheetGestures','bindSentenceSwipe','startTutorial','toggleFrozenAnnotations','renderLearningDashboard','recordLearningExposure','revealReviewNow','mn-v07-learning','renderWorldContext','exploreFrozenPhoto','mn-v08-world']:
     ok(needle in app,f'app missing {needle}')
@@ -84,7 +84,7 @@ for k in ['utility_knife','hand','shoe','bottle_cap','fan','blade','shoelace','f
     ok(k in data['keys'],f'missing vocab key {k}')
 
 # Pre-Alpha 2.1 consolidation invariants
-ok('mira-nihongo-v1-prealpha2-1-r1' in sw,'service worker cache version 2.1')
+ok('mira-nihongo-v1-prealpha3-r2' in sw,'service worker cache version Pre-Alpha 3')
 for needle in ["perceptionRouter.run('live-analysis'","perceptionRouter.run('scene-analysis'","perceptionRouter.run('point-analysis'","perceptionRouter.run('human-arbitration'","perceptionRouter.run('ocr'",'requestVideoFrameCallback','startPerformanceObservers','stopPerformanceObservers','mn-vision-profile']:
     ok(needle in app,f'2.1 app invariant missing {needle}')
 world2=(root/'js/world-model-v2.js').read_text()
@@ -94,6 +94,30 @@ hierarchy=(root/'js/visual-hierarchy-v1.js').read_text()
 ok("bottle:['bottle_cap','label']" in hierarchy,'bottle cap hierarchy must use canonical bottle_cap')
 ok("finger:['fingernail']" in hierarchy,'fingernail hierarchy missing')
 ok("finger:['nail']" not in hierarchy,'semantic collision nail/fingernail returned')
+
+# Pre-Alpha 3 Semantic AI invariants
+semantic=(root/'js/semantic-ai-v1.js').read_text()
+semantic_worker=(root/'js/semantic-ai-worker-v1.js').read_text()
+language=(root/'js/language-ai-v1.js').read_text()
+language_worker=(root/'js/language-ai-worker-v1.js').read_text()
+reading=(root/'js/japanese-reading-v1.js').read_text()
+ontology=(root/'js/visual-ontology-v1.js').read_text()
+for needle in ["toilet:['toilet','guitar'","surfboard:['surfboard','flip_flop'",'zero-shot-image-classification','Xenova/clip-vit-base-patch32']:
+    ok(needle in semantic+semantic_worker,f'Semantic AI invariant missing {needle}')
+ok('kuromoji@0.1.2' in (root/'js/japanese-reading-worker-v1.js').read_text(),'Kuromoji lazy reading worker missing')
+ok('groupWordsToLines' in (root/'js/ocr-engine-v1.js').read_text(),'OCR line reconstruction missing')
+ok('renderReadOverlays' in app,'Lens-style translated overlay missing')
+ok('.ocr-translation' in (root/'css/app.css').read_text(),'translated overlay CSS missing')
+ok("perceptionRouter.run('japanese-reading'" in app,'Japanese reading must use the shared heavy-work budget')
+for needle in ['Xenova/opus-mt-ROMANCE-en','Xenova/opus-mt-en-jap','translation']:
+    ok(needle in language_worker,f'Language AI worker invariant missing {needle}')
+for needle in ["perceptionRouter.run('semantic-ai'","perceptionRouter.run('language-ai'",'runSemanticAI','runReadTranslation']:
+    ok(needle in app,f'Pre-Alpha 3 app integration missing {needle}')
+ok("guitar:{type:'object'" in ontology,'runtime ontology missing guitar')
+ok("flip_flop:{type:'object'" in ontology,'runtime ontology missing flip-flop')
+ok("'押してください':'おして ください'" in reading,'reading engine must preserve learner-friendly boundary in common instruction')
+ok("localStorage.getItem('mn-v05-autofreeze')!=='0'" in app,'Auto Freeze default ON regression')
+ok('fetch(' not in app and 'FormData(' not in app,'camera/app code must not upload images')
 
 if errors:
     print(f'FAILED {len(errors)}/{checks}')

@@ -1,0 +1,36 @@
+'use strict';
+const fs=require('fs'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8');
+const app=fs.readFileSync('js/app.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+const data=require('../js/japanese-data.js');
+const ontology=fs.readFileSync('js/visual-ontology-v1.js','utf8');
+const semantic=fs.readFileSync('js/semantic-ai-v1.js','utf8');
+assert(html.includes('Pre-Alpha 3 · Semantic AI'));
+for(const id of ['semanticAiBtn','semanticAiMoreBtn','readTranslateBtn','readSourceLanguage','semanticAiToggle','languageAiToggle'])assert(html.includes(`id="${id}"`),`missing ${id}`);
+for(const file of ['./js/semantic-ai-v1.js','./js/semantic-ai-worker-v1.js','./js/japanese-reading-v1.js','./js/japanese-reading-worker-v1.js','./js/language-ai-v1.js','./js/language-ai-worker-v1.js'])assert(sw.includes(file),`SW missing ${file}`);
+assert(sw.includes('mira-nihongo-v1-prealpha3-r2'));
+assert(app.includes("perceptionRouter.run('semantic-ai'"));
+assert(app.includes("perceptionRouter.run('language-ai'"));
+assert(app.includes("perceptionRouter.run('japanese-reading'"));
+assert(app.includes('analyzeBatchAsync'));
+assert(fs.readFileSync('js/japanese-reading-worker-v1.js','utf8').includes('kuromoji@0.1.2'));
+assert(app.includes('state.ocrLines'));
+assert(app.includes('renderReadOverlays'));
+assert(!app.includes('x===n||n.includes(x)'),'OCR sentence must not collapse to a contained vocabulary word');
+assert(fs.readFileSync('css/app.css','utf8').includes('.ocr-translation'));
+
+assert(app.includes("localStorage.getItem('mn-v05-autofreeze')!=='0'"));
+assert(app.includes("localStorage.setItem('mn-v05-autofreeze',state.autoFreezeEnabled?'1':'0')"));
+assert(app.includes("source:'user-correction'"));
+assert(app.includes("source:'user-confirmation'"));
+assert(app.includes('clearTimeout(state.semanticAiAutoTimer)'));
+assert.equal(Object.keys(data.JAPANESE_DB).length,383,'base vocabulary must remain 383');
+assert(ontology.includes("guitar:{type:'object'"));
+assert(ontology.includes("flip_flop:{type:'object'"));
+assert(semantic.includes("toilet:['toilet','guitar'"),'guitar!=toilet regression not encoded');
+assert(semantic.includes("surfboard:['surfboard','flip_flop'"),'flip-flop!=surfboard regression not encoded');
+// Positive specialist regression stays present.
+assert(app.includes("['hand','palm','wrist','thumb','index_finger','middle_finger','ring_finger','pinky_finger']"));
+assert(app.includes('addHandsToScene'));
+console.log('prealpha3 permanent regressions: Semantic AI + prior specialist invariants OK');
